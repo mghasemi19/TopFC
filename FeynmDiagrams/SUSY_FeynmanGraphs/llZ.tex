@@ -1,0 +1,15 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(60,45)
+
+\fmflabel{$\ell/q$}{l1}
+\fmflabel{$\ell/q$}{l2}
+\fmflabel{$\gamma/Z$}{Z}
+\fmfleft{l1}
+\fmf{plain,tension=2}{l1,v}
+\fmf{plain}{v,l2}
+\fmf{boson}{v,Z}
+\fmfright{Z,l2}
+
+\end{fmfgraph*}
+\input{footer.tx}

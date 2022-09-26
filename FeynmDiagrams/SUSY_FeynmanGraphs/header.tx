@@ -1,0 +1,33 @@
+\documentclass{article}
+\usepackage{feynmp}
+\usepackage{atlasphysics}
+\usepackage[usenames,dvipsnames]{color}
+\DeclareGraphicsRule{*}{mps}{*}{} 
+\def\filename{\jobname TMP}
+
+\begin{document}
+\pagestyle{empty}
+\begin{fmffile}{\filename}
+
+% DEFINE SUSY STYLES
+\fmfcmd{%
+style_def gluino expr p =
+shrink(0.5);
+cdraw (curly p);
+endshrink;
+cdraw p;
+enddef;
+style_def ewkino expr p =
+cdraw (wiggly p);
+cdraw p;
+enddef;
+style_def gravitino expr p =
+cdraw (wiggly p);
+cdraw p;
+enddef;
+style_def gluon expr p =
+shrink(0.5);
+cdraw (curly p);
+endshrink;
+enddef;}
+

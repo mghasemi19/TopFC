@@ -1,0 +1,34 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{dashes,lab=\color{red}$\stop$,lab.side=left,fore=red,tension=2}{ppVertex,v1}
+\fmfv{fore=blue,d.sh=circle,d.fi=full,d.si=3,lab=\color{blue}$\lambda^{\prime\prime}_{323}$,lab.an=-90}{v1}
+%\fmfv{lab=$\lambda^{\prime\prime}_{323}$,lab.an=-90}{v1}
+
+    \fmf{plain}{v1,s1}
+    \fmflabel{$s$}{s1}
+
+    \fmf{plain}{v1,b1}
+    \fmflabel{$b$}{b1}
+
+% LOWER CASCADE, EDIT BELOW
+\fmf{dashes,lab=\color{red}$\stop$,lab.side=right,fore=red,tension=2}{ppVertex,v2}
+\fmfv{fore=blue,d.sh=circle,d.fi=full,d.si=3,lab=\color{blue}$\lambda^{\prime\prime}_{323}$,lab.an=-90}{v2}
+%\fmfv{lab=$\lambda^{\prime\prime}_{323}$,lab.an=-90}{v2}
+
+    \fmf{plain}{v2,s2}
+    \fmflabel{$s$}{s2}
+ 
+    \fmf{plain}{v2,b2} 
+    \fmflabel{$b$}{b2}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmfright{b2,s2,s1,b1}
+
+\end{fmfgraph*}
+\input{footer.tx}

@@ -1,0 +1,21 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(70,65)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE
+\fmf{ewkino,fore=red,tension=2}{ppVertex,v1}
+\fmflabel{$\color{red}\chinoonepm$}{v1}
+
+% LOWER CASCADE
+\fmf{ewkino,fore=red,tension=2}{ppVertex,v3}
+\fmflabel{$\color{red}\ninotwo$}{v3}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+%\fmfright{b1,b2,LSP2,LSP1,t,b3}
+\fmfright{,v3,,,v1,}
+
+\end{fmfgraph*}
+\input{footer.tx}

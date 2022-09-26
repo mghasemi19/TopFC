@@ -1,0 +1,36 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% ISR TOP
+\fmf{plain,lab.side=right,lab.dist=0.5,tension=4}{ppVertex,j1}
+\fmflabel{$j$}{j1}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{dashes,lab=$\quad h$,lab.side=left,lab.dist=3,tension=4}{ppVertex,v1}
+
+    \fmf{ewkino,lab=\color{red}\ninoone/\ninotwo,tension=2,lab.side=right,lab.dist=2,fore=red}{v1,v2}
+
+        \fmf{boson}{v2,ph}
+        \fmflabel{$\gamma$}{ph}
+
+        \fmf{ewkino,fore=red}{v2,G1}
+        \fmflabel{\color{red}\gravino/\ninoone}{G1}
+
+    \fmf{ewkino,tension=2,fore=red}{v1,G2}
+    \fmflabel{\color{red}\gravino/\ninoone}{G2}
+
+% ISR BOTTOM
+\fmf{plain,lab.side=right,lab.dist=0.5,tension=4}{ppVertex,j2}
+\fmflabel{$j$}{j2}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmftop{,,j1,}
+\fmfright{,ph,G1,,G2,}
+\fmfbottom{,,j2,}
+
+\end{fmfgraph*}
+\input{footer.tx}

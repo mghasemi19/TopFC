@@ -1,0 +1,30 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{dashes,lab=\color{red}$G$,lab.side=left,fore=red,tension=2}{ppVertex,v1}
+
+    \fmf{gluon}{v1,g2}
+    \fmflabel{$g$}{g2}
+
+    \fmf{gluon}{v1,g1}
+    \fmflabel{$g$}{g1}
+
+% LOWER CASCADE, EDIT BELOW
+\fmf{dashes,lab=\color{red}$G$,lab.side=right,fore=red,tension=2}{ppVertex,v2}
+
+    \fmf{gluon}{v2,g3}
+    \fmflabel{$g$}{g3}
+ 
+    \fmf{gluon}{v2,g4} 
+    \fmflabel{$g$}{g4}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmfright{g4,g3,g2,g1}
+
+\end{fmfgraph*}
+\input{footer.tx}

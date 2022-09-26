@@ -1,0 +1,46 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{dashes,lab=\color{red}$\stop$,lab.side=left,fore=red,tension=2}{ppVertex,v1}
+\fmfv{d.sh=circle,d.fi=30,d.si=5}{v1}
+
+    \fmf{plain}{v1,b1}
+    \fmflabel{$b$}{b1}
+
+    \fmf{plain}{v1,l1}
+    \fmflabel{$\ell$}{l1}
+
+    \fmf{plain}{v1,nu1}
+    \fmflabel{$\nu$}{nu1}
+
+    \fmf{ewkino,fore=red}{v1,LSP1}
+    \fmflabel{\color{red}\ninoone}{LSP1}
+        
+% LOWER CASCADE, EDIT BELOW
+\fmf{dashes,lab=\color{red}$\stop$,lab.side=right,fore=red,tension=2}{ppVertex,v2}
+\fmfv{d.sh=circle,d.fi=30,d.si=5}{v2}
+
+    \fmf{plain}{v2,b2}
+    \fmflabel{$b$}{b2}
+
+    \fmf{plain}{v2,l2}
+    \fmflabel{$\ell$}{l2}
+
+    \fmf{plain}{v2,nu2}
+    \fmflabel{$\nu$}{nu2}
+
+    \fmf{ewkino,fore=red}{v2,LSP2}
+    \fmflabel{\color{red}\ninoone}{LSP2}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmftop{,,b1,}
+\fmfright{l2,nu2,LSP2,LSP1,nu1,l1}
+\fmfbottom{,,b2,}
+
+\end{fmfgraph*}
+\input{footer.tx}

@@ -1,0 +1,56 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{dashes,lab=\color{red}$\stopR$,lab.side=left,fore=red,tension=3}{ppVertex,v1}
+\fmfv{fore=blue,d.sh=circle,d.fi=20,d.si=5,lab=\color{blue}$\lambda$,lab.an=-90}{v1}
+
+    \fmf{plain}{v1,mu1}
+    \fmflabel{$\mu$}{mu1}
+
+    \fmf{plain}{v1,tau1}
+    \fmflabel{$\tau$}{tau1}
+
+    \fmf{plain}{v1,nu1}
+    \fmflabel{$\nu$}{nu1}
+
+    \fmf{plain,lab=$t$,lab.side=right,lab.di=0.1cm}{v1,v2}
+
+        \fmf{plain}{v2,b1}
+        \fmflabel{$b$}{b1}
+        
+        \fmf{boson}{v2,W1} 
+        \fmflabel{$W$}{W1}
+
+% LOWER CASCADE, EDIT BELOW
+\fmf{dashes,lab=\color{red}$\stopR$,lab.side=right,fore=red,tension=3}{ppVertex,v3}
+\fmfv{fore=blue,d.sh=circle,d.fi=20,d.si=5,lab=\color{blue}$\lambda$,lab.an=90}{v3}
+
+    \fmf{plain}{v3,mu2}
+    \fmflabel{$\mu$}{mu2}
+
+    \fmf{plain}{v3,tau2}
+    \fmflabel{$\tau$}{tau2}
+
+    \fmf{plain}{v3,nu2}
+    \fmflabel{$\nu$}{nu2}
+
+    \fmf{plain,lab=$t$,lab.side=left,lab.di=0.1cm}{v3,v4}
+
+        \fmf{plain}{v4,b2}
+        \fmflabel{$b$}{b2}
+        
+        \fmf{boson}{v4,W2}
+        \fmflabel{$W$}{W2}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmftop{,,,mu1,tau1,,}
+\fmfright{nu2,W2,b2,,b1,W1,nu1}
+\fmfbottom{,,,mu2,tau2,,}
+
+\end{fmfgraph*}
+\input{footer.tx}

@@ -1,0 +1,42 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{ewkino,lab=\color{red}\chinoonepm,lab.side=left,fore=red,tension=2}{ppVertex,u_v1}
+
+    \fmf{boson}{u_v1,u_W}
+    \fmflabel{$W$}{u_W}
+
+    \fmf{ewkino,lab=\color{red}\ninoone,lab.side=right,lab.di=2,fore=red}{u_v1,u_v2}
+
+        \fmf{boson}{u_v2,u_ph}
+        \fmflabel{$\gamma$}{u_ph}
+
+        \fmf{ewkino,fore=red}{u_v2,u_G}
+        \fmflabel{\color{red}$\gravino$}{u_G}
+
+% LOWER CASCADE, EDIT BELOW
+\fmf{ewkino,lab=\color{red}\chinoonemp/\ninotwo\hspace{-0.3cm},lab.an=90,fore=red,tension=2}{ppVertex,l_v1}
+
+    \fmf{boson}{l_v1,l_W}
+    \fmflabel{$W/Z/h$}{l_W}
+
+    \fmf{ewkino,lab=\color{red}\ninoone,lab.side=left,lab.di=2,fore=red}{l_v1,l_v2}
+
+        \fmf{boson}{l_v2,l_ph}
+        \fmflabel{$\gamma$}{l_ph}
+
+        \fmf{ewkino,fore=red}{l_v2,l_G}
+        \fmflabel{\color{red}$\gravino$}{l_G}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmftop{,,u_W,}
+\fmfright{,l_ph,l_G,,u_G,u_ph,}
+\fmfbottom{,,l_W,}
+
+\end{fmfgraph*}
+\input{footer.tx}

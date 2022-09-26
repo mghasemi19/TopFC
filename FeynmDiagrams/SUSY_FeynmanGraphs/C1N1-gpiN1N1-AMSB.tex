@@ -1,0 +1,30 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(75,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE
+\fmf{ewkino,lab=\color{red}\chinoonepm,lab.side=left,fore=red,tension=2}{ppVertex,v1}
+\fmfv{d.sh=circle,d.fi=30,d.si=5}{v1}
+ 
+    \fmf{ewkino,fore=red}{v1,LSP1}
+    \fmflabel{\color{red}\ninoone}{LSP1} 
+
+    \fmf{dashes,tension=2}{v1,pi1}
+    \fmflabel{\pipm}{pi1}
+ 
+% LOWER CASCADE 
+\fmf{ewkino,fore=red,tension=1}{ppVertex,LSP2}
+\fmflabel{\color{red}\ninoone}{LSP2} 
+
+% ISR
+\fmf{gluon}{ppVertex,g}
+\fmflabel{$g$}{g}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmfright{g,LSP2,LSP1,pi1}
+
+\end{fmfgraph*}
+\input{footer.tx}

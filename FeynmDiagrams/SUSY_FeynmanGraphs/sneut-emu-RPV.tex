@@ -1,0 +1,34 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,50)
+
+% PROTON-PROTON VERTEX
+%%%% NO PP VERTEX FOR THIS RESONANCE SINCE 
+%%%% WE ASSUME A SPECIFIC PRODUCTION CHANNEL
+%\input{ppVertex.fmf}
+
+% PRODUCTION VERTEX
+\fmfleft{i1,i2}
+
+\fmflabel{$\overline{d}$}{i1}
+\fmflabel{$d$}{i2}
+
+\fmf{fermion}{i1,v1,i2}
+\fmflabel{\color{blue}$\lambda^{\prime}_{311}$}{v1}
+\fmfv{fore=blue,d.sh=circle,d.fi=full,d.si=3}{v1}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmfright{l1,l2}
+
+\fmflabel{$\mu^{+}$}{l1}
+\fmflabel{$e^{-}$}{l2}
+
+\fmf{fermion}{l1,v2,l2}
+\fmflabel{\color{blue}$\lambda_{132}$}{v2}
+\fmfv{fore=blue,d.sh=circle,d.fi=full,d.si=3}{v2}
+
+% TAU SNEUTRINO RESONANCE
+\fmf{dashes,lab=$\color{red}\snu_\tau$,lab.side=right,fore=red,tension=2}{v1,v2}
+
+\end{fmfgraph*}
+\input{footer.tx}

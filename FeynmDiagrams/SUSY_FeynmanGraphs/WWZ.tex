@@ -1,0 +1,15 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(60,45)
+
+\fmflabel{\W}{W1}
+\fmflabel{\Wpm}{W2}
+\fmflabel{$\gamma/Z$}{Z}
+\fmfleft{W1}
+\fmf{boson,tension=2}{W1,v}
+\fmf{boson}{v,W2}
+\fmf{boson}{v,Z}
+\fmfright{Z,W2}
+
+\end{fmfgraph*}
+\input{footer.tx}

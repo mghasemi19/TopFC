@@ -1,0 +1,65 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{plain}{ppVertex,j}
+\fmfv{l=$j$,l.a=65}{j}
+
+\fmf{dashes,lab=\color{red}\squark\hspace*{-7pt},lab.side=left,fore=red,tension=2}{ppVertex,v1}
+
+    \fmf{plain}{v1,q1}
+    \fmflabel{$q$}{q1}
+
+    \fmf{ewkino,lab=\color{red}\chinoonepm,lab.side=right,lab.di=3,fore=red,tension=2}{v1,v2}
+
+        \fmf{boson,lab=$W$,lab.side=left,lab.di=3}{v2,v3}
+
+            \fmf{plain}{v3,l}
+            \fmflabel{$\ell$}{l}
+
+            \fmf{plain}{v3,neutrino}
+            \fmflabel{$\nu$}{neutrino}
+
+        \fmf{ewkino,fore=red,lab=\color{red}\ninoone,lab.si=right,lab.di=3}{v2,v4}
+
+            \fmf{gravitino,fore=red}{v4,gravitino}
+            \fmfv{lab=\color{red}\gravino}{gravitino}
+
+            \fmf{boson}{v4,photon}
+            \fmflabel{$\gamma$}{photon}
+
+% LOWER CASCADE, EDIT BELOW
+\fmf{gluino,lab=\color{red}\gluino,fore=red,tension=3}{ppVertex,v5}
+\fmfv{d.sh=circle,d.fi=30,d.si=5}{v5}
+
+    \fmf{plain}{v5,q2}
+    \fmflabel{$q$}{q2}
+
+    \fmf{plain}{v5,q3}
+    \fmflabel{$q$}{q3}
+
+    \fmf{ewkino,lab=\color{red}\ninoone,lab.di=3,lab.side=left,fore=red,tension=2}{v5,v6}
+
+	    \fmf{plain}{v6,l2}
+	    \fmflabel{$\ell$}{l2}
+	
+	    \fmf{dashes,lab=$\color{red}\slepton$,lab.side=left,fore=red,lab.di=3}{v6,v7}
+	    \fmfv{fore=blue,d.sh=circle,d.fi=full,d.si=1.5,lab=\color{blue}$\lambda$,lab.an=-110}{v7}
+	
+	        \fmf{plain}{v7,l3}
+	        \fmflabel{$\ell$}{l3}
+	
+	        \fmf{plain}{v7,nu2}
+	        \fmflabel{$\nu$}{nu2}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmftop{,,j,q1,l,neutrino,}
+\fmfright{,l3,nu2,,gravitino,photon,}
+\fmfbottom{,,,q3,q2,l2,,}
+
+\end{fmfgraph*}
+\input{footer.tx}

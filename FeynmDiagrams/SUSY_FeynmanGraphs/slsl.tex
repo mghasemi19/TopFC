@@ -1,0 +1,20 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(60,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{dashes,fore=red,tension=2}{ppVertex,v1}
+\fmflabel{$\color{red}\slepton$}{v1}
+
+% LOWER CASCADE, EDIT BELOW
+\fmf{dashes,fore=red,tension=2}{ppVertex,v2}
+\fmflabel{$\color{red}\slepton$}{v2}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmfright{,v2,,v1,}
+
+\end{fmfgraph*}
+\input{footer.tx}

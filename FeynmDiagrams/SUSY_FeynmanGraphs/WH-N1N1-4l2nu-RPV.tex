@@ -1,0 +1,44 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{dashes,lab=$h$,lab.side=left,tension=3}{ppVertex,v1}
+
+    \fmf{ewkino,lab=\color{red}\ninoone,tension=2,lab.side=left,lab.dist=3.0,fore=red}{v1,N1v1}
+    \fmfv{fore=blue,d.sh=circle,d.fi=20,d.si=5,lab=\color{blue}$\lambda$,lab.an=90}{N1v1}
+
+    \fmf{ewkino,lab=\color{red}\ninoone,tension=2,lab.side=right,lab.dist=0.8,fore=red}{v1,N1v2}
+    \fmfv{fore=blue,d.sh=circle,d.fi=20,d.si=5,lab=\color{blue}$\lambda$,lab.an=-90}{N1v2}
+
+        \fmf{plain}{N1v1,l1}
+        \fmflabel{$\ell$}{l1}
+
+        \fmf{plain}{N1v1,l2}
+        \fmflabel{$\ell$}{l2}
+
+        \fmf{plain}{N1v1,nu1}
+        \fmflabel{$\nu$}{nu1}
+        
+        \fmf{plain}{N1v2,l3}
+        \fmflabel{$\ell$}{l3}
+
+        \fmf{plain}{N1v2,l4}
+        \fmflabel{$\ell$}{l4}
+
+        \fmf{plain}{N1v2,nu2}
+        \fmflabel{$\nu$}{nu2} 
+
+% ASSOCIATED PRODUCTION
+\fmf{boson,lab.side=right,lab.dist=0.5,tension=4}{ppVertex,W}
+\fmflabel{$W$}{W}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmfright{,l3,l4,nu2,,nu1,l2,l1,}
+\fmfbottom{,,W,}
+
+\end{fmfgraph*}
+\input{footer.tx}

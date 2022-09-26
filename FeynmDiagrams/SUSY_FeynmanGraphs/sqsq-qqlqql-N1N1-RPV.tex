@@ -1,0 +1,57 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+
+% UPPER CASCADE
+\fmf{dashes,lab=\color{red}\squark,lab.side=left,fore=red,tension=2}{ppVertex,v1}
+%\fmfv{d.sh=circle,d.fi=30,d.si=5}{v1}
+
+    \fmf{plain}{v1,q1}
+    \fmflabel{$q$}{q1}
+
+    \fmf{ewkino,lab=\color{red}\ninoone,lab.side=right,fore=red}{v1,v2}
+    \fmfv{fore=blue,d.sh=circle,d.fi=20,d.si=5,lab=\color{blue}$\lambda^{\prime}$,lab.an=-90}{v2}
+
+        \fmf{plain}{v2,q5}
+        \fmflabel{$q$}{q5}
+
+        \fmf{plain}{v2,q6}
+        \fmflabel{$q$}{q6}
+
+        \fmf{plain}{v2,m1}
+        \fmflabel{$\mu$}{m1}
+
+
+
+% LOWER CASCADE, EDIT BELOW
+
+\fmf{dashes,lab=\color{red}\squark,lab.side=right,fore=red,tension=2}{ppVertex,v3}
+%\fmfv{d.sh=circle,d.fi=30,d.si=0.05w}{v3}
+  
+   \fmf{plain}{v3,q2}
+   \fmflabel{$q$}{q2}
+        
+   \fmf{ewkino,lab=\color{red}\ninoone,lab.side=left,fore=red}{v3,v4}
+   \fmfv{fore=blue,d.sh=circle,d.fi=20,d.si=5,lab=\color{blue}$\lambda^{\prime}$,lab.an=90}{v4}
+   
+      \fmf{plain}{v4,q7}
+      \fmflabel{$q$}{q7}
+
+      \fmf{plain}{v4,q8}
+      \fmflabel{$q$}{q8}
+
+      \fmf{plain}{v4,m2}
+      \fmflabel{$\mu$}{m2}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmftop{,,q1,}
+\fmfright{m2,q7,q8,,,,,q5,q6,m1}
+%m2,q7,q8,}
+\fmfbottom{,,q2,}
+
+\end{fmfgraph*}
+\input{footer.tx}

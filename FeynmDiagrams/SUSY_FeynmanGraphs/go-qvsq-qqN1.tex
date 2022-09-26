@@ -1,0 +1,19 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(80,30)
+
+\fmflabel{\color{red}\gluino}{go}
+\fmflabel{$q$}{q1}
+\fmflabel{$q$}{q2}
+\fmflabel{\color{red}$\ninoone$}{N1}
+
+\fmfleft{go}
+\fmf{gluino,fore=red,tension=2}{go,v1}
+\fmf{dashes,fore=red,lab=\color{red}$\squark^{*}$,lab.side=left,lab.dist=0.1cm}{v1,v2}
+\fmf{plain}{v1,q1}
+\fmf{plain}{v2,q2}
+\fmf{ewkino,fore=red}{v2,N1}
+\fmfright{q1,q2,N1}
+
+\end{fmfgraph*}
+\input{footer.tx}

@@ -1,0 +1,40 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE
+\fmf{ewkino,lab=\color{red}\ninotwo,lab.side=left,fore=red,tension=2}{ppVertex,v1}
+
+    \fmf{plain}{v1,l1}
+    \fmflabel{$\ell$}{l1}
+
+    \fmf{dashes,lab=$\color{red}\slepton$,lab.side=right,fore=red,lab.di=0.1cm}{v1,v2}
+
+        \fmf{plain}{v2,l2}
+        \fmflabel{$\ell$}{l2}
+
+        \fmf{ewkino,fore=red}{v2,LSP1}
+        \fmflabel{\color{red}\ninoone}{LSP1}
+
+% LOWER CASCADE
+\fmf{ewkino,lab=\color{red}\ninothree,lab.side=right,fore=red,tension=2}{ppVertex,v3}
+
+    \fmf{plain}{v3,l3}
+    \fmflabel{$\ell$}{l3}
+
+    \fmf{dashes,lab=$\color{red}\slepton$,fore=red,lab.side=left,lab.di=0.1cm}{v3,v4}
+
+        \fmf{plain}{v4,l4}
+        \fmflabel{$\ell$}{l4}
+
+        \fmf{ewkino,fore=red}{v4,LSP2}
+        \fmflabel{$\color{red}\ninoone$}{LSP2}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmfright{l3,l4,LSP2,,LSP1,l2,l1}
+
+\end{fmfgraph*}
+\input{footer.tx}

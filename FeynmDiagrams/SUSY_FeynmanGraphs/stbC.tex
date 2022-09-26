@@ -1,0 +1,15 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(60,45)
+
+\fmflabel{\color{red}\stop}{st}
+\fmflabel{$b$}{b}
+\fmflabel{\color{red}\chinopm}{C}
+\fmfleft{st}
+\fmf{dashes,fore=red,tension=2}{st,v}
+\fmf{plain}{v,b}
+\fmf{ewkino,fore=red}{v,C}
+\fmfright{C,b}
+
+\end{fmfgraph*}
+\input{footer.tx}

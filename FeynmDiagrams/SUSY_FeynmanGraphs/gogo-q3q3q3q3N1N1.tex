@@ -1,0 +1,38 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{gluino,lab=\color{red}\gluino,lab.side=left,fore=red,tension=3}{ppVertex,v1}
+\fmfv{d.sh=circle,d.fi=30,d.si=5}{v1}
+
+    \fmf{ewkino,fore=red}{v1,LSP1}
+    \fmflabel{\color{red}\ninoone}{LSP1}
+
+    \fmf{plain}{v1,t1}
+    \fmflabel{$b/t$}{t1}
+
+    \fmf{plain}{v1,t2}
+    \fmflabel{$b/t$}{t2}
+
+% LOWER CASCADE, EDIT BELOW
+\fmf{gluino,lab=\color{red}\gluino,lab.side=right,fore=red,tension=3}{ppVertex,v2}
+\fmfv{d.sh=circle,d.fi=30,d.si=5}{v2}
+
+    \fmf{ewkino,fore=red}{v2,LSP2}
+    \fmflabel{\color{red}\ninoone}{LSP2}
+
+    \fmf{plain}{v2,t3}
+    \fmflabel{$b/t$}{t3}
+
+    \fmf{plain}{v2,t4}
+    \fmflabel{$b/t$}{t4}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmfright{t4,t3,LSP2,LSP1,t2,t1}
+
+\end{fmfgraph*}
+\input{footer.tx}

@@ -1,0 +1,15 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(60,45)
+
+\fmflabel{$t$}{t}
+\fmflabel{$b$}{b}
+\fmflabel{$\Wpm$}{W}
+\fmfleft{t}
+\fmf{plain,tension=2}{t,v}
+\fmf{plain}{v,b}
+\fmf{boson}{v,W}
+\fmfright{W,b}
+
+\end{fmfgraph*}
+\input{footer.tx}

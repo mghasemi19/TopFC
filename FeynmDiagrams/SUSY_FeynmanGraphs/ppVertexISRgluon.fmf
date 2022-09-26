@@ -1,0 +1,28 @@
+% PROTON PROTON AND PRODUCTION VERTEX
+\fmfleft{,p1,,p2,} 
+\fmfv{lab=$p$,lab.an=-120}{p1}
+\fmfv{lab=$p$,lab.an=120}{p2}
+\fmf{plain,tension=2}{p2,ppVertex}
+\fmf{plain,tension=3.5}{p1,ISRv}
+\fmfv{d.sh=circle,d.fi=30,d.si=.05w}{ISRv}
+\fmf{plain,tension=2.5}{ISRv,ppVertex}
+\fmfv{d.sh=circle,d.fi=30,d.si=.10w}{ppVertex}
+\fmf{phantom}{ppVertex,virtual} 
+\fmfright{virtual}
+\fmffreeze
+\fmf{gluon,tension=4,decor.size=2}{ISRv,ISRgluon}
+\fmflabel{$g$}{ISRgluon}
+\fmfbottom{,,ISRgluon,,,}
+\fmffreeze
+
+\renewcommand{\P}[3]{\fmfi{plain}{%
+vpath(__#1,__#2) shifted (thick*(#3))}}
+\P{p1}{ISRv}{0.7,-0.7}
+\P{p1}{ISRv}{-0.7,0.7}
+\P{ISRv}{ppVertex}{0.7,-0.7}
+\P{ISRv}{ppVertex}{-0.7,0.7}
+\P{p2}{ppVertex}{0.7,0.7}
+\P{p2}{ppVertex}{-0.7,-0.7}
+\fmffreeze
+
+

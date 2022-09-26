@@ -1,0 +1,51 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{gluino,lab=\color{red}\gluino,lab.side=left,fore=red,tension=3}{ppVertex,v1}
+\fmfv{d.sh=circle,d.fi=30,d.si=5}{v1}
+
+    \fmf{plain}{v1,q1}
+    %\fmflabel{$t/b$}{q1}
+    \fmflabel{$t$}{q1}
+
+    \fmf{plain}{v1,q2}
+    \fmflabel{$t$}{q2}
+
+    \fmf{ewkino,fore=red,lab=\color{red}$\tilde{\chi}_{2}^{0}$,lab.side=right,lab.di=0.1cm}{v1,v2}
+
+        \fmf{ewkino,fore=red}{v2,LSP1}
+        \fmflabel{\color{red}\ninoone}{LSP1}
+
+        \fmf{dashes,tension=0.05}{v2,h1}
+        \fmflabel{$h$}{h1}
+
+% LOWER CASCADE, EDIT BELOW
+\fmf{gluino,lab=\color{red}\gluino,lab.side=right,fore=red,tension=3}{ppVertex,v3}
+\fmfv{d.sh=circle,d.fi=30,d.si=5}{v3}
+
+    \fmf{plain}{v3,q3}
+    \fmflabel{$b$}{q3}
+
+    \fmf{plain}{v3,q4}
+    \fmflabel{$b$}{q4}
+
+    \fmf{ewkino,fore=red,lab=\color{red}$\tilde{\chi}_{2}^{0}$,lab.side=left,lab.di=0.1cm}{v3,v4}
+
+        \fmf{ewkino,fore=red}{v4,LSP2}
+        \fmflabel{\color{red}\ninoone}{LSP2}
+
+        \fmf{dashes,tension=0.05}{v4,h2}
+        \fmflabel{$h$}{h2}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmftop{,,q1,}
+\fmfright{q3,h2,LSP2,,LSP1,h1,q2}
+\fmfbottom{,,q4,}
+
+\end{fmfgraph*}
+\input{footer.tx}

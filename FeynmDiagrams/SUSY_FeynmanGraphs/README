@@ -1,0 +1,45 @@
+To check out this package:
+svn co svn+ssh://svn.cern.ch/reps/atlasphys-susp/Physics/SUSY/Papers/FeynmanGraphs FeynmanGraphs
+
+To check existing diagrams open:
+allDiagrams.pdf
+
+To make a new diagram copy an existing one closest in topology to the desired one.
+The naming convention is sparticle1sparticle2-finalState-comment.tex:
+cp sparticle1sparticle2-finalState-existing.tex sparticle1sparticle2-finalState-new.tex
+
+Particle naming convention in the filename:
+SM particles:
+q - quark
+l - lepton
+t - top
+b - bottom
+tau - tau
+v - neutrino
+g - gluon
+W - W boson
+Z - Z boson
+ph - photon
+h - Higgs
+
+SUSY particles:
+sq - squark
+sl - slepton
+st - stop
+sb - sbottom
+stau - stau
+sv - sneutrino
+go - gluino
+C1 - chargino1
+N1 - neutralino1
+Ph - photino
+G - gravitino
+
+Edit the new file and compile:
+make
+
+You can read the manual for help:
+fmfman.pdf
+
+To include the new diagram into the package, email the tex file to the responsible:
+ https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/SUSYFeynmanDiagrams#responsible

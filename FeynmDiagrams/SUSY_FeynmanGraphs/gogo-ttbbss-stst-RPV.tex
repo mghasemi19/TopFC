@@ -1,0 +1,44 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{gluino,lab=\color{red}\gluino,lab.side=left,fore=red,tension=2}{ppVertex,v1}
+
+    \fmf{plain}{v1,t1}
+    \fmflabel{$t$}{t1}
+
+    \fmf{dashes,lab=\color{red}\stop,lab.side=right,lab.di=0.1cm,fore=red}{v1,v2}
+    \fmfv{fore=blue,d.sh=circle,d.fi=full,d.si=3,lab=\color{blue}$\lambda^{\prime\prime}_{323}$,lab.an=-90,lab.dist=0.04w}{v2}
+    %\fmfv{lab=$\lambda^{\prime\prime}_{323}$,lab.an=-90,lab.dist=0.04w}{v2}
+    
+        \fmf{plain}{v2,s1}
+        \fmflabel{$s$}{s1}
+
+        \fmf{plain}{v2,b1}
+        \fmflabel{$b$}{b1}
+
+ % LOWER CASCADE, EDIT BELOW
+\fmf{gluino,lab=\color{red}\gluino,lab.side=right,fore=red,tension=2}{ppVertex,v3}
+
+    \fmf{plain}{v3,t3}
+    \fmflabel{$t$}{t3}
+
+    \fmf{dashes,lab=\color{red}\stop,lab.side=left,lab.di=0.1cm,fore=red}{v3,v4}
+    \fmfv{fore=blue,d.sh=circle,d.fi=full,d.si=3,lab=\color{blue}$\lambda^{\prime\prime}_{323}$,lab.an=-90,lab.dist=0.04w}{v4}
+    %\fmfv{lab=$\lambda^{\prime\prime}_{323}$,lab.an=-90,lab.dist=0.04w}{v4}
+
+        \fmf{plain}{v4,s2}
+        \fmflabel{$s$}{s2}
+
+        \fmf{plain}{v4,b2}
+        \fmflabel{$b$}{b2}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmfright{t3,b2,s2,s1,b1,t1}
+
+\end{fmfgraph*}
+\input{footer.tx}

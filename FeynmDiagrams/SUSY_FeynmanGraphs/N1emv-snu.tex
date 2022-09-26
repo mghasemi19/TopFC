@@ -1,0 +1,21 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(80,30)
+
+\fmflabel{\color{red}\ninoone}{N}
+\fmflabel{$e^+/\mu^+$}{LP}
+\fmflabel{$e^-$}{LM}
+\fmflabel{$\bar{\nu}_{\mu}/\bar{\nu}_e$}{V}
+
+\fmfleft{N}
+\fmf{ewkino,fore=red,tension=2}{N,v1}
+\fmf{dashes,fore=red,tension=0.5,lab=\color{red}\small$\tilde{\nu}_{\mu}^{*}/\tilde{\nu}_{e}^{*}$,lab.side=left,lab.dist=3.5}{v1,v2}
+\fmfv{fore=blue,d.sh=circle,d.fi=full,d.si=3,lab=\small\color{blue}$\lambda_{121}$,lab.an=-90,lab.dist=3.0}{v2}
+\fmf{plain}{v1,V}
+\fmf{plain}{v2,LM}
+\fmf{plain}{v2,LP}
+% \fmfbottom{LP}
+\fmfright{V,LM,LP}
+
+\end{fmfgraph*}
+\input{footer.tx}

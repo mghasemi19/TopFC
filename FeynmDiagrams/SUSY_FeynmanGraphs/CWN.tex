@@ -1,0 +1,15 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(60,45)
+
+\fmflabel{\color{red}\chinopm}{C}
+\fmflabel{\Wpm}{W}
+\fmflabel{\color{red}\nino}{N}
+\fmfleft{C}
+\fmf{ewkino,fore=red,tension=2}{C,v}
+\fmf{boson}{v,W}
+\fmf{ewkino,fore=red}{v,N}
+\fmfright{N,W}
+
+\end{fmfgraph*}
+\input{footer.tx}

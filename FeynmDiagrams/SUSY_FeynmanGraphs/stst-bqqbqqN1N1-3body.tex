@@ -1,0 +1,50 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{dashes,lab=\color{red}$\stop$,lab.side=left,fore=red,tension=2}{ppVertex,v1}
+\fmfv{d.sh=circle,d.fi=30,d.si=5}{v1}
+
+        \fmf{ewkino,fore=red}{v1,LSP1}
+        \fmflabel{\color{red}\ninoone}{LSP1}
+    
+        \fmf{plain}{v1,b1}
+        \fmflabel{$b$}{b1}
+    
+        \fmf{boson,lab=$\ W$,lab.di=-0.45cm}{v1,v2}
+            
+            \fmf{plain}{v2,q1}
+            \fmflabel{$q$}{q1}
+
+            \fmf{plain}{v2,q2}
+            \fmflabel{$q$}{q2}
+
+% LOWER CASCADE, EDIT BELOW
+\fmf{dashes,lab=\color{red}$\stop$,lab.side=right,fore=red,tension=2}{ppVertex,v3}
+\fmfv{d.sh=circle,d.fi=30,d.si=5}{v3}
+
+        \fmf{ewkino,fore=red}{v3,LSP2}
+        \fmflabel{\color{red}\ninoone}{LSP2}
+    
+        \fmf{plain}{v3,b2}
+        \fmflabel{$b$}{b2}
+    
+        \fmf{boson,lab=$\ W$,lab.side=left,lab.di=-0.50cm}{v3,v4}
+            
+            \fmf{plain}{v4,q3}
+            \fmflabel{$q$}{q3}
+
+            \fmf{plain}{v4,q4}
+            \fmflabel{$q$}{q4}
+        
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmftop{,,,b1,,}
+\fmfright{q4,q3,LSP2,LSP1,q2,q1}
+\fmfbottom{,,,b2,,}
+
+\end{fmfgraph*}
+\input{footer.tx}

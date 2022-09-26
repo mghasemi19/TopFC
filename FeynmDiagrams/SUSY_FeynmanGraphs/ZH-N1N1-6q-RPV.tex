@@ -1,0 +1,44 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(100,75)
+
+% PROTON-PROTON VERTEX
+\input{ppVertex.fmf}
+
+% UPPER CASCADE, EDIT BELOW
+\fmf{dashes,lab=$h$,lab.side=left,tension=3}{ppVertex,v1}
+
+    \fmf{ewkino,lab=\color{red}\ninoone,tension=2,lab.side=left,lab.dist=3.0,fore=red}{v1,N1v1}
+    \fmfv{fore=blue,d.sh=circle,d.fi=20,d.si=5,lab=\color{blue}$\lambda^{\prime\prime}$,lab.an=90}{N1v1}
+
+    \fmf{ewkino,lab=\color{red}\ninoone,tension=2,lab.side=right,lab.dist=0.8,fore=red}{v1,N1v2}
+    \fmfv{fore=blue,d.sh=circle,d.fi=20,d.si=5,lab=\color{blue}$\lambda^{\prime\prime}$,lab.an=-90}{N1v2}
+
+        \fmf{plain}{N1v1,q1}
+        \fmflabel{$q$}{q1}
+
+        \fmf{plain}{N1v1,q2}
+        \fmflabel{$q$}{q2}
+
+        \fmf{plain}{N1v1,q3}
+        \fmflabel{$q$}{q3}
+        
+        \fmf{plain}{N1v2,q4}
+        \fmflabel{$q$}{q4}
+
+        \fmf{plain}{N1v2,q5}
+        \fmflabel{$q$}{q5}
+
+        \fmf{plain}{N1v2,q6}
+        \fmflabel{$q$}{q6} 
+
+% ASSOCIATED PRODUCTION
+\fmf{boson,lab.side=right,lab.dist=0.5,tension=4}{ppVertex,Z}
+\fmflabel{$Z$}{Z}
+
+% ORDER OF FINAL PARTICLES: BOTTOM, RIGHT, TOP    
+\fmfright{,q4,q5,q6,,q3,q2,q1,}
+\fmfbottom{,,Z,}
+
+\end{fmfgraph*}
+\input{footer.tx}

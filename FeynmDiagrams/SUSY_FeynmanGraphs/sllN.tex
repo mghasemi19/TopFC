@@ -1,0 +1,15 @@
+\input{header.tx}
+% KEEP SIZE LOW SO THE LETTERS ARE LARGE
+\begin{fmfgraph*}(60,45)
+
+\fmflabel{\color{red}\slepton/\squark}{sl}
+\fmflabel{$\ell/q$}{l}
+\fmflabel{\color{red}\nino}{N}
+\fmfleft{sl}
+\fmf{dashes,fore=red,tension=2}{sl,v}
+\fmf{plain}{v,l}
+\fmf{ewkino,fore=red}{v,N}
+\fmfright{N,l}
+
+\end{fmfgraph*}
+\input{footer.tx}
