@@ -10,6 +10,14 @@ The main backgrounds in the SM for this analysis are:
 - single-top production via s-channel, t-channel, and Wt-channel
 - single-top production in association with a gauge-boson such as Z or W boson
 
+**Table of Contents** for this repositry
+- [to-do list](#to-do-list)
+- [Feynman Diagrams](#feynman-diagrams)
+- [Signal and background ntuple generation](#signal-and-background-ntuple-generation)
+- [BDT implementation](#bdt-implementation)
+- [Event selection](#event-selection)
+
+
 ## to-do list
 - [x] Read the [paper](https://arxiv.org/pdf/2101.05286.pdf) and review QFT for the related phenomology parts
 - [ ] Determine the signal and dominant/sub-dominant backgrounds (make all the Feynman diagrams)
