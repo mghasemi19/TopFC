@@ -1,0 +1,23 @@
+define p = g u c d s b u~ c~ d~ s~ b~ 
+define j = g u c d s b u~ c~ d~ s~ b~ 
+define lightj = g u u~ d d~ c c~
+define l = e- e+ mu- mu+
+
+# our signal 
+generate p p > t w-, (t > l+ l- u), (w- > l- vl~)
+add process p p > t lightj ,(t > u l- l+)
+add process p p > t t~, (t > L+ l- u), (t~ > w- b~, w- > l- vl~)
+
+# their signal
+generate p p > mu+ mu- t NP^2==4  
+add process p p > mu+ mu- t~ NP^2==4
+add process p p > mu+ mu- t j NP^2==4
+add process p p > mu+ mu- t~ j NP^2==4
+
+set lambdas = ?
+set fSrr = 1
+set fTrr = 1
+set fVlr = 1
+set fVrl = 1
+set fVrr = 1
+set fVll = 1
