@@ -1,3 +1,6 @@
+import model ./models/4fermion-models/4fermitop_charm_5F
+
+# multiparticle definition
 define p = g u c d s b u~ c~ d~ s~ b~ 
 define j = g u c d s b u~ c~ d~ s~ b~ 
 define lightj = g u u~ d d~ c c~
@@ -8,7 +11,7 @@ generate p p > t w-, (t > l+ l- c), (w- > l- vl~)
 add process p p > t lightj ,(t > c l- l+)
 add process p p > t t~, (t > L+ l- c), (t~ > w- b~, w- > l- vl~)
 
-# their signal
+# their signal (can be removed)
 generate p p > mu+ mu- t NP^2==4  
 add process p p > mu+ mu- t~ NP^2==4
 add process p p > mu+ mu- t j NP^2==4
