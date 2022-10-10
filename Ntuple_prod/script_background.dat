@@ -1,8 +1,8 @@
 import sm
 
 # multiparticle definition
-define p = g u c d s b u~ c~ d~ s~ b~ 
-define j = g u c d s b u~ c~ d~ s~ b~ 
+define p = g u c d s b u~ c~ d~ s~ b~
+define j = g u c d s b u~ c~ d~ s~ b~
 define lightj = g u u~ d d~ c c~
 define v = w+ w- z
 
@@ -11,30 +11,91 @@ generate p p > t t~, (t > b l+ vl), (t~ > b~ l- vl~)
 output IPM_ttbar
 launch IPM_ttbar
 
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
 # Z+jets
 generate p p > z j, (z > l- l+)
 output IPM_Zjet
 launch IPM_Zjet
 
-# WZ 
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+# WZ
 generate p p > w- z, (z > l- l+), (w- > l- vl~)
-add processes p p > +- z, (z > l- l+), (w+ > l+ vl)
+add process p p > +- z, (z > l- l+), (w+ > l+ vl)
 output IPM_WZ
-launch IPM_WZ
+launch IPM_W
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFFZ
 
 # ZZ
 generate p p > z z, (z > l- l+), (z > l- l+)
 output IPM_ZZ
 launch IPM_ZZ
 
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
 # tW
-generate 
+generate p p > t w-, (t > b l+ vl), (w- > l- vl~)
+output IPM_tW
+launch IPM_tW
 
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
 
-#set lambdas = ?
-set fSrr = 1
-set fTrr = 1
-set fVlr = 1
-set fVrl = 1
-set fVrr = 1
-set fVll = 1
+# ttbarW
+generate p p > t t~ w-, (w- > l- vl~), (t > b l+ vl), (t~ > b~ l- vl~)
+add process p p > t t~ w+, (w+ > l+ vl), (t > b l+ vl), (t~ > b~ l- vl~)
+
+output IPM_ttbarW
+launch IPM_ttbarW
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+# ttbarZ
+generate p p > t t~ z, (z > l- l+), (t > b l+ vl), (t~ > b~ j j)
+
+output IPM_ttbarZ
+launch IPM_ttbarZ
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+# tWZ
+generate p p > t w- z, (z > l- l+), (t > b l+ vl), (w- > j j)
+
+output IPM_tWZ
+launch IPM_tWZ
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+

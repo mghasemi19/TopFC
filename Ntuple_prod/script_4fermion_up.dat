@@ -1,12 +1,12 @@
-import model ./models/4fermion-models/4fermitop_charm_5F
+import model ../models/4fermion-models/4fermitop_charm_5F
 
 # multiparticle definition
-define p = g u c d s b u~ c~ d~ s~ b~ 
-define j = g u c d s b u~ c~ d~ s~ b~ 
+define p = g u c d s b u~ c~ d~ s~ b~
+define j = g u c d s b u~ c~ d~ s~ b~
 define lightj = g u u~ d d~ c c~
 define l = e- e+ mu- mu+
 
-# our signal 
+# our signal
 generate p p > t w-, (t > l+ l- u), (w- > l- vl~)
 add process p p > t lightj ,(t > u l- l+)
 add process p p > t t~, (t > L+ l- u), (t~ > w- b~, w- > l- vl~)
@@ -14,7 +14,15 @@ add process p p > t t~, (t > L+ l- u), (t~ > w- b~, w- > l- vl~)
 output IPM_test_signalup
 launch IPM_test_signalup
 
-#set lambdas = ?
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 5000  # may increase in future
+
+# set lambdas = ?
 set fSrr = 1
 set fTrr = 1
 set fVlr = 1
