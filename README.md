@@ -20,8 +20,8 @@ The main backgrounds in the SM for this analysis are:
 
 ## to-do list
 - [x] Read the [paper](https://arxiv.org/pdf/2101.05286.pdf) and review QFT for the related phenomology parts
-- [ ] Determine the signal and dominant/sub-dominant backgrounds (make all the Feynman diagrams)
-- [ ] Generate signal and background ntuples using MadGraph+Delphes (useful [link](http://feynrules.irmp.ucl.ac.be/wiki/FourFermionFCNCtqll))
+- [X] Determine the signal and dominant/sub-dominant backgrounds (make all the Feynman diagrams)
+- [X] Generate signal and background ntuples using MadGraph+Delphes (useful [link](http://feynrules.irmp.ucl.ac.be/wiki/FourFermionFCNCtqll))
 - [ ] Event selection: signal vs. background
 - [ ] Implement BDT algorithm to gain ML weights
 - [ ] Perform cut-and-count analysis using BDT weights to define signal regions
