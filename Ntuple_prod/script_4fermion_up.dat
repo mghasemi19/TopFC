@@ -1,4 +1,4 @@
-import model ../models/4fermion-models/4fermitop_charm_5F
+import model ../models/4fermion-models/4fermitop_up_5F
 
 # multiparticle definition
 define p = g u c d s b u~ c~ d~ s~ b~
@@ -7,9 +7,11 @@ define lightj = g u u~ d d~ c c~
 define l = e- e+ mu- mu+
 
 # our signal
-generate p p > t w-, (t > l+ l- u), (w- > l- vl~)
-add process p p > t lightj ,(t > u l- l+)
-add process p p > t t~, (t > L+ l- u), (t~ > w- b~, w- > l- vl~)
+#generate p p > t w-, (t > l+ l- u), (w- > l- vl~)
+#add process p p > t lightj ,(t > u l- l+)
+#add process p p > t t~, (t > l+ l- u), (t~ > w- b~, w- > l- vl~)
+generate p p > t t~, (t > l+ l- u), (t~ > w- b~, w- > l- vl~)
+
 
 output IPM_test_signalup
 launch IPM_test_signalup
@@ -29,3 +31,5 @@ set fVlr = 1
 set fVrl = 1
 set fVrr = 1
 set fVll = 1
+
+/Users/mghasemi/Desktop/Code-factory/Generator/MG5_aMC_v3_4_1/Delphes/cards/delphes_card_HLLHC.tcl
