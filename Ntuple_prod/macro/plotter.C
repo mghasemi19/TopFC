@@ -21,6 +21,7 @@ struct MyPlots
 {
   TH1 *fJetPT;
   TH1 *fJetEta;
+  TH1 *fbJetPT;
   TH1 *fMissingET;
   TH1 *fElectronPT;
   TH1 *fElectronEta;
@@ -65,8 +66,14 @@ void BookHistograms(ExRootResult *result, MyPlots *plots)
     "jet_eta", "Jet Eta",
     "jet Eta", "number of jets",
     50, -5, 5);
-  plots->fJetEta->SetLineColor(kBlue);    
+  plots->fJetEta->SetLineColor(kBlue);   
 
+  plots->fbJetPT = result->AddHist1D(
+    "bjet_pt", "B-Jet P_{T}",
+    "bjet P_{T}, GeV/c", "number of b-jets",
+    50, 0.0, 100.0);   
+  plots->fbJetPT->SetLineColor(kBlue);   
+ 
   /*
   // book 1 stack of 2 histograms
 
@@ -154,7 +161,10 @@ void AnalyseEvents(ExRootTreeReader *treeReader, MyPlots *plots)
     {
       jet = (Jet*) branchJet->At(i);
       plots->fJetPT->Fill(jet->PT);    
-      plot->fJetEta->Fill(jet->Eta);
+      plots->fJetEta->Fill(jet->Eta);
+
+      // Loop over bjets
+      if(jet->BTag){plots->fbJetPT->Fill(jet->PT);}
     }
 
     // Analyse missing ET
@@ -169,7 +179,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, MyPlots *plots)
     {
       electron = (Electron*) branchElectron->At(i);
       plots->fElectronPT->Fill(electron->PT);
-      plot->fElectronEta->Fill(electron->Eta);
+      plots->fElectronEta->Fill(electron->Eta);
 
     }
   }
