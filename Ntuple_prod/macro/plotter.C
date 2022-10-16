@@ -21,10 +21,13 @@ struct MyPlots
 {
   TH1 *fJetPT;
   TH1 *fJetEta;
+  TH1 *fJetNo;
   TH1 *fbJetPT;
+  TH1 *fbJetNo;
   TH1 *fMissingET;
   TH1 *fElectronPT;
   TH1 *fElectronEta;
+  TH1 *fElectronNo;
 };
 
 //------------------------------------------------------------------------------
@@ -54,6 +57,7 @@ void BookHistograms(ExRootResult *result, MyPlots *plots)
     50, 0.0, 100.0);
   */  
 
+  // Jet PT
   plots->fJetPT = result->AddHist1D(
     "jet_pt", "Jet P_{T}",
     "jet P_{T}, GeV/c", "number of jets",
@@ -62,17 +66,33 @@ void BookHistograms(ExRootResult *result, MyPlots *plots)
   //plots->fJetPT[1]->SetLineColor(kBlue);
   plots->fJetPT->SetLineColor(kBlue);    
 
+  // Jet Eta
   plots->fJetEta = result->AddHist1D(
     "jet_eta", "Jet Eta",
     "jet Eta", "number of jets",
     50, -5, 5);
   plots->fJetEta->SetLineColor(kBlue);   
 
+  // Jet Number
+  plots->fJetNo = result->AddHist1D(
+    "jet_number", "Jet Number",
+    "jet number", "number of jets",
+    12, 0, 12);
+  plots->fJetNo->SetLineColor(kBlue);
+
+  // Bjet PT
   plots->fbJetPT = result->AddHist1D(
     "bjet_pt", "B-Jet P_{T}",
     "bjet P_{T}, GeV/c", "number of b-jets",
     50, 0.0, 100.0);   
-  plots->fbJetPT->SetLineColor(kBlue);   
+  plots->fbJetPT->SetLineColor(kBlue);
+  
+  // Bjet Number
+  plots->fbJetNo = result->AddHist1D(
+    "bjet_number", "B-Jet Number",
+    "bjet number", "number of b-jets",
+    12, 0, 12);
+  plots->fbJetNo->SetLineColor(kBlue);     
  
   /*
   // book 1 stack of 2 histograms
@@ -94,18 +114,28 @@ void BookHistograms(ExRootResult *result, MyPlots *plots)
 
   // book more histograms
 
+  // Electron PT
   plots->fElectronPT = result->AddHist1D(
     "electron_pt", "electron P_{T}",
     "electron P_{T}, GeV/c", "number of electrons",
     50, 0.0, 100.0);
   plots->fElectronPT->SetLineColor(kBlue);
 
+  // Electron Eta
   plots->fElectronEta = result->AddHist1D(
     "electron_eta", "Electron Eta",
     "electron Eta", "number of jets",
     50, -5, 5);
   plots->fElectronEta->SetLineColor(kBlue);  
 
+  // Electron Number
+  plots->fElectronNo = result->AddHist1D(
+    "electron_number", "Electron Number",
+    "electron number", "number of electrons",
+    6, 0, 6);
+  plots->fElectronNo->SetLineColor(kBlue);   
+
+  // MET
   plots->fMissingET = result->AddHist1D(
     "missing_et", "Missing E_{T}",
     "Missing E_{T}, GeV", "number of events",
@@ -156,16 +186,28 @@ void AnalyseEvents(ExRootTreeReader *treeReader, MyPlots *plots)
     treeReader->ReadEntry(entry);
   
     //if(branchJet->GetEntriesFast() >= 2)
+    int JetNo = branchJet->GetEntries();
+    //plots->fJetNo->Fill(JetNo);
+    int Jetcounter = 0;
+    //if(branchJet->GetEntries() >= 3){cout << "Number of Jets: " << branchJet->GetEntries() << endl;}
     // Loop over all jets in event
     for(i = 0; i < branchJet->GetEntriesFast(); ++i)
     {
       jet = (Jet*) branchJet->At(i);
       plots->fJetPT->Fill(jet->PT);    
       plots->fJetEta->Fill(jet->Eta);
+      Jetcounter ++;
 
       // Loop over bjets
-      if(jet->BTag){plots->fbJetPT->Fill(jet->PT);}
+      int bJetcounter = 0;
+      if(jet->BTag){
+        bJetcounter ++;
+        plots->fbJetPT->Fill(jet->PT);
+      }
+      plots->fbJetNo->Fill(bJetcounter);
     }
+    //if (entry <= 10){cout << branchJet->GetEntries() << "=" << Jetcounter << endl;}
+    //plots->fJetNo->Fill(Jetcounter);
 
     // Analyse missing ET
     if(branchMissingET->GetEntriesFast() > 0)
