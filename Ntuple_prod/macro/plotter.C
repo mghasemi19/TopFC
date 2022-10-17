@@ -187,7 +187,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, MyPlots *plots)
     treeReader->ReadEntry(entry);
 
     // Preselections at least 3 leptons and 2 jet with 1 b-tagged
-    if (!(branchElectron->GetEntries() >= 3 || branchJet->GetEntriesFast() >=2 )) continue;
+    if (!(branchElectron->GetEntries() == 3 || branchJet->GetEntriesFast() >=2 )) continue;
     int bJetNo = 0;
     for(i = 0; i < branchJet->GetEntriesFast(); ++i)
     {
@@ -229,13 +229,22 @@ void AnalyseEvents(ExRootTreeReader *treeReader, MyPlots *plots)
     }
 
     // Loop over all electrons in event
+    double arrElectronEta[branchElectron->GetEntriesFast()];
+    double arrElectronEtaindex[branchElectron->GetEntriesFast()];
+
     for(i = 0; i < branchElectron->GetEntriesFast(); ++i)
     {
       electron = (Electron*) branchElectron->At(i);
       plots->fElectronPT->Fill(electron->PT);
       plots->fElectronEta->Fill(electron->Eta);
-
+      
+      arrElectronEta[i] = electron->Eta;      
+      arrElectronEtaindex[i] = i;  
     }
+
+    // Find the minimum DeltaEta for leptons coming from 4FC vertex
+
+
   }
   cout << "Total number of events wich pass the preselection: " << nEvent << endl;
 }
