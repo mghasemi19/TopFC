@@ -178,19 +178,31 @@ void AnalyseEvents(ExRootTreeReader *treeReader, MyPlots *plots)
   Long64_t entry;
 
   Int_t i;
+  Long64_t nEvent = 0;
 
   // Loop over all events
   for(entry = 0; entry < allEntries; ++entry)
   {
     // Load selected branches with data from specified event
     treeReader->ReadEntry(entry);
-  
-    //if(branchJet->GetEntriesFast() >= 2)
+
+    // Preselections at least 3 leptons and 2 jet with 1 b-tagged
+    if (!(branchElectron->GetEntries() >= 3 || branchJet->GetEntriesFast() >=2 )) continue;
+    int bJetNo = 0;
+    for(i = 0; i < branchJet->GetEntriesFast(); ++i)
+    {
+      if(jet->BTag) bJetNo ++;      
+    }
+    //cout << "Number of b-jet: " << bJetNo << endl;
+    if(!(bJetNo >= 1)) continue;
+    nEvent ++;
+    
     int JetNo = branchJet->GetEntries();
     //plots->fJetNo->Fill(JetNo);
     int Jetcounter = 0;
     //if(branchJet->GetEntries() >= 3){cout << "Number of Jets: " << branchJet->GetEntries() << endl;}
     // Loop over all jets in event
+
     for(i = 0; i < branchJet->GetEntriesFast(); ++i)
     {
       jet = (Jet*) branchJet->At(i);
@@ -225,6 +237,7 @@ void AnalyseEvents(ExRootTreeReader *treeReader, MyPlots *plots)
 
     }
   }
+  cout << "Total number of events wich pass the preselection: " << nEvent << endl;
 }
 
 //------------------------------------------------------------------------------
