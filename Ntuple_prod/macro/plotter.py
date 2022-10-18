@@ -5,6 +5,7 @@ import sys
 import os
 import ROOT
 
+
 try:
   input = raw_input
 except:
@@ -52,12 +53,15 @@ histbJetNo = ROOT.TH1F("bjet_number", "b-jet Number", 5, 0.0, 5.0)
 histElectronPT = ROOT.TH1F("electron_pt", "electron P_{T}", 50, 0.0, 100.0)
 histElectronEta = ROOT.TH1F("electron_eta", "electron Eta", 50, -5.0, 5.0)
 histdiElectronEta = ROOT.TH1F("dielectron_delta eta", "dielectron delta Eta", 50, -5.0, 5.0)
-histdiElectronCosine = ROOT.TH1F("dielectron_cos", "dielectron Cosine", 20, 0.0, 7.0)
+histdiElectronCosine = ROOT.TH1F("dielectron_cos", "dielectron Cosine", 14, 0.0, 7.0)
+histElectrondeltaR = ROOT.TH1F("dielectron_R", "dielectron delta R", 16, 0.0, 8.0)
 histElectronNo = ROOT.TH1F("electron_number", "electron Number", 12, 0.0, 12.0)
 histMuonPT = ROOT.TH1F("muon_pt", "muon P_{T}", 50, 0.0, 100.0)
 histMuonEta = ROOT.TH1F("muon_eta", "muon Eta", 50, -5.0, 5.0)
 histMuonNo = ROOT.TH1F("muon_number", "muon Number", 12, 0.0, 12.0)
 histMET = ROOT.TH1F("MET", "MET", 100, 0.0, 300.0)
+histWmass = ROOT.TH1F("Wmass", "Wboson Mass", 20, 50, 150)
+histTopmass = ROOT.TH1F("Topmass", "Top Mass", 20, 100, 200)
 
 #dict_hist = {}
 
@@ -82,7 +86,7 @@ for entry in range(0, numberOfEntries):
   for i in range(0, branchJet.GetEntries()):
     jet = branchJet.At(i)
     if (jet.BTag): bJetNo += 1
-  if (not bJetNo >= 1): continue
+  if (not bJetNo == 1): continue
   ncharge = 0
   for i in range(0, branchElectron.GetEntries()):
     electron = branchElectron.At(i)      
@@ -99,11 +103,12 @@ for entry in range(0, numberOfEntries):
     histJetEta.Fill(jet.Eta)
   histJetNo.Fill(branchJet.GetEntries())
 
-  # Loop over all bjets in events
+  # Loop over all bjets in events  
   for i in range(0, branchJet.GetEntries()):
     jet = branchJet.At(i)
     if (jet.BTag):
       histbJetPT.Fill(jet.PT)  
+      bjet_index = i
   histbJetNo.Fill(bJetNo)
 
   # Loop over all electrons in event
@@ -118,7 +123,7 @@ for entry in range(0, numberOfEntries):
   histElectronNo.Fill(branchElectron.GetEntries())
   
   # Delta Eta for lepton+ and lepton-
-  min_eta = 999
+  min_deltaEta = 999
   index = {}
   if (ncharge==-1):
       for i in elec_eta.keys():
@@ -126,8 +131,8 @@ for entry in range(0, numberOfEntries):
               for j in elec_eta.keys():
                   if (i != j): 
                       tmp_eta = elec_eta[i] - elec_eta[j]
-                      if (abs(tmp_eta) <= min_eta): 
-                        min_eta = tmp_eta
+                      if (abs(tmp_eta) <= min_deltaEta): 
+                        min_deltaEta = tmp_eta
                         index[1] = abs(int(i))
                         index[-1] = abs(int(j))                        
   if (ncharge==+1):
@@ -136,24 +141,32 @@ for entry in range(0, numberOfEntries):
               for j in elec_eta.keys():
                   if (i != j): 
                       tmp_eta = elec_eta[i] - elec_eta[j]
-                      if (abs(tmp_eta) <= min_eta): 
-                        min_eta = tmp_eta
+                      if (abs(tmp_eta) <= min_deltaEta): 
+                        min_deltaEta = tmp_eta
                         index[-1] = abs(int(i))
-                        index[1] = abs(int(j))                        
-  histdiElectronEta.Fill(min_eta)
-
+                        index[1] = abs(int(j))  
+  index[0] = [k for k in range(0,3) if not (k==index[-1] or k==index[+1])][0]
+  
+  histdiElectronEta.Fill(min_deltaEta)
+  deltaPhi = abs(branchElectron.At(index[1]).Phi - branchElectron.At(index[-1]).Phi)
+  deltaR = ROOT.sqrt((min_deltaEta * min_deltaEta) + (deltaPhi * deltaPhi))
+  histdiElectronCosine.Fill(deltaPhi)
+  histElectrondeltaR.Fill(deltaR)
 
   # Analyse missing ET
   if branchMET.GetEntries() >= 0:
       met = branchMET.At(0)
-      histMET.Fill(met.MET)
+      histMET.Fill(met.MET)  
+      mW = (met.P4() + branchElectron.At(index[0]).P4()).M()
+      mTop = (branchJet.At(bjet_index).P4() + met.P4() + branchElectron.At(index[0]).P4()).M()
+      histWmass.Fill(mW)
+      histTopmass.Fill(mTop)
 
-  
+
 print("Number of events which pass the preselection: {}".format(nEvent))
-print(elec_eta)
 
 
-histdiElectronEta.Draw()
+histTopmass.Draw()
 c1.SaveAs('test.pdf')
 os.system('open test.pdf')
 
