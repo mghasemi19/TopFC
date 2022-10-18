@@ -51,6 +51,8 @@ histbJetPT = ROOT.TH1F("bjet_pt", "b-jet P_{T}", 50, 0.0, 100.0)
 histbJetNo = ROOT.TH1F("bjet_number", "b-jet Number", 5, 0.0, 5.0)
 histElectronPT = ROOT.TH1F("electron_pt", "electron P_{T}", 50, 0.0, 100.0)
 histElectronEta = ROOT.TH1F("electron_eta", "electron Eta", 50, -5.0, 5.0)
+histdiElectronEta = ROOT.TH1F("dielectron_delta eta", "dielectron delta Eta", 50, -5.0, 5.0)
+histdiElectronCosine = ROOT.TH1F("dielectron_cos", "dielectron Cosine", 20, 0.0, 7.0)
 histElectronNo = ROOT.TH1F("electron_number", "electron Number", 12, 0.0, 12.0)
 histMuonPT = ROOT.TH1F("muon_pt", "muon P_{T}", 50, 0.0, 100.0)
 histMuonEta = ROOT.TH1F("muon_eta", "muon Eta", 50, -5.0, 5.0)
@@ -108,14 +110,38 @@ for entry in range(0, numberOfEntries):
   elec_eta = {}
   for i in range(0, branchElectron.GetEntries()):
     electron = branchElectron.At(i)  
-    if (electron.Charge): elec_eta['+'] = electron.Eta
-    else: elec_eta[i] = electron.Eta
+    # Save positive and negative charge electron's Eta
+    if (electron.Charge==1): elec_eta['+'+str(i)] = electron.Eta
+    else: elec_eta['-'+str(i)] = electron.Eta
     histElectronPT.Fill(electron.PT)
     histElectronEta.Fill(electron.Eta)
   histElectronNo.Fill(branchElectron.GetEntries())
+  
+  # Delta Eta for lepton+ and lepton-
+  min_eta = 999
+  index = {}
+  if (ncharge==-1):
+      for i in elec_eta.keys():
+          if i.startswith('+'):
+              for j in elec_eta.keys():
+                  if (i != j): 
+                      tmp_eta = elec_eta[i] - elec_eta[j]
+                      if (abs(tmp_eta) <= min_eta): 
+                        min_eta = tmp_eta
+                        index[1] = abs(int(i))
+                        index[-1] = abs(int(j))                        
+  if (ncharge==+1):
+      for i in elec_eta.keys():
+          if i.startswith('-'):
+              for j in elec_eta.keys():
+                  if (i != j): 
+                      tmp_eta = elec_eta[i] - elec_eta[j]
+                      if (abs(tmp_eta) <= min_eta): 
+                        min_eta = tmp_eta
+                        index[-1] = abs(int(i))
+                        index[1] = abs(int(j))                        
+  histdiElectronEta.Fill(min_eta)
 
-  min_eta = -999 
-  #for i,
 
   # Analyse missing ET
   if branchMET.GetEntries() >= 0:
@@ -123,17 +149,13 @@ for entry in range(0, numberOfEntries):
       histMET.Fill(met.MET)
 
   
-
-
-
-
 print("Number of events which pass the preselection: {}".format(nEvent))
 print(elec_eta)
 
 
-#histbJetNo.Draw()
-#c1.SaveAs('test.pdf')
-#os.system('open test.pdf')
+histdiElectronEta.Draw()
+c1.SaveAs('test.pdf')
+os.system('open test.pdf')
 
 '''
   # Yield value
