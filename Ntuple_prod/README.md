@@ -13,3 +13,8 @@ The same can be run for background sample generaton:
 ```
 ./bin/mg5_aMC /path/to/script/background/file
 ```
+
+There are several useful scripts for plotting in macro folder. We can get all the analysis plots by running:
+ ```
+ python ./macro/plotter.py ./tag_1_delphes_events.root 2>&1 | tee output.log
+ ```
