@@ -35,6 +35,7 @@ numberOfEntries = treeReader.GetEntries()
 # Get pointers to branches used in this analysis
 branchJet = treeReader.UseBranch("Jet")
 branchElectron = treeReader.UseBranch("Electron")
+branchMuon = treeReader.UseBranch("Muon")
 branchPhoton = treeReader.UseBranch("Photon")
 branchMET = treeReader.UseBranch("MissingET")
 
@@ -51,6 +52,9 @@ histbJetNo = ROOT.TH1F("bjet_number", "b-jet Number", 5, 0.0, 5.0)
 histElectronPT = ROOT.TH1F("electron_pt", "electron P_{T}", 50, 0.0, 100.0)
 histElectronEta = ROOT.TH1F("electron_eta", "electron Eta", 50, -5.0, 5.0)
 histElectronNo = ROOT.TH1F("electron_number", "electron Number", 12, 0.0, 12.0)
+histMuonPT = ROOT.TH1F("muon_pt", "muon P_{T}", 50, 0.0, 100.0)
+histMuonEta = ROOT.TH1F("muon_eta", "muon Eta", 50, -5.0, 5.0)
+histMuonNo = ROOT.TH1F("muon_number", "muon Number", 12, 0.0, 12.0)
 histMET = ROOT.TH1F("MET", "MET", 100, 0.0, 300.0)
 
 #dict_hist = {}
@@ -77,8 +81,14 @@ for entry in range(0, numberOfEntries):
     jet = branchJet.At(i)
     if (jet.BTag): bJetNo += 1
   if (not bJetNo >= 1): continue
+  ncharge = 0
+  for i in range(0, branchElectron.GetEntries()):
+    electron = branchElectron.At(i)      
+    ncharge += electron.Charge
+  if (ncharge == -3 or ncharge == 3): continue
+
   nEvent += 1
-  if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
+  #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
 
   # Loop over all jets in event
   for i in range(0, branchJet.GetEntries()):
@@ -95,22 +105,35 @@ for entry in range(0, numberOfEntries):
   histbJetNo.Fill(bJetNo)
 
   # Loop over all electrons in event
+  elec_eta = {}
   for i in range(0, branchElectron.GetEntries()):
     electron = branchElectron.At(i)  
+    if (electron.Charge): elec_eta['+'] = electron.Eta
+    else: elec_eta[i] = electron.Eta
     histElectronPT.Fill(electron.PT)
     histElectronEta.Fill(electron.Eta)
   histElectronNo.Fill(branchElectron.GetEntries())
+
+  min_eta = -999 
+  #for i,
 
   # Analyse missing ET
   if branchMET.GetEntries() >= 0:
       met = branchMET.At(0)
       histMET.Fill(met.MET)
 
-print("Number of events which pass the preselection: {}".format(nEvent))
+  
 
-histbJetNo.Draw()
-c1.SaveAs('test.pdf')
-os.system('open test.pdf')
+
+
+
+print("Number of events which pass the preselection: {}".format(nEvent))
+print(elec_eta)
+
+
+#histbJetNo.Draw()
+#c1.SaveAs('test.pdf')
+#os.system('open test.pdf')
 
 '''
   # Yield value
