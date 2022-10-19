@@ -6,9 +6,10 @@ In this analysis, we will look for Flavor-Changing Neutral Currents of top quark
 </p>
 
 The main backgrounds in the SM for this analysis are: 
-- top quark pair production can occur through quark-antiquark annihilation or through gluon-gluon fusion. Then top-pair can decay to different channels such as **di-lepton** (10.5%), **single-lepton** (43.8%), and **all-hadronic** with (45.7%) decay branching ratios.
-- single-top production via s-channel, t-channel, and Wt-channel
-- single-top production in association with a gauge-boson such as Z or W boson
+- single-top production in association with a gauge-boson such as Z or W boson (in W boson case there should be ca fake lepton)
+- ttV where V represents weak bosons like Z and W (V bosons should decay leptonically to pass the preselection) 
+- top quark pair production with fake lepton can occur through quark-antiquark annihilation or through gluon-gluon fusion. Then top-pair can decay to different channels such as **di-lepton** (10.5%), **single-lepton** (43.8%), and **all-hadronic** with (45.7%) decay branching ratios.
+- single-top production via s-channel, t-channel, and Wt-channel with fake leptons
 
 **Table of Contents** for this repositry
 - [to-do list](#to-do-list)
