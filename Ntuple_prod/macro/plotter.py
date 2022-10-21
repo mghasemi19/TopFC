@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+'''
+to-Do list:
+  1. switch from sys to parser
+  2. Change lepton and b-jet selection scheme to get better
+  top and W boson distribution
+'''
 
 from http.client import HTTP_VERSION_NOT_SUPPORTED
 import sys
