@@ -1,25 +1,31 @@
 #!/usr/bin/env python
-'''
-to-Do list:
-  1. switch from sys to parser
-  2. Change lepton and b-jet selection scheme to get better
-  top and W boson distribution
-'''
 
-from http.client import HTTP_VERSION_NOT_SUPPORTED
+#from http.client import HTTP_VERSION_NOT_SUPPORTED
 import sys
 import os
 import ROOT
+import argparse
 
+parser = argparse.ArgumentParser(
+                description='Produce Analysis variables.'
+                )
+parser.add_argument('--file', type=str, nargs='+', help='tree files want to be merged')
+args = parser.parse_args()
 
 try:
   input = raw_input
 except:
   pass
 
+if len(args.file) < 1:
+  print(" Usage: Example1.py input_file")
+  sys.exit(1)
+
+'''
 if len(sys.argv) < 2:
   print(" Usage: Example1.py input_file")
   sys.exit(1)
+'''
 
 ROOT.gSystem.Load("libDelphes")
 
@@ -29,11 +35,13 @@ try:
 except:
   pass
 
-inputFile = sys.argv[1]
+#inputFile = sys.argv[1]
+inputFile = [f for f in args.file]
 
 # Create chain of root trees
 chain = ROOT.TChain("Delphes")
-chain.Add(inputFile)
+for f in inputFile: chain.Add(f)
+#chain.Add(inputFile)
 
 # Create object of class ExRootTreeReader
 treeReader = ROOT.ExRootTreeReader(chain)
@@ -67,7 +75,10 @@ histMuonEta = ROOT.TH1F("muon_eta", "muon Eta", 50, -5.0, 5.0)
 histMuonNo = ROOT.TH1F("muon_number", "muon Number", 12, 0.0, 12.0)
 histMET = ROOT.TH1F("MET", "MET", 100, 0.0, 300.0)
 histWmass = ROOT.TH1F("Wmass", "Wboson Mass", 20, 50, 150)
-histTopmass = ROOT.TH1F("Topmass", "Top Mass", 20, 100, 200)
+histTopmass = ROOT.TH1F("Topmass", "Top Mass", 50, 100, 300)
+
+#hist_list = [histJetPT, histJetEta, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronEta, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histElectronNo, histMET, histWmass, histTopmass]
+hist_list = [histWmass, histTopmass]
 
 #dict_hist = {}
 
@@ -84,6 +95,8 @@ nEvent = 0
 counter = 0
 for entry in range(0, numberOfEntries):
   # Load selected branches with data from specified event
+  #if (entry % 100000 == 0): break 
+  if (entry % 50000 == 0): print("Event Number:{}".format(entry))
   treeReader.ReadEntry(entry)
 
   # Preselections exactly 3 leptons and at least 2 jet with 1 b-tagged
@@ -100,6 +113,8 @@ for entry in range(0, numberOfEntries):
   if (ncharge == -3 or ncharge == 3): continue
 
   nEvent += 1
+
+  
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
 
   # Loop over all jets in event
@@ -127,6 +142,7 @@ for entry in range(0, numberOfEntries):
     histElectronPT.Fill(electron.PT)
     histElectronEta.Fill(electron.Eta)
   histElectronNo.Fill(branchElectron.GetEntries())
+  #print(elec_eta)
   
   # Delta Eta for lepton+ and lepton-
   min_deltaEta = 999
@@ -152,8 +168,10 @@ for entry in range(0, numberOfEntries):
                         index[-1] = abs(int(i))
                         index[1] = abs(int(j))  
   index[0] = [k for k in range(0,3) if not (k==index[-1] or k==index[+1])][0]
+  #print(index)
   
   histdiElectronEta.Fill(min_deltaEta)
+  # deltaPhi or cosinePhi
   deltaPhi = abs(branchElectron.At(index[1]).Phi - branchElectron.At(index[-1]).Phi)
   deltaR = ROOT.sqrt((min_deltaEta * min_deltaEta) + (deltaPhi * deltaPhi))
   histdiElectronCosine.Fill(deltaPhi)
@@ -163,8 +181,27 @@ for entry in range(0, numberOfEntries):
   if branchMET.GetEntries() >= 0:
       met = branchMET.At(0)
       histMET.Fill(met.MET)  
-      mW = (met.P4() + branchElectron.At(index[0]).P4()).M()
-      mTop = (branchJet.At(bjet_index).P4() + met.P4() + branchElectron.At(index[0]).P4()).M()
+      met_vec = ROOT.TLorentzVector()
+      elec_vec = ROOT.TLorentzVector()
+      bjet_vec = ROOT.TLorentzVector()
+      met_vec.SetPtEtaPhiE(met.MET, met.Eta, met.Phi, met.MET) 
+      elec_ET = ROOT.TMath.Sqrt(branchElectron.At(index[0]).PT**2 + 0.005**2)
+      #elec_vec.SetPtEtaPhiE(branchElectron.At(index[0]).PT, branchElectron.At(index[0]).Eta, branchElectron.At(index[0]).Phi, branchElectron.At(index[0]).PT)
+      elec_vec.SetPtEtaPhiE(branchElectron.At(index[0]).PT, branchElectron.At(index[0]).Eta,
+branchElectron.At(index[0]).Phi, elec_ET)
+      bjet_ET = ROOT.TMath.Sqrt(branchJet.At(bjet_index).PT**2 + 4.67**2)
+      bjet_vec.SetPtEtaPhiE(branchJet.At(bjet_index).PT, branchJet.At(bjet_index).Eta, branchJet.At(bjet_index).Phi, bjet_ET)
+      W_vec = met_vec + elec_vec
+      top_vec = met_vec + elec_vec + bjet_vec
+
+      #mW = (met.P4() + branchElectron.At(index[0]).P4()).Mt()
+      #mW = (met.P4() + branchElectron.At(index[0]).P4())**2
+      mW = W_vec.Mt()
+      
+      #mW = (met_vec + elec_vec).Mt()      
+      #mTop = (branchJet.At(bjet_index).P4() + met.P4() + branchElectron.At(index[0]).P4()).Mt()
+      mTop = top_vec.Mt()
+    
       histWmass.Fill(mW)
       histTopmass.Fill(mTop)
 
@@ -172,14 +209,17 @@ for entry in range(0, numberOfEntries):
 print("Number of events which pass the preselection: {}".format(nEvent))
 
 
-histTopmass.Draw()
-c1.SaveAs('test.pdf')
-os.system('open test.pdf')
+#histTopmass.Draw()
+for hist in hist_list:
+    hist.Draw()
+    save_name = hist.GetName() + '.pdf'
+    c1.SaveAs(save_name)
+#os.system('open test.pdf')
 
 '''
-  # Yield value
-  #yield_val += weight
-  #y2 = weight * weight
+# Yield value
+#yield_val += weight
+#y2 = weight * weight
 
 print("Number of Events with more than two electrons {}".format(counter))
 # Show resulting histograms
