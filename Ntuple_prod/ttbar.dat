@@ -1,0 +1,35 @@
+import sm
+
+# multiparticle definition
+define p = g u c d s b u~ c~ d~ s~ b~
+define j = g u c d s b u~ c~ d~ s~ b~
+define lightj = g u u~ d d~ c c~
+define v = w+ w- z
+
+# ttbar
+generate p p > t t~, (t > b e+ ve), (t~ > b~ e- ve~)
+output /data/mghasemi/samples/background/ttbar
+
+# 1st launch
+launch /data/mghasemi/samples/background/ttbar
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000  # may increase in future
+
+# 2nd launch
+launch /data/mghasemi/samples/background/ttbar
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000  # may increase in future
+
+
