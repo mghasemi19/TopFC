@@ -1,0 +1,38 @@
+import sm
+
+# multiparticle definition
+define p = g u c d s b u~ c~ d~ s~ b~
+define j = g u c d s b u~ c~ d~ s~ b~
+define lightj = g u u~ d d~ c c~
+define q = u u~ d d~ c c~ s s~ b b~
+define v = w+ w- z
+
+# ttbarttbar
+generate p p > t t~ t t~, (t > w+ b, w+ > e+ ve), (t~ > w- b~, w- > e- ve~), (t > w+ b, w+ > e+ ve), (t~ > w- b~, w- > q q)
+output /data/mghasemi/samples/background/tttt
+
+# 1st launch
+launch /data/mghasemi/samples/background/tttt
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000  # may increase in future
+
+# 2nd launch
+launch /data/mghasemi/samples/background/tttt
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000  # may increase in future
+
+../Delphes/cards/delphes_card_HLLHC.tcl
+
+

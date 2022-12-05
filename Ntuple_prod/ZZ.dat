@@ -1,0 +1,38 @@
+import sm
+
+# multiparticle definition
+define p = g u c d s b u~ c~ d~ s~ b~
+define j = g u c d s b u~ c~ d~ s~ b~
+define lightj = g u u~ d d~ c c~
+define q = u u~ b b~ c c~ s s~ b b~
+define v = w+ w- z
+
+# ZZboson
+generate p p > z z, (z > e- e+), (z > q q)
+output /data/mghasemi/samples/background/ZZ
+
+# 1st launch
+launch /data/mghasemi/samples/background/ZZ
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000  # may increase in future
+
+# 2nd launch
+launch /data/mghasemi/samples/background/ZZ
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000  # may increase in future
+
+../Delphes/cards/delphes_card_HLLHC.tcl
+
+
