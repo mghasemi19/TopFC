@@ -32,4 +32,5 @@ reweight=OFF
 
 set nevents = 1000000  # may increase in future
 
+../Delphes/cards/delphes_card_HLLHC.tcl
 
