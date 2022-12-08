@@ -10,7 +10,7 @@ define l = e- e+ mu- mu+
 #generate p p > t w-, (t > l+ l- c), (w- > l- vl~)
 #add process p p > t lightj ,(t > c l- l+)
 #add process p p > t t~, (t > L+ l- c), (t~ > w- b~, w- > l- vl~)
-generate p p > t t~, (t > L+ l- c), (t~ > w- b~, w- > l- vl~)
+generate p p > t t~, (t > l+ l- c), (t~ > w- b~, w- > l- vl~)
 
 output IPM_test_signalcharm
 launch IPM_test_signalcharm
