@@ -1,0 +1,6 @@
+{
+"presel_2b":"bjets_n>=2 && met>200 && jets_n>=4",
+"presel_3b":"bjets_n>=3 && met>200 && jets_n>=4",
+"presel_4b":"bjets_n>=4 && met>200 && jets_n>=4"
+
+}

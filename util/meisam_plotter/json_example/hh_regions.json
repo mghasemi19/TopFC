@@ -1,0 +1,44 @@
+{
+  "VR_4b_meff2_B": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=6 &&  mass_h1_dR>110 && ((mass_h1_dR>80 && mass_h1_dR<150 && mass_h2_dR<80) ||  (mass_h1_dR>150 && mass_h2_dR>90 && mass_h2_dR<140) ) && mTb_min>-1 &&  (meff_4bj+50)>850 && (meff_4bj-50)<1100 && bjets_n>=4) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>1.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=3)", 
+
+  "VR_4b_meff1_B": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  mass_h1_dR>110 && ((mass_h1_dR>80 && mass_h1_dR<150 && mass_h2_dR<80) ||  (mass_h1_dR>150 && mass_h2_dR>90 && mass_h2_dR<140) )&& mTb_min>-1 &&  (meff_4bj+50)>600 && (meff_4bj-50)<850 && bjets_n>=4) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>1.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=3)", 
+
+  "VR_3b_meff1_A": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  mass_h1_dR>110 && ((mass_h1_dR>80 && mass_h1_dR<150 && mass_h2_dR<80) ||  (mass_h1_dR>150 && mass_h2_dR>90 && mass_h2_dR<140) ) && mTb_min-30>150 &&  (meff_4bj+50)>600 && (meff_4bj-50)<850 && bjets_n==3) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=1.5)", 
+
+  "VR_4b_meff1_A": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  mass_h1_dR>110 && ((mass_h1_dR>80 && mass_h1_dR<150 && mass_h2_dR<80) ||  (mass_h1_dR>150 && mass_h2_dR>90 && mass_h2_dR<140) )&& mTb_min>-1 &&  (meff_4bj+50)>600 && (meff_4bj-50)<850 && bjets_n>=4) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=1.7)", 
+
+  "VR_3b_meff2_A": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  mass_h1_dR>110 && ((mass_h1_dR>80 && mass_h1_dR<150 && mass_h2_dR<80) ||  (mass_h1_dR>150 && mass_h2_dR>90 && mass_h2_dR<140) ) && mTb_min-30>150 &&  (meff_4bj+50)>850 && (meff_4bj-50)<1100 && bjets_n==3) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=1.7)", 
+
+  "VR_4b_meff2_A": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=6 &&  mass_h1_dR>110 && ((mass_h1_dR>80 && mass_h1_dR<150 && mass_h2_dR<80) ||  (mass_h1_dR>150 && mass_h2_dR>90 && mass_h2_dR<140) ) && mTb_min>-1 &&  (meff_4bj+50)>850 && (meff_4bj-50)<1100 && bjets_n>=4) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=1.7)", 
+
+  "VR_3b_meff3_A":"(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  mass_h1_dR>110 && ((mass_h1_dR>80 && mass_h1_dR<150 && mass_h2_dR<80) ||  (mass_h1_dR>150 && mass_h2_dR>90 && mass_h2_dR<140) ) && mTb_min-50>130 &&  (meff_4bj+50)>1100 && bjets_n>=3) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=1.7)",
+
+
+  "SR_4b_meff2_B": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=6 &&  mass_h1_dR>110 && mass_h1_dR<150 && mass_h2_dR>90 &&mass_h2_dR<140 && mTb_min>-1 &&  meff_4bj>850 && meff_4bj<1100 && bjets_n>=4) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>1.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=2.4)", 
+
+
+  "SR_4b_meff1_B": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  mass_h1_dR>110 && mass_h1_dR<150 && mass_h2_dR>90 &&mass_h2_dR<140&& mTb_min>-1 &&  meff_4bj>600 && meff_4bj<850 && bjets_n>=4) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>1.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=2.4)", 
+
+  "SR_3b_meff1_A": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  mass_h1_dR>110 && mass_h1_dR<150 && mass_h2_dR>90 &&mass_h2_dR<140 && mTb_min>150 &&  meff_4bj>600 && meff_4bj<850 && bjets_n==3) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=1.4)", 
+
+  "SR_4b_meff1_A": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  mass_h1_dR>110 && mass_h1_dR<150 && mass_h2_dR>90 &&mass_h2_dR<140&& mTb_min>-1 &&  meff_4bj>600 && meff_4bj<850 && bjets_n>=4) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=1.4)", 
+
+  "SR_4b_meff1_A_disc": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  mass_h1_dR>110 && mass_h1_dR<150 && mass_h2_dR>90 &&mass_h2_dR<140&& mTb_min>-1 &&  meff_4bj>600 && bjets_n>=4) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=1.4)", 
+
+  "SR_3b_meff2_A": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  mass_h1_dR>110 && mass_h1_dR<150 && mass_h2_dR>90 &&mass_h2_dR<140 && mTb_min>150 &&  meff_4bj>850 && meff_4bj<1100 && bjets_n==3) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=1.4)", 
+
+  "SR_4b_meff2_A": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=6 &&  mass_h1_dR>110 && mass_h1_dR<150 && mass_h2_dR>90 &&mass_h2_dR<140 && mTb_min>-1 &&  meff_4bj>850 && meff_4bj<1100 && bjets_n>=4) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=1.4)", 
+
+  "SR_3b_meff3_A":"(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  mass_h1_dR>110 && mass_h1_dR<150 && mass_h2_dR>90 &&mass_h2_dR<140 && mTb_min>130 &&  meff_4bj>1100 && bjets_n>=3) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=1.4)",
+
+  "CR_3b_meff3": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  ((mass_h1_dR<80 && mass_h2_dR<80)||(mass_h1_dR>150 && mass_h2_dR<80) || (mass_h1_dR>150 && mass_h2_dR>140)) && mTb_min>100 &&  meff_4bj>1100 && bjets_n>=3) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=4)", 
+
+  "CR_3b_meff2": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  ((mass_h1_dR<80 && mass_h2_dR<80)||(mass_h1_dR>150 && mass_h2_dR<80) || (mass_h1_dR>150 && mass_h2_dR>140)) && mTb_min>100 &&  meff_4bj>850 && meff_4bj<1100 && bjets_n==3) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=4)", 
+
+  "CR_3b_meff1": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  ((mass_h1_dR<80 && mass_h2_dR<80)||(mass_h1_dR>150 && mass_h2_dR<80) || (mass_h1_dR>150 && mass_h2_dR>140)) && mTb_min>100 &&  meff_4bj>600 && meff_4bj<850 && bjets_n==3) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=4)", 
+
+  "CR_4b_meff1": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=5 &&  ((mass_h1_dR<80 && mass_h2_dR<80)||(mass_h1_dR>150 && mass_h2_dR<80) || (mass_h1_dR>150 && mass_h2_dR>140))&& mTb_min>-1 &&  meff_4bj>600 && meff_4bj<850 && bjets_n>=4) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=4)", 
+
+  "CR_4b_meff2": "(pass_MET && met>200 && dphi_min>0.4  && (baseline_electrons_n+baseline_muons_n)==0 && jets_n>=4 && jets_n<=6 &&  ((mass_h1_dR<80 && mass_h2_dR<80)||(mass_h1_dR>150 && mass_h2_dR<80) || (mass_h1_dR>150 && mass_h2_dR>140)) && mTb_min>-1 &&  meff_4bj>850 && meff_4bj<1100 && bjets_n>=4) && (max(DeltaR_h1_dR,DeltaR_h2_dR)>0.4 && max(DeltaR_h1_dR,DeltaR_h2_dR)<=100)"
+
+}
