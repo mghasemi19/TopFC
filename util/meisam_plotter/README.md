@@ -1,4 +1,4 @@
-# Making Plots (chiara_plotter)
+# Making Plots
 
 This package provides the tools to produce basic plots starting from ROOT ntuples that contain variables and proper event weights. In order to produce plots, the user has to write a configuration file containing the calls to the existing plotting functions.
 
