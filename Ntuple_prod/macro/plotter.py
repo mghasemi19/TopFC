@@ -5,11 +5,15 @@ import sys
 import os
 import ROOT
 import argparse
+import numpy as np
+from array import arr
 
 parser = argparse.ArgumentParser(
-                description='Produce Analysis variables.'
+                description='Produce TopFC Analysis variables.'
                 )
-parser.add_argument('--file', type=str, nargs='+', help='tree files want to be merged')
+parser.add_argument('--files', type=str, nargs='+', help='tree files want to be merged')
+parser.add_argument('--name', type=str, help='either signal or background name')
+parser.add_argument('--treename', type=str, help='tree name to save variables')
 args = parser.parse_args()
 
 try:
@@ -17,7 +21,7 @@ try:
 except:
   pass
 
-if len(args.file) < 1:
+if len(args.files) < 1:
   print(" Usage: Example1.py input_file")
   sys.exit(1)
 
@@ -36,7 +40,7 @@ except:
   pass
 
 #inputFile = sys.argv[1]
-inputFile = [f for f in args.file]
+inputFile = [f for f in args.files]
 
 # Create chain of root trees
 chain = ROOT.TChain("Delphes")
@@ -58,16 +62,72 @@ branchMET = treeReader.UseBranch("MissingET")
 c1 = ROOT.TCanvas("c1","c1",1100,900);
 #c1.Divide(1,4)
 
+# Tree to keep variables
+treeName = args.treename
+tree_obj = ROOT.TTree(treeName, treeName+"tree")
+
+# List of all variables to keep in the tree
+
+# Jet variables
+jetPT = array('d', [0])
+jetETa = array('d', [0])
+jetPHI = array('d', [0])
+jetNo = array('d', [0])
+
+# bjet variables
+bjetPT = array('d', [0])
+bjetNo = array('d', [0])
+
+# Electron variables
+elecPT = array('d', [0])
+elecEta = array('d', [0])
+elecPHI = array('d', [0])
+eleceNo = array('d', [0])
+
+# Di-electron variables
+dielecETA = array('d', [0])
+dielecCOS = array('d', [0])
+dielecMass = array('d', [0])
+dielecR = array('d', [0])
+
+# W-boson and Top-quark Mass
+WMass = array('d', [0])
+TopMass = array('d', [0])
+
+tree_obj.Branch("jetpT", jetPT, "jetPT/D")
+tree_obj.Branch("jetETA", jetETA, "jetETA/D")
+tree_obj.Branch("jetPHI", jetPHI, "jetPHI/D")
+tree_obj.Branch("jetNo", jetNo, "jetNo/D")
+
+tree_obj.Branch("bjetpT", bjetPT, "jetPT/D")
+tree_obj.Branch("bjetNo", bjetNo, "bjetNo/D")
+
+tree_obj.Branch("elecPT", elecPT, "elecPT/D")
+tree_obj.Branch("elecETA", elecETA, "elecETA/D")
+tree_obj.Branch("elecPHI", elecPHI, "elecPHI/D")
+tree_obj.Branch("elecNo", elecNo, "elecNo/D")
+
+tree_obj.Branch("dielecETA", dielecETA, "dielecETA/D")
+tree_obj.Branch("dielecCOS", dielecCOS, "dielecCOS/D")
+tree_obj.Branch("dielecPHI", dielecPHI, "dielecPHI/D")
+tree_obj.Branch("dielecNo", dielecNo, "dielecNo/D")
+
+tree_obj.Branch("WMass", WMass, "WMass/D")
+tree_obj.Branch("TopMass", TopMass, "TopMass/D")
+
 # All histograms for objects
 histJetPT = ROOT.TH1F("jet_pt", "jet P_{T}", 50, 0.0, 100.0)
 histJetEta = ROOT.TH1F("jet_eta", "jet Eta", 50, -5.0, 5.0)
+histJetPhi = ROOT.TH1F("jet_phi", "jet Phi", 16, -4.0, 4.0)
 histJetNo = ROOT.TH1F("jet_number", "jet Number", 12, 0.0, 12.0)
 histbJetPT = ROOT.TH1F("bjet_pt", "b-jet P_{T}", 50, 0.0, 100.0)
 histbJetNo = ROOT.TH1F("bjet_number", "b-jet Number", 5, 0.0, 5.0)
 histElectronPT = ROOT.TH1F("electron_pt", "electron P_{T}", 50, 0.0, 100.0)
 histElectronEta = ROOT.TH1F("electron_eta", "electron Eta", 50, -5.0, 5.0)
+histElectronPhi = ROOT.TH1F("electron_phi", "electron Phi", 16, -4.0, 4.0)
 histdiElectronEta = ROOT.TH1F("dielectron_delta eta", "dielectron delta Eta", 50, -5.0, 5.0)
 histdiElectronCosine = ROOT.TH1F("dielectron_cos", "dielectron Cosine", 14, 0.0, 7.0)
+histdiElectronMass = ROOT.TH1F("dielectron_mass", "dielectron Mass", 6, 500.0, 3500.0)
 histElectrondeltaR = ROOT.TH1F("dielectron_R", "dielectron delta R", 16, 0.0, 8.0)
 histElectronNo = ROOT.TH1F("electron_number", "electron Number", 12, 0.0, 12.0)
 histMuonPT = ROOT.TH1F("muon_pt", "muon P_{T}", 50, 0.0, 100.0)
@@ -77,8 +137,8 @@ histMET = ROOT.TH1F("MET", "MET", 100, 0.0, 300.0)
 histWmass = ROOT.TH1F("Wmass", "Wboson Mass", 20, 50, 150)
 histTopmass = ROOT.TH1F("Topmass", "Top Mass", 50, 100, 300)
 
-#hist_list = [histJetPT, histJetEta, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronEta, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histElectronNo, histMET, histWmass, histTopmass]
-hist_list = [histWmass, histTopmass]
+hist_list = [histJetPT, histJetEta, histJetPhi, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronEta, histElectronPhi, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histdiElectronMass, histElectronNo, histMET, histWmass, histTopmass]
+#hist_list = [histWmass, histTopmass]
 
 #dict_hist = {}
 
@@ -95,11 +155,11 @@ nEvent = 0
 counter = 0
 for entry in range(0, numberOfEntries):
   # Load selected branches with data from specified event
-  #if (entry % 100000 == 0): break 
+  if (entry % 10000 == 0 and entry != 0): break 
   if (entry % 50000 == 0): print("Event Number:{}".format(entry))
   treeReader.ReadEntry(entry)
 
-  # Preselections exactly 3 leptons and at least 2 jet with 1 b-tagged
+  # Preselections exactly 3 leptons with 1 OS and at least 2 jet with 1 b-tagged
   if (not(branchElectron.GetEntries() == 3 and branchJet.GetEntries() >=2)): continue
   bJetNo = 0
   for i in range(0, branchJet.GetEntries()):
@@ -114,7 +174,7 @@ for entry in range(0, numberOfEntries):
 
   nEvent += 1
 
-  
+
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
 
   # Loop over all jets in event
@@ -122,6 +182,7 @@ for entry in range(0, numberOfEntries):
     jet = branchJet.At(i)
     histJetPT.Fill(jet.PT)
     histJetEta.Fill(jet.Eta)
+    histJetPhi.Fill(jet.Phi)    
   histJetNo.Fill(branchJet.GetEntries())
 
   # Loop over all bjets in events  
@@ -141,6 +202,7 @@ for entry in range(0, numberOfEntries):
     else: elec_eta['-'+str(i)] = electron.Eta
     histElectronPT.Fill(electron.PT)
     histElectronEta.Fill(electron.Eta)
+    histElectronPhi.Fill(electron.Phi)
   histElectronNo.Fill(branchElectron.GetEntries())
   #print(elec_eta)
   
@@ -174,7 +236,7 @@ for entry in range(0, numberOfEntries):
   # deltaPhi or cosinePhi
   deltaPhi = abs(branchElectron.At(index[1]).Phi - branchElectron.At(index[-1]).Phi)
   deltaR = ROOT.sqrt((min_deltaEta * min_deltaEta) + (deltaPhi * deltaPhi))
-  histdiElectronCosine.Fill(deltaPhi)
+  histdiElectronCosine.Fill(ROOT.cos(deltaPhi))
   histElectrondeltaR.Fill(deltaR)
 
   # Analyse missing ET
@@ -194,10 +256,10 @@ branchElectron.At(index[0]).Phi, elec_ET)
       W_vec = met_vec + elec_vec
       top_vec = met_vec + elec_vec + bjet_vec
 
+      # W boson and Top quark mass
       #mW = (met.P4() + branchElectron.At(index[0]).P4()).Mt()
       #mW = (met.P4() + branchElectron.At(index[0]).P4())**2
-      mW = W_vec.Mt()
-      
+      mW = W_vec.Mt()      
       #mW = (met_vec + elec_vec).Mt()      
       #mTop = (branchJet.At(bjet_index).P4() + met.P4() + branchElectron.At(index[0]).P4()).Mt()
       mTop = top_vec.Mt()
@@ -205,15 +267,27 @@ branchElectron.At(index[0]).Phi, elec_ET)
       histWmass.Fill(mW)
       histTopmass.Fill(mTop)
 
+  elec_first_vec = ROOT.TLorentzVector()
+  elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[1]).PT**2 + 0.005**2)
+  elec_second_vec = ROOT.TLorentzVector()  
+  elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[-1]).PT**2 + 0.005**2)
+  elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,
+branchElectron.At(index[1]).Phi, elec_first_ET)
+  elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,
+branchElectron.At(index[-1]).Phi, elec_second_ET)
+  mLL = (elec_first_vec + elec_second_vec).Mt()
+  histdiElectronMass.Fill(mLL)  
 
-print("Number of events which pass the preselection: {}".format(nEvent))
-
+  tree_obj.Fill()
 
 #histTopmass.Draw()
+name = args.name
 for hist in hist_list:
     hist.Draw()
-    save_name = hist.GetName() + '.pdf'
+    save_name = './plots/' + name + '_' + hist.GetName() + '.pdf'
     c1.SaveAs(save_name)
+    c1.Clear()
+tree_obj.Write('./trees/')
 #os.system('open test.pdf')
 
 '''
