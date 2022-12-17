@@ -6,7 +6,7 @@ import os
 import ROOT
 import argparse
 import numpy as np
-from array import arr
+from array import array
 
 parser = argparse.ArgumentParser(
                 description='Produce TopFC Analysis variables.'
@@ -70,7 +70,7 @@ tree_obj = ROOT.TTree(treeName, treeName+"tree")
 
 # Jet variables
 jetPT = array('d', [0])
-jetETa = array('d', [0])
+jetETA = array('d', [0])
 jetPHI = array('d', [0])
 jetNo = array('d', [0])
 
@@ -80,9 +80,9 @@ bjetNo = array('d', [0])
 
 # Electron variables
 elecPT = array('d', [0])
-elecEta = array('d', [0])
+elecETA = array('d', [0])
 elecPHI = array('d', [0])
-eleceNo = array('d', [0])
+elecNo = array('d', [0])
 
 # Di-electron variables
 dielecETA = array('d', [0])
@@ -109,20 +109,20 @@ tree_obj.Branch("elecNo", elecNo, "elecNo/D")
 
 tree_obj.Branch("dielecETA", dielecETA, "dielecETA/D")
 tree_obj.Branch("dielecCOS", dielecCOS, "dielecCOS/D")
-tree_obj.Branch("dielecPHI", dielecPHI, "dielecPHI/D")
-tree_obj.Branch("dielecNo", dielecNo, "dielecNo/D")
+tree_obj.Branch("dielecMass", dielecMass, "dielecMass/D")
+tree_obj.Branch("dielecR", dielecR, "dieleR/D")
 
 tree_obj.Branch("WMass", WMass, "WMass/D")
 tree_obj.Branch("TopMass", TopMass, "TopMass/D")
 
 # All histograms for objects
-histJetPT = ROOT.TH1F("jet_pt", "jet P_{T}", 50, 0.0, 100.0)
+histJetPT = ROOT.TH1F("jet_pt", "jet P_{T}", 50, 0.0, 500.0)
 histJetEta = ROOT.TH1F("jet_eta", "jet Eta", 50, -5.0, 5.0)
 histJetPhi = ROOT.TH1F("jet_phi", "jet Phi", 16, -4.0, 4.0)
 histJetNo = ROOT.TH1F("jet_number", "jet Number", 12, 0.0, 12.0)
-histbJetPT = ROOT.TH1F("bjet_pt", "b-jet P_{T}", 50, 0.0, 100.0)
+histbJetPT = ROOT.TH1F("bjet_pt", "b-jet P_{T}", 50, 0.0, 500.0)
 histbJetNo = ROOT.TH1F("bjet_number", "b-jet Number", 5, 0.0, 5.0)
-histElectronPT = ROOT.TH1F("electron_pt", "electron P_{T}", 50, 0.0, 100.0)
+histElectronPT = ROOT.TH1F("electron_pt", "electron P_{T}", 50, 0.0, 500.0)
 histElectronEta = ROOT.TH1F("electron_eta", "electron Eta", 50, -5.0, 5.0)
 histElectronPhi = ROOT.TH1F("electron_phi", "electron Phi", 16, -4.0, 4.0)
 histdiElectronEta = ROOT.TH1F("dielectron_delta eta", "dielectron delta Eta", 50, -5.0, 5.0)
@@ -130,15 +130,15 @@ histdiElectronCosine = ROOT.TH1F("dielectron_cos", "dielectron Cosine", 14, 0.0,
 histdiElectronMass = ROOT.TH1F("dielectron_mass", "dielectron Mass", 6, 500.0, 3500.0)
 histElectrondeltaR = ROOT.TH1F("dielectron_R", "dielectron delta R", 16, 0.0, 8.0)
 histElectronNo = ROOT.TH1F("electron_number", "electron Number", 12, 0.0, 12.0)
-histMuonPT = ROOT.TH1F("muon_pt", "muon P_{T}", 50, 0.0, 100.0)
+histMuonPT = ROOT.TH1F("muon_pt", "muon P_{T}", 50, 0.0, 500.0)
 histMuonEta = ROOT.TH1F("muon_eta", "muon Eta", 50, -5.0, 5.0)
 histMuonNo = ROOT.TH1F("muon_number", "muon Number", 12, 0.0, 12.0)
 histMET = ROOT.TH1F("MET", "MET", 100, 0.0, 300.0)
 histWmass = ROOT.TH1F("Wmass", "Wboson Mass", 20, 50, 150)
 histTopmass = ROOT.TH1F("Topmass", "Top Mass", 50, 100, 300)
 
-hist_list = [histJetPT, histJetEta, histJetPhi, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronEta, histElectronPhi, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histdiElectronMass, histElectronNo, histMET, histWmass, histTopmass]
-#hist_list = [histWmass, histTopmass]
+#hist_list = [histJetPT, histJetEta, histJetPhi, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronEta, histElectronPhi, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histdiElectronMass, histElectronNo, histMET, histWmass, histTopmass]
+hist_list = [histWmass, histTopmass]
 
 #dict_hist = {}
 
@@ -287,7 +287,9 @@ for hist in hist_list:
     save_name = './plots/' + name + '_' + hist.GetName() + '.pdf'
     c1.SaveAs(save_name)
     c1.Clear()
-tree_obj.Write('./trees/')
+f = ROOT.TFile("./trees/" + treeName + ".root", "RECREATE")
+#tree_obj.Write('./trees/' + treeName + '.root', ROOT.TObject.kOverwrite)
+tree_obj.Write("", ROOT.TObject.kOverwrite)
 #os.system('open test.pdf')
 
 '''
