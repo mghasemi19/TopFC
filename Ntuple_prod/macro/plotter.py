@@ -69,10 +69,10 @@ tree_obj = ROOT.TTree(treeName, treeName+"tree")
 # List of all variables to keep in the tree
 
 # Jet variables
-jetPT = array('d', [0])
-jetETA = array('d', [0])
-jetPHI = array('d', [0])
-jetNo = array('d', [0])
+#jetPT = array('d', [0])
+#jetETA = array('d', [0])
+#jetPHI = array('d', [0])
+#jetNo = array('d', [0])
 
 # bjet variables
 bjetPT = array('d', [0])
@@ -94,12 +94,13 @@ dielecR = array('d', [0])
 WMass = array('d', [0])
 TopMass = array('d', [0])
 
-tree_obj.Branch("jetpT", jetPT, "jetPT/D")
+'''
+tree_obj.Branch("jetPT", jetPT, "jetPT/D")
 tree_obj.Branch("jetETA", jetETA, "jetETA/D")
 tree_obj.Branch("jetPHI", jetPHI, "jetPHI/D")
 tree_obj.Branch("jetNo", jetNo, "jetNo/D")
 
-tree_obj.Branch("bjetpT", bjetPT, "jetPT/D")
+tree_obj.Branch("bjetPT", bjetPT, "jetPT/D")
 tree_obj.Branch("bjetNo", bjetNo, "bjetNo/D")
 
 tree_obj.Branch("elecPT", elecPT, "elecPT/D")
@@ -114,6 +115,7 @@ tree_obj.Branch("dielecR", dielecR, "dieleR/D")
 
 tree_obj.Branch("WMass", WMass, "WMass/D")
 tree_obj.Branch("TopMass", TopMass, "TopMass/D")
+'''
 
 # All histograms for objects
 histJetPT = ROOT.TH1F("jet_pt", "jet P_{T}", 50, 0.0, 500.0)
@@ -138,7 +140,9 @@ histWmass = ROOT.TH1F("Wmass", "Wboson Mass", 20, 50, 150)
 histTopmass = ROOT.TH1F("Topmass", "Top Mass", 50, 100, 300)
 
 #hist_list = [histJetPT, histJetEta, histJetPhi, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronEta, histElectronPhi, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histdiElectronMass, histElectronNo, histMET, histWmass, histTopmass]
-hist_list = [histWmass, histTopmass]
+#hist_list = [histJetPT, histWmass, histTopmass]
+#hist_list = [histJetPT, histJetEta, histJetPhi, histJetNo]
+hist_list = []
 
 #dict_hist = {}
 
@@ -178,11 +182,34 @@ for entry in range(0, numberOfEntries):
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
 
   # Loop over all jets in event
+
+  # Jet variables
+  njet = branchJet.GetEntries()
+  jetPT = array('d', [0.]*njet)
+  jetETA = array('d', [0.]*njet)
+  jetPHI = array('d', [0.]*njet)
+  jetNo = array('d', [0.])
+
+  tree_obj.Branch("jetpT", jetPT, "jetpT[%d]/D"%len(jetPT))
+  tree_obj.Branch("jetEta", jetETA, "jetEta[%d]/D"%len(jetETA))
+  tree_obj.Branch("jetPhi", jetPHI, "jetPhi[%d]/D"%len(jetPHI))
+  tree_obj.Branch("jetNo", jetNo, "jetNo/D")
+
   for i in range(0, branchJet.GetEntries()):
     jet = branchJet.At(i)
     histJetPT.Fill(jet.PT)
     histJetEta.Fill(jet.Eta)
     histJetPhi.Fill(jet.Phi)    
+    
+    #jetPT[0].append(jet.PT)
+    #jetETA[0].append(jet.Eta)
+    #jetPHI[0].append(jet.Phi)
+    jetPT[i] = jet.PT
+    print(jetPT)
+    jetETA[i] = jet.Eta
+    jetPHI[i] = jet.Phi
+  jetNo[0] = branchJet.GetEntries()
+
   histJetNo.Fill(branchJet.GetEntries())
 
   # Loop over all bjets in events  
@@ -288,9 +315,13 @@ for hist in hist_list:
     c1.SaveAs(save_name)
     c1.Clear()
 f = ROOT.TFile("./trees/" + treeName + ".root", "RECREATE")
+f.cd()
 #tree_obj.Write('./trees/' + treeName + '.root', ROOT.TObject.kOverwrite)
 tree_obj.Write("", ROOT.TObject.kOverwrite)
+tree_obj.Scan("jetpT")
+#tree_obj.Draw("jetPT")
 #os.system('open test.pdf')
+f.Close()
 
 '''
 # Yield value
