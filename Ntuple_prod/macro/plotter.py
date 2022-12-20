@@ -155,11 +155,26 @@ print ("Total Num of Events {}".format(numberOfEntries))
 #yield_val = 0
 #y2 = 0
 
+# Jet variables
+#njet = int(branchJet.GetEntries())
+njet = 5
+print("Number of jets:", njet)
+jetPT = array('d', [0.]*njet)
+jetETA = array('d', [0.]*njet)
+jetPHI = array('d', [0.]*njet)
+jetNo = array('d', [0.])
+
+tree_obj.Branch("jetpT", jetPT, "jetpT[%d]/D"%len(jetPT))
+tree_obj.Branch("jetEta", jetETA, "jetEta[%d]/D"%len(jetETA))
+tree_obj.Branch("jetPhi", jetPHI, "jetPhi[%d]/D"%len(jetPHI))
+tree_obj.Branch("jetNo", jetNo, "jetNo/D")
+
 nEvent = 0
 counter = 0
 for entry in range(0, numberOfEntries):
   # Load selected branches with data from specified event
-  if (entry % 10000 == 0 and entry != 0): break 
+  #if (entry % 100 == 0 and entry != 0): break 
+  #if (entry == 1): break 
   if (entry % 50000 == 0): print("Event Number:{}".format(entry))
   treeReader.ReadEntry(entry)
 
@@ -181,20 +196,7 @@ for entry in range(0, numberOfEntries):
 
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
 
-  # Loop over all jets in event
-
-  # Jet variables
-  njet = branchJet.GetEntries()
-  jetPT = array('d', [0.]*njet)
-  jetETA = array('d', [0.]*njet)
-  jetPHI = array('d', [0.]*njet)
-  jetNo = array('d', [0.])
-
-  tree_obj.Branch("jetpT", jetPT, "jetpT[%d]/D"%len(jetPT))
-  tree_obj.Branch("jetEta", jetETA, "jetEta[%d]/D"%len(jetETA))
-  tree_obj.Branch("jetPhi", jetPHI, "jetPhi[%d]/D"%len(jetPHI))
-  tree_obj.Branch("jetNo", jetNo, "jetNo/D")
-
+  # Loop over all jets in event  
   for i in range(0, branchJet.GetEntries()):
     jet = branchJet.At(i)
     histJetPT.Fill(jet.PT)
@@ -204,11 +206,12 @@ for entry in range(0, numberOfEntries):
     #jetPT[0].append(jet.PT)
     #jetETA[0].append(jet.Eta)
     #jetPHI[0].append(jet.Phi)
-    jetPT[i] = jet.PT
-    print(jetPT)
+    jetPT[i] = float(jet.PT)
     jetETA[i] = jet.Eta
     jetPHI[i] = jet.Phi
   jetNo[0] = branchJet.GetEntries()
+  #print(jetPT)  
+  tree_obj.Fill()
 
   histJetNo.Fill(branchJet.GetEntries())
 
@@ -305,7 +308,7 @@ branchElectron.At(index[-1]).Phi, elec_second_ET)
   mLL = (elec_first_vec + elec_second_vec).Mt()
   histdiElectronMass.Fill(mLL)  
 
-  tree_obj.Fill()
+  #tree_obj.Fill()
 
 #histTopmass.Draw()
 name = args.name
@@ -318,7 +321,7 @@ f = ROOT.TFile("./trees/" + treeName + ".root", "RECREATE")
 f.cd()
 #tree_obj.Write('./trees/' + treeName + '.root', ROOT.TObject.kOverwrite)
 tree_obj.Write("", ROOT.TObject.kOverwrite)
-tree_obj.Scan("jetpT")
+#tree_obj.Scan("jetpT")
 #tree_obj.Draw("jetPT")
 #os.system('open test.pdf')
 f.Close()
