@@ -62,37 +62,38 @@ c1 = ROOT.TCanvas("c1","c1",1100,900);
 #c1.Divide(1,4)
 
 # All histograms for objects
+# Jets
 histJetPT = ROOT.TH1F("jet_pt", "jet P_{T}", 50, 0.0, 500.0)
 histJetPTLead = ROOT.TH1F("jet_pt_leading", "jet P_{T}", 50, 0.0, 500.0)
 histJetEta = ROOT.TH1F("jet_eta", "jet Eta", 50, -5.0, 5.0)
 histJetPhi = ROOT.TH1F("jet_phi", "jet Phi", 16, -4.0, 4.0)
 histJetNo = ROOT.TH1F("jet_number", "jet Number", 12, 0.0, 12.0)
+# bJets
 histbJetPT = ROOT.TH1F("bjet_pt", "b-jet P_{T}", 50, 0.0, 500.0)
 histbJetNo = ROOT.TH1F("bjet_number", "b-jet Number", 5, 0.0, 5.0)
+# electrons
 histElectronPT = ROOT.TH1F("electron_pt", "electron P_{T}", 50, 0.0, 500.0)
 histElectronPTLead = ROOT.TH1F("electron_pt_leading", "electron P_{T}", 50, 0.0, 500.0)
 histElectronEta = ROOT.TH1F("electron_eta", "electron Eta", 50, -5.0, 5.0)
 histElectronPhi = ROOT.TH1F("electron_phi", "electron Phi", 16, -4.0, 4.0)
+histElectronNo = ROOT.TH1F("electron_number", "electron Number", 12, 0.0, 12.0)
+# Di-electrons
 histdiElectronEta = ROOT.TH1F("dielectron_delta eta", "dielectron delta Eta", 50, -5.0, 5.0)
 histdiElectronCosine = ROOT.TH1F("dielectron_cos", "dielectron Cosine", 20, -1.5, 1.5)
 histdiElectronMass = ROOT.TH1F("dielectron_mass", "dielectron Mass", 30, 0.0, 300.0)
 histElectrondeltaR = ROOT.TH1F("dielectron_R", "dielectron delta R", 16, 0.0, 8.0)
-histElectronNo = ROOT.TH1F("electron_number", "electron Number", 12, 0.0, 12.0)
 histMuonPT = ROOT.TH1F("muon_pt", "muon P_{T}", 50, 0.0, 500.0)
 histMuonEta = ROOT.TH1F("muon_eta", "muon Eta", 50, -5.0, 5.0)
 histMuonNo = ROOT.TH1F("muon_number", "muon Number", 12, 0.0, 12.0)
+# MET and masses
 histMET = ROOT.TH1F("MET", "MET", 100, 0.0, 300.0)
 histWmass = ROOT.TH1F("Wmass", "Wboson Mass", 20, 50, 150)
 histTopmass = ROOT.TH1F("Topmass", "Top Mass", 50, 100, 300)
 histnoSMTopmass = ROOT.TH1F("noSMTopmass", "noSMTop Mass", 50, 100, 300)
+histnewnoSMTopmass = ROOT.TH1F("NewnoSMTopmass", "NewnoSMTop Mass", 50, 100, 300)
 
-#hist_list = [histJetPT, histJetEta, histJetPhi, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronEta, histElectronPhi, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histdiElectronMass, histElectronNo, histMET, histWmass, histTopmass]
-#hist_list = [histJetPT, histWmass, histTopmass]
-#hist_list = [histJetPT, histJetEta, histJetPhi, histJetNo]
-#hist_list = [histdiElectronMass]
-hist_list = [histJetPTLead, histElectronPTLead, histnoSMTopmass]
-
-#dict_hist = {}
+hist_list = [histJetPT, histJetPTLead, histJetEta, histJetPhi, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronPTLead, histElectronEta, histElectronPhi, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histdiElectronMass, histElectronNo, histMET, histWmass, histTopmass, histnoSMTopmass, histnewnoSMTopmass]
+#hist_list = [histJetPTLead, histElectronPTLead, histnoSMTopmass]
 
 # Loop over all events
 print ("Total Num of Events {}".format(numberOfEntries))
@@ -108,9 +109,9 @@ nEvent = 0
 counter = 0
 for entry in range(0, numberOfEntries):
   # Load selected branches with data from specified event
-  if (entry % 100 == 0 and entry != 0): break 
+  #if (entry % 100 == 0 and entry != 0): break 
   #if (entry == 500): break 
-  #if (entry % 100000 == 0): print("Event Number:{}".format(entry))
+  if (entry % 100000 == 0): print("Event Number:{}".format(entry))
   treeReader.ReadEntry(entry)
 
   # Preselections exactly 3 leptons with 1 OS and at least 2 jet with 1 b-tagged
@@ -233,6 +234,46 @@ branchElectron.At(index[0]).Phi, elec_ET)
   
       histWmass.Fill(mW)
       histTopmass.Fill(mTop)
+
+  # New algorithm gor ll selection
+  leadjet_vec = ROOT.TLorentzVector()
+  leadjet_ET = ROOT.TMath.Sqrt(branchJet.At(leading_jet_index).PT**2 + branchJet.At(leading_jet_index).Mass)
+  leadjet_vec.SetPtEtaPhiE(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, leadjet_ET)
+  min_topmass = 999
+  noSMmTop_var = 0
+
+   
+  if (ncharge==+1):
+      elec_first_vec = ROOT.TLorentzVector()
+      elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[-1]).PT**2 + 0.005**2)
+      elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,branchElectron.At(index[-1]).Phi, elec_first_ET)
+      for i in index.keys():
+          if (i != -1):
+             elec_second_vec = ROOT.TLorentzVector()
+             elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[i]).PT**2 + 0.005**2)
+             elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
+             newnoSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()
+             delta_mass = abs(newnoSMmTop - 174)
+             if (delta_mass < min_topmass): 
+                 min_topmass = delta_mass
+                 noSMmTop_var = newnoSMmTop
+
+  if (ncharge==-1):
+      elec_first_vec = ROOT.TLorentzVector()
+      elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[1]).PT**2 + 0.005**2)
+      elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,branchElectron.At(index[1]).Phi, elec_first_ET)
+      for i in index.keys():
+          if (i != 1):
+             elec_second_vec = ROOT.TLorentzVector()
+             elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[i]).PT**2 + 0.005**2)
+             elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
+             newnoSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()
+             delta_mass = abs(newnoSMmTop - 174)
+             if (delta_mass < min_topmass): 
+                 min_topmass = delta_mass
+                 noSMmTop_var = newnoSMmTop                 
+
+  histnewnoSMTopmass.Fill(noSMmTop_var)
 
   # Analyse non SM Top and mLL
   elec_first_vec = ROOT.TLorentzVector()
