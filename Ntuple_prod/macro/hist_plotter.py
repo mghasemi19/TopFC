@@ -38,13 +38,11 @@ try:
 except:
   pass
 
-#inputFile = sys.argv[1]
 inputFile = [f for f in args.files]
 
 # Create chain of root trees
 chain = ROOT.TChain("Delphes")
 for f in inputFile: chain.Add(f)
-#chain.Add(inputFile)
 
 # Create object of class ExRootTreeReader
 treeReader = ROOT.ExRootTreeReader(chain)
@@ -59,7 +57,6 @@ branchMET = treeReader.UseBranch("MissingET")
 
 # Book Canvas
 c1 = ROOT.TCanvas("c1","c1",1100,900);
-#c1.Divide(1,4)
 
 # All histograms for objects
 # Jets
@@ -88,12 +85,14 @@ histMuonNo = ROOT.TH1F("muon_number", "muon Number", 12, 0.0, 12.0)
 # MET and masses
 histMET = ROOT.TH1F("MET", "MET", 100, 0.0, 300.0)
 histWmass = ROOT.TH1F("Wmass", "Wboson Mass", 20, 50, 150)
-histTopmass = ROOT.TH1F("Topmass", "Top Mass", 50, 100, 300)
-histnoSMTopmass = ROOT.TH1F("noSMTopmass", "noSMTop Mass", 50, 100, 300)
-histnewnoSMTopmass = ROOT.TH1F("NewnoSMTopmass", "NewnoSMTop Mass", 50, 100, 300)
+histTopmass = ROOT.TH1F("Topmass", "Top Mass", 30, 0, 300)
+histnoSMTopmass = ROOT.TH1F("noSMTopmass", "noSMTop Mass", 30, 0, 300)
+histnewnoSMTopmass = ROOT.TH1F("NewnoSMTopmass", "NewnoSMTop Mass", 30, 0, 300)
 
-hist_list = [histJetPT, histJetPTLead, histJetEta, histJetPhi, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronPTLead, histElectronEta, histElectronPhi, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histdiElectronMass, histElectronNo, histMET, histWmass, histTopmass, histnoSMTopmass, histnewnoSMTopmass]
+#hist_list = [histJetPT, histJetPTLead, histJetEta, histJetPhi, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronPTLead, histElectronEta, histElectronPhi, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histdiElectronMass, histElectronNo, histMET, histWmass, histTopmass, histnoSMTopmass, histnewnoSMTopmass]
 #hist_list = [histJetPTLead, histElectronPTLead, histnoSMTopmass]
+#hist_list = [histTopmass, histnoSMTopmass, histnewnoSMTopmass]
+hist_list = [histnewnoSMTopmass]
 
 # Loop over all events
 print ("Total Num of Events {}".format(numberOfEntries))
@@ -109,9 +108,9 @@ nEvent = 0
 counter = 0
 for entry in range(0, numberOfEntries):
   # Load selected branches with data from specified event
-  #if (entry % 100 == 0 and entry != 0): break 
+  if (entry % 100 == 0 and entry != 0): break 
   #if (entry == 500): break 
-  if (entry % 100000 == 0): print("Event Number:{}".format(entry))
+  #if (entry % 100000 == 0): print("Event Number:{}".format(entry))
   treeReader.ReadEntry(entry)
 
   # Preselections exactly 3 leptons with 1 OS and at least 2 jet with 1 b-tagged
@@ -129,7 +128,6 @@ for entry in range(0, numberOfEntries):
 
   nEvent += 1
 
-
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
 
   # Loop over all jets in event  
@@ -144,7 +142,6 @@ for entry in range(0, numberOfEntries):
        leading_jet_pt = jet.PT
        leading_jet_index = i
   histJetPTLead.Fill(leading_jet_pt)
-  #print "Leading non b-tagged jet PT:{}".format(leading_jet_pt)
     
   histJetNo.Fill(branchJet.GetEntries())
 
@@ -172,7 +169,6 @@ for entry in range(0, numberOfEntries):
        
   histElectronPTLead.Fill(leading_elec_pt)
   histElectronNo.Fill(branchElectron.GetEntries())
-  #print(elec_eta)
   
   # Delta Eta for lepton+ and lepton-
   min_deltaEta = 999
@@ -198,7 +194,6 @@ for entry in range(0, numberOfEntries):
                         index[-1] = abs(int(i))
                         index[1] = abs(int(j))  
   index[0] = [k for k in range(0,3) if not (k==index[-1] or k==index[+1])][0]
-  #print(index)
   
   histdiElectronEta.Fill(min_deltaEta)
   # deltaPhi or cosinePhi od Di-electron
@@ -225,24 +220,22 @@ branchElectron.At(index[0]).Phi, elec_ET)
       top_vec = met_vec + elec_vec + bjet_vec
 
       mW = W_vec.Mt()      
+      histWmass.Fill(mW)
       mTop = top_vec.Mt()
+      histTopmass.Fill(mTop)
       # W boson and Top quark mass
       #mW = (met.P4() + branchElectron.At(index[0]).P4()).Mt()
       #mW = (met.P4() + branchElectron.At(index[0]).P4())**2
       #mW = (met_vec + elec_vec).Mt()      
       #mTop = (branchJet.At(bjet_index).P4() + met.P4() + branchElectron.At(index[0]).P4()).Mt()
   
-      histWmass.Fill(mW)
-      histTopmass.Fill(mTop)
-
   # New algorithm gor ll selection
   leadjet_vec = ROOT.TLorentzVector()
   leadjet_ET = ROOT.TMath.Sqrt(branchJet.At(leading_jet_index).PT**2 + branchJet.At(leading_jet_index).Mass)
   leadjet_vec.SetPtEtaPhiE(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, leadjet_ET)
-  min_topmass = 999
-  noSMmTop_var = 0
+  min_deltamass = 9999
+  #noSMmTop_new = 0
 
-   
   if (ncharge==+1):
       elec_first_vec = ROOT.TLorentzVector()
       elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[-1]).PT**2 + 0.005**2)
@@ -254,9 +247,9 @@ branchElectron.At(index[0]).Phi, elec_ET)
              elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
              newnoSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()
              delta_mass = abs(newnoSMmTop - 174)
-             if (delta_mass < min_topmass): 
-                 min_topmass = delta_mass
-                 noSMmTop_var = newnoSMmTop
+             if (delta_mass < min_deltamass): 
+                 min_deltamass = delta_mass
+                 noSMmTop_new = newnoSMmTop
 
   if (ncharge==-1):
       elec_first_vec = ROOT.TLorentzVector()
@@ -269,13 +262,14 @@ branchElectron.At(index[0]).Phi, elec_ET)
              elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
              newnoSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()
              delta_mass = abs(newnoSMmTop - 174)
-             if (delta_mass < min_topmass): 
-                 min_topmass = delta_mass
-                 noSMmTop_var = newnoSMmTop                 
+             if (delta_mass < min_deltamass): 
+                 min_deltamass = delta_mass
+                 noSMmTop_new = newnoSMmTop                 
 
-  histnewnoSMTopmass.Fill(noSMmTop_var)
+  print "NoSM Top mass:", noSMmTop_new
+  histnewnoSMTopmass.Fill(noSMmTop_new)
 
-  # Analyse non SM Top and mLL
+  # Old algorithm to analyze non SM Top and mLL
   elec_first_vec = ROOT.TLorentzVector()
   elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[1]).PT**2 + 0.005**2)
   elec_second_vec = ROOT.TLorentzVector()  
