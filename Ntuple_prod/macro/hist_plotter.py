@@ -91,8 +91,8 @@ histnewnoSMTopmass = ROOT.TH1F("NewnoSMTopmass", "NewnoSMTop Mass", 30, 0, 300)
 
 #hist_list = [histJetPT, histJetPTLead, histJetEta, histJetPhi, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronPTLead, histElectronEta, histElectronPhi, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histdiElectronMass, histElectronNo, histMET, histWmass, histTopmass, histnoSMTopmass, histnewnoSMTopmass]
 #hist_list = [histJetPTLead, histElectronPTLead, histnoSMTopmass]
-#hist_list = [histTopmass, histnoSMTopmass, histnewnoSMTopmass]
-hist_list = [histnewnoSMTopmass]
+hist_list = [histTopmass, histnoSMTopmass, histnewnoSMTopmass]
+#hist_list = [histnewnoSMTopmass]
 
 # Loop over all events
 print ("Total Num of Events {}".format(numberOfEntries))
@@ -108,9 +108,9 @@ nEvent = 0
 counter = 0
 for entry in range(0, numberOfEntries):
   # Load selected branches with data from specified event
-  if (entry % 100 == 0 and entry != 0): break 
+  #if (entry % 100 == 0 and entry != 0): break 
   #if (entry == 500): break 
-  #if (entry % 100000 == 0): print("Event Number:{}".format(entry))
+  if (entry % 100000 == 0): print("Event Number:{}".format(entry))
   treeReader.ReadEntry(entry)
 
   # Preselections exactly 3 leptons with 1 OS and at least 2 jet with 1 b-tagged
@@ -231,8 +231,9 @@ branchElectron.At(index[0]).Phi, elec_ET)
   
   # New algorithm gor ll selection
   leadjet_vec = ROOT.TLorentzVector()
-  leadjet_ET = ROOT.TMath.Sqrt(branchJet.At(leading_jet_index).PT**2 + branchJet.At(leading_jet_index).Mass)
-  leadjet_vec.SetPtEtaPhiE(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, leadjet_ET)
+  #leadjet_ET = ROOT.TMath.Sqrt(branchJet.At(leading_jet_index).PT**2 + branchJet.At(leading_jet_index).Mass)
+  #leadjet_vec.SetPtEtaPhiE(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, leadjet_ET)
+  leadjet_vec.SetPtEtaPhiM(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, branchJet.At(leading_jet_index).Mass)
   min_deltamass = 9999
   #noSMmTop_new = 0
 
@@ -266,7 +267,7 @@ branchElectron.At(index[0]).Phi, elec_ET)
                  min_deltamass = delta_mass
                  noSMmTop_new = newnoSMmTop                 
 
-  print "NoSM Top mass:", noSMmTop_new
+  #print "NoSM Top mass:", noSMmTop_new
   histnewnoSMTopmass.Fill(noSMmTop_new)
 
   # Old algorithm to analyze non SM Top and mLL
@@ -277,8 +278,9 @@ branchElectron.At(index[0]).Phi, elec_ET)
   elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,branchElectron.At(index[1]).Phi, elec_first_ET)
   elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,branchElectron.At(index[-1]).Phi, elec_second_ET)
   leadjet_vec = ROOT.TLorentzVector()
-  leadjet_ET = ROOT.TMath.Sqrt(branchJet.At(leading_jet_index).PT**2 + branchJet.At(leading_jet_index).Mass)
-  leadjet_vec.SetPtEtaPhiE(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, leadjet_ET)
+  #leadjet_ET = ROOT.TMath.Sqrt(branchJet.At(leading_jet_index).PT**2 + branchJet.At(leading_jet_index).Mass)
+  #leadjet_vec.SetPtEtaPhiE(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, leadjet_ET)
+  leadjet_vec.SetPtEtaPhiM(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, branchJet.At(leading_jet_index).Mass)
   
   mLL = (elec_first_vec + elec_second_vec).Mt()
   noSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()
