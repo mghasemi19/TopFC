@@ -12,7 +12,6 @@ parser = argparse.ArgumentParser(
                 description='Produce TopFC Analysis variables.'
                 )
 parser.add_argument('--files', type=str, nargs='+', help='tree files want to be merged')
-parser.add_argument('--name', type=str, help='either signal or background name')
 parser.add_argument('--treename', type=str, help='tree name to save variables')
 args = parser.parse_args()
 
@@ -66,7 +65,7 @@ jetPHI = array('d')
 
 # bjet variables
 bjetNo = array('l', [0])
-bjetPT = array('d')
+bjetPT = array('d', [0])
 
 # Electron variables
 elecNo = array('l', [0])
@@ -99,7 +98,7 @@ tree_obj.Branch("bjetPT", bjetPT, "jetPT/D")
 
 tree_obj.Branch("elecNo", elecNo, "elecNo/I")
 tree_obj.Branch("elecPT", elecPT, "elecPT[elecNo]/D")
-tree_obj.Branch("elecPTLeading", PTleading, "elecPTLeading/D")
+tree_obj.Branch("elecPTLeading", elecPTleading, "elecPTLeading/D")
 tree_obj.Branch("elecETA", elecETA, "elecETA[elecNo]/D")
 tree_obj.Branch("elecPHI", elecPHI, "elecPHI[elecNo]/D")
 
@@ -128,8 +127,8 @@ counter = 0
 for entry in range(0, numberOfEntries):
   # Load selected branches with data from specified event
   #if (entry % 100 == 0 and entry != 0): break 
-  #if (entry == 500): break 
-  if (entry % 100000 == 0): print("Event Number:{}".format(entry))
+  if (entry == 50000): break 
+  #if (entry % 100000 == 0): print("Event Number:{}".format(entry))
   treeReader.ReadEntry(entry)
 
   # Preselections exactly 3 leptons with 1 OS and at least 2 jet with 1 b-tagged
@@ -149,43 +148,53 @@ for entry in range(0, numberOfEntries):
 
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
 
-  # Loop over all jets in event  
+  # 1) Loop over all jets in event  
   leading_jet_pt = 0 	# Leading non b-tagged jet pT
   leading_jet_index = 0 # Leading non b-tagged jet index
+
+  jetNo[0] = branchJet.GetEntries()
   for i in range(0, branchJet.GetEntries()):
+    jetPT = array( 'd')
+    jetETA = array( 'd')
+    jetPHI = array( 'd')
+
     jet = branchJet.At(i)
+    jetPT.append(jet.PT)
+    jetETA.append(jet.Eta)
+    jetPHI.append(jet.Phi)
     if (jet.PT > leading_jet_pt) and (jet.BTag == 0): 
        leading_jet_pt = jet.PT
-       leading_jet_index = i
-  histJetPTLead.Fill(leading_jet_pt)
-    
-  histJetNo.Fill(branchJet.GetEntries())
+       leading_jet_index = i    
+  jetPTleading[0] = leading_jet_pt
 
-  # Loop over all bjets in events  
+  # 2) Loop over all bjets in events  
+  bjetNo[0] = bJetNo
   for i in range(0, branchJet.GetEntries()):
     jet = branchJet.At(i)
     if (jet.BTag):
-      histbJetPT.Fill(jet.PT)  
+      bjetPT[0] = jet.PT
       bjet_index = i
-  histbJetNo.Fill(bJetNo)
 
-  # Loop over all electrons in event
+  # 3) Loop over all electrons in event
   elec_eta = {}
   leading_elec_pt = 0	 # leading electron pT
+  leading_electron_index = 0  # Leading electron index
   
+  elecNo[0] = branchElectron.GetEntries()
   for i in range(0, branchElectron.GetEntries()):
+    elecPT = array( 'd')
+    elecETA = array( 'd')
+    elecPHI = array( 'd')
+    
     electron = branchElectron.At(i)  
     # Save positive and negative charge electron's Eta
     if (electron.Charge==1): elec_eta['+'+str(i)] = electron.Eta
     else: elec_eta['-'+str(i)] = electron.Eta
-    histElectronPT.Fill(electron.PT)
-    histElectronEta.Fill(electron.Eta)
-    histElectronPhi.Fill(electron.Phi)
-    if (electron.PT > leading_elec_pt): leading_elec_pt = electron.PT
+    if (electron.PT > leading_elec_pt): 
+       leading_elec_pt = electron.PT
+       leading_electron_index = i
+  elecPTleading[0] = leading_elec_pt
        
-  histElectronPTLead.Fill(leading_elec_pt)
-  histElectronNo.Fill(branchElectron.GetEntries())
-  
   # Delta Eta for lepton+ and lepton-
   min_deltaEta = 999
   index = {}
@@ -211,23 +220,22 @@ for entry in range(0, numberOfEntries):
                         index[1] = abs(int(j))  
   index[0] = [k for k in range(0,3) if not (k==index[-1] or k==index[+1])][0]
   
-  histdiElectronEta.Fill(min_deltaEta)
-  # deltaPhi or cosinePhi od Di-electron
+  # 4) Fill Di-electron variables
   deltaPhi = abs(branchElectron.At(index[1]).Phi - branchElectron.At(index[-1]).Phi)
   deltaR = ROOT.sqrt((min_deltaEta * min_deltaEta) + (deltaPhi * deltaPhi))
-  histdiElectronCosine.Fill(ROOT.cos(deltaPhi))
-  histElectrondeltaR.Fill(deltaR)
+  
+  dielecETA[0] = min_deltaEta
+  dielecCOS[0] = ROOT.cos(deltaPhi)
+  dielecR[0] = deltaR 
 
-  # Analyse missing ET, W boson and SM top mass
+  # 5) Analyse missing ET, W boson and SM top mass
   if branchMET.GetEntries() >= 0:
       met = branchMET.At(0)
-      histMET.Fill(met.MET)  
       met_vec = ROOT.TLorentzVector()
       elec_vec = ROOT.TLorentzVector()
       bjet_vec = ROOT.TLorentzVector()
       met_vec.SetPtEtaPhiE(met.MET, met.Eta, met.Phi, met.MET) 
       elec_ET = ROOT.TMath.Sqrt(branchElectron.At(index[0]).PT**2 + 0.005**2)
-      #elec_vec.SetPtEtaPhiE(branchElectron.At(index[0]).PT, branchElectron.At(index[0]).Eta, branchElectron.At(index[0]).Phi, branchElectron.At(index[0]).PT)
       elec_vec.SetPtEtaPhiE(branchElectron.At(index[0]).PT, branchElectron.At(index[0]).Eta,
 branchElectron.At(index[0]).Phi, elec_ET)
       bjet_ET = ROOT.TMath.Sqrt(branchJet.At(bjet_index).PT**2 + 4.67**2)
@@ -236,22 +244,15 @@ branchElectron.At(index[0]).Phi, elec_ET)
       top_vec = met_vec + elec_vec + bjet_vec
 
       mW = W_vec.Mt()      
-      histWmass.Fill(mW)
       mTop = top_vec.Mt()
-      histTopmass.Fill(mTop)
-      # W boson and Top quark mass
-      #mW = (met.P4() + branchElectron.At(index[0]).P4()).Mt()
-      #mW = (met.P4() + branchElectron.At(index[0]).P4())**2
-      #mW = (met_vec + elec_vec).Mt()      
-      #mTop = (branchJet.At(bjet_index).P4() + met.P4() + branchElectron.At(index[0]).P4()).Mt()
+
+      WMass[0] = mW
+      SMTopMass[0] = mTop
   
   # New algorithm gor ll selection
   leadjet_vec = ROOT.TLorentzVector()
-  #leadjet_ET = ROOT.TMath.Sqrt(branchJet.At(leading_jet_index).PT**2 + branchJet.At(leading_jet_index).Mass)
-  #leadjet_vec.SetPtEtaPhiE(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, leadjet_ET)
   leadjet_vec.SetPtEtaPhiM(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, branchJet.At(leading_jet_index).Mass)
   min_deltamass = 9999
-  #noSMmTop_new = 0
 
   if (ncharge==+1):
       elec_first_vec = ROOT.TLorentzVector()
@@ -283,8 +284,7 @@ branchElectron.At(index[0]).Phi, elec_ET)
                  min_deltamass = delta_mass
                  noSMmTop_new = newnoSMmTop                 
 
-  #print "NoSM Top mass:", noSMmTop_new
-  histnewnoSMTopmass.Fill(noSMmTop_new)
+  newnonSMTopMass[0] = noSMmTop_new
 
   # Old algorithm to analyze non SM Top and mLL
   elec_first_vec = ROOT.TLorentzVector()
@@ -294,22 +294,28 @@ branchElectron.At(index[0]).Phi, elec_ET)
   elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,branchElectron.At(index[1]).Phi, elec_first_ET)
   elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,branchElectron.At(index[-1]).Phi, elec_second_ET)
   leadjet_vec = ROOT.TLorentzVector()
-  #leadjet_ET = ROOT.TMath.Sqrt(branchJet.At(leading_jet_index).PT**2 + branchJet.At(leading_jet_index).Mass)
-  #leadjet_vec.SetPtEtaPhiE(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, leadjet_ET)
   leadjet_vec.SetPtEtaPhiM(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, branchJet.At(leading_jet_index).Mass)
   
   mLL = (elec_first_vec + elec_second_vec).Mt()
   noSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()
   
-  histdiElectronMass.Fill(mLL)  
-  histnoSMTopmass.Fill(noSMmTop)
+  dielecMass[0] = mLL  
+  nonSMTopMass[0] = noSMmTop
 
-name = args.name
-for hist in hist_list:
-    hist.Draw()
-    save_name = './plots/' + name + '_' + hist.GetName() + '.pdf'
-    c1.SaveAs(save_name)
-    c1.Clear()
+  # Set branches address back to their origin
+  tree_obj.SetBranchAddress("jetPT", jetPT)  
+  tree_obj.SetBranchAddress("jetETA", jetETA)  
+  tree_obj.SetBranchAddress("jetPHI", jetPHI)  
+  tree_obj.SetBranchAddress("elecPT", elecPT)  
+  tree_obj.SetBranchAddress("elecETA", jetETA)  
+  tree_obj.SetBranchAddress("elecPHI", jetPHI) 
+
+  tree_obj.Fill() 
+    
+f.cd()
+tree_obj.Write()
+f.Close()
+
 
 '''
 # Yield value
