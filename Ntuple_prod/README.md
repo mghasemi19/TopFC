@@ -16,5 +16,10 @@ The same can be run for background sample generaton:
 
 There are several useful scripts for plotting in macro folder. We can get all the analysis plots by running:
  ```
- python ./macro/plotter.py --file ./tag_1_delphes_events.root 2>&1 | tee output.log
+ python2 ./macro/plotter.py --file ./tag_1_delphes_events.root 2>&1 | tee output.log
  ```
+
+To make analysis trees for both signal and background, [tree_maker.py](https://github.com/mghasemi19/TopFC/blob/main/Ntuple_prod/macro/tree_maker.py) can be used as below:
+```
+python2 examples/tree_maker.py --files /data/mghasemi/IPM_test_signalup/Events/run_01/tag_1_delphes_events.root --treename upsignal
+```
