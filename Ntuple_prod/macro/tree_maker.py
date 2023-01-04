@@ -127,8 +127,8 @@ counter = 0
 for entry in range(0, numberOfEntries):
   # Load selected branches with data from specified event
   #if (entry % 100 == 0 and entry != 0): break 
-  if (entry == 50000): break 
-  #if (entry % 100000 == 0): print("Event Number:{}".format(entry))
+  #if (entry == 50000): break 
+  if (entry % 100000 == 0): print("Event Number:{}".format(entry))
   treeReader.ReadEntry(entry)
 
   # Preselections exactly 3 leptons with 1 OS and at least 2 jet with 1 b-tagged
@@ -144,8 +144,9 @@ for entry in range(0, numberOfEntries):
     ncharge += electron.Charge
   if (ncharge == -3 or ncharge == 3): continue
 
+  #if (nEvent == 1): break
   nEvent += 1
-
+  
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
 
   # 1) Loop over all jets in event  
@@ -153,12 +154,13 @@ for entry in range(0, numberOfEntries):
   leading_jet_index = 0 # Leading non b-tagged jet index
 
   jetNo[0] = branchJet.GetEntries()
-  for i in range(0, branchJet.GetEntries()):
-    jetPT = array( 'd')
-    jetETA = array( 'd')
-    jetPHI = array( 'd')
+  jetPT = array( 'd')
+  jetETA = array( 'd')
+  jetPHI = array( 'd')
 
+  for i in range(0, branchJet.GetEntries()):    
     jet = branchJet.At(i)
+    #print "jet", i, " pT:", jet.PT
     jetPT.append(jet.PT)
     jetETA.append(jet.Eta)
     jetPHI.append(jet.Phi)
@@ -166,6 +168,8 @@ for entry in range(0, numberOfEntries):
        leading_jet_pt = jet.PT
        leading_jet_index = i    
   jetPTleading[0] = leading_jet_pt
+
+  #print jetPT
 
   # 2) Loop over all bjets in events  
   bjetNo[0] = bJetNo
@@ -181,11 +185,11 @@ for entry in range(0, numberOfEntries):
   leading_electron_index = 0  # Leading electron index
   
   elecNo[0] = branchElectron.GetEntries()
-  for i in range(0, branchElectron.GetEntries()):
-    elecPT = array( 'd')
-    elecETA = array( 'd')
-    elecPHI = array( 'd')
-    
+  elecPT = array( 'd')
+  elecETA = array( 'd')
+  elecPHI = array( 'd')
+
+  for i in range(0, branchElectron.GetEntries()):  
     electron = branchElectron.At(i)  
     # Save positive and negative charge electron's Eta
     if (electron.Charge==1): elec_eta['+'+str(i)] = electron.Eta
