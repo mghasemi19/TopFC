@@ -144,7 +144,7 @@ for entry in range(0, numberOfEntries):
     ncharge += electron.Charge
   if (ncharge == -3 or ncharge == 3): continue
 
-  #if (nEvent == 1): break
+  #if (nEvent == 10): break
   nEvent += 1
   
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
@@ -191,6 +191,9 @@ for entry in range(0, numberOfEntries):
 
   for i in range(0, branchElectron.GetEntries()):  
     electron = branchElectron.At(i)  
+    electronPT.append(electron.PT)
+    electronETA.append(electron.Eta)
+    electronPHI.append(electron.Phi)    
     # Save positive and negative charge electron's Eta
     if (electron.Charge==1): elec_eta['+'+str(i)] = electron.Eta
     else: elec_eta['-'+str(i)] = electron.Eta
@@ -253,7 +256,7 @@ branchElectron.At(index[0]).Phi, elec_ET)
       WMass[0] = mW
       SMTopMass[0] = mTop
   
-  # New algorithm gor ll selection
+  # New algorithm for ll selection
   leadjet_vec = ROOT.TLorentzVector()
   leadjet_vec.SetPtEtaPhiM(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, branchJet.At(leading_jet_index).Mass)
   min_deltamass = 9999
@@ -327,20 +330,8 @@ f.Close()
 #y2 = weight * weight
 
 print("Number of Events with more than two electrons {}".format(counter))
-# Show resulting histograms
-c1.cd(1)
-histJetPT.Draw()
-#input("Press Enter to continue...")
-c1.cd(2)
-histMass.Draw()
-c1.cd(3)
-histMET.Draw()
-c1.cd(4)
-histPhotonMass.Draw()
 
 #print("Event yield: {} +/- {}".format(yield_val, y2))
 #print("Selection Efficiency: {}".format(yield_val / (weight * numberOfEntries)))
 
-c1.SaveAs("./test.pdf")
-os.system("open test.pdf")
 '''
