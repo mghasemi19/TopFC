@@ -89,9 +89,9 @@ histTopmass = ROOT.TH1F("Topmass", "Top Mass", 30, 0, 300)
 histnoSMTopmass = ROOT.TH1F("noSMTopmass", "noSMTop Mass", 30, 0, 300)
 histnewnoSMTopmass = ROOT.TH1F("NewnoSMTopmass", "NewnoSMTop Mass", 30, 0, 300)
 
-#hist_list = [histJetPT, histJetPTLead, histJetEta, histJetPhi, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronPTLead, histElectronEta, histElectronPhi, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histdiElectronMass, histElectronNo, histMET, histWmass, histTopmass, histnoSMTopmass, histnewnoSMTopmass]
+hist_list = [histJetPT, histJetPTLead, histJetEta, histJetPhi, histJetNo, histbJetPT, histbJetNo, histElectronPT, histElectronPTLead, histElectronEta, histElectronPhi, histdiElectronEta, histdiElectronCosine, histElectrondeltaR, histdiElectronMass, histElectronNo, histMET, histWmass, histTopmass, histnoSMTopmass, histnewnoSMTopmass]
 #hist_list = [histJetPTLead, histElectronPTLead, histnoSMTopmass]
-hist_list = [histTopmass, histnoSMTopmass, histnewnoSMTopmass]
+#hist_list = [histTopmass, histnoSMTopmass, histnewnoSMTopmass]
 #hist_list = [histnewnoSMTopmass]
 
 # Loop over all events
@@ -127,6 +127,7 @@ for entry in range(0, numberOfEntries):
   if (ncharge == -3 or ncharge == 3): continue
 
   nEvent += 1
+  #if (nEvent == 500): break
 
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
 
@@ -212,10 +213,10 @@ for entry in range(0, numberOfEntries):
       met_vec.SetPtEtaPhiE(met.MET, met.Eta, met.Phi, met.MET) 
       elec_ET = ROOT.TMath.Sqrt(branchElectron.At(index[0]).PT**2 + 0.005**2)
       #elec_vec.SetPtEtaPhiE(branchElectron.At(index[0]).PT, branchElectron.At(index[0]).Eta, branchElectron.At(index[0]).Phi, branchElectron.At(index[0]).PT)
-      elec_vec.SetPtEtaPhiE(branchElectron.At(index[0]).PT, branchElectron.At(index[0]).Eta,
-branchElectron.At(index[0]).Phi, elec_ET)
+      elec_vec.SetPtEtaPhiM(branchElectron.At(index[0]).PT, branchElectron.At(index[0]).Eta, branchElectron.At(index[0]).Phi, 0.005)
       bjet_ET = ROOT.TMath.Sqrt(branchJet.At(bjet_index).PT**2 + 4.67**2)
-      bjet_vec.SetPtEtaPhiE(branchJet.At(bjet_index).PT, branchJet.At(bjet_index).Eta, branchJet.At(bjet_index).Phi, bjet_ET)
+      #bjet_vec.SetPtEtaPhiE(branchJet.At(bjet_index).PT, branchJet.At(bjet_index).Eta, branchJet.At(bjet_index).Phi, bjet_ET)
+      bjet_vec.SetPtEtaPhiM(branchJet.At(bjet_index).PT, branchJet.At(bjet_index).Eta, branchJet.At(bjet_index).Phi, 4.67)
       W_vec = met_vec + elec_vec
       top_vec = met_vec + elec_vec + bjet_vec
 
@@ -229,7 +230,7 @@ branchElectron.At(index[0]).Phi, elec_ET)
       #mW = (met_vec + elec_vec).Mt()      
       #mTop = (branchJet.At(bjet_index).P4() + met.P4() + branchElectron.At(index[0]).P4()).Mt()
   
-  # New algorithm gor ll selection
+  # New algorithm for ll selection
   leadjet_vec = ROOT.TLorentzVector()
   #leadjet_ET = ROOT.TMath.Sqrt(branchJet.At(leading_jet_index).PT**2 + branchJet.At(leading_jet_index).Mass)
   #leadjet_vec.SetPtEtaPhiE(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, leadjet_ET)
@@ -239,13 +240,15 @@ branchElectron.At(index[0]).Phi, elec_ET)
 
   if (ncharge==+1):
       elec_first_vec = ROOT.TLorentzVector()
-      elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[-1]).PT**2 + 0.005**2)
-      elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,branchElectron.At(index[-1]).Phi, elec_first_ET)
+      #elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[-1]).PT**2 + 0.005**2)
+      #elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,branchElectron.At(index[-1]).Phi, elec_first_ET)
+      elec_first_vec.SetPtEtaPhiM(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,branchElectron.At(index[-1]).Phi, 0.005)
       for i in index.keys():
           if (i != -1):
              elec_second_vec = ROOT.TLorentzVector()
-             elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[i]).PT**2 + 0.005**2)
-             elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
+             #elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[i]).PT**2 + 0.005**2)
+             #elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
+             elec_second_vec.SetPtEtaPhiM(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, 0.005)
              newnoSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()
              delta_mass = abs(newnoSMmTop - 174)
              if (delta_mass < min_deltamass): 
@@ -254,20 +257,22 @@ branchElectron.At(index[0]).Phi, elec_ET)
 
   if (ncharge==-1):
       elec_first_vec = ROOT.TLorentzVector()
-      elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[1]).PT**2 + 0.005**2)
-      elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,branchElectron.At(index[1]).Phi, elec_first_ET)
+      #elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[1]).PT**2 + 0.005**2)
+      #elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,branchElectron.At(index[1]).Phi, elec_first_ET)
+      elec_first_vec.SetPtEtaPhiM(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,branchElectron.At(index[1]).Phi, 0.005)
       for i in index.keys():
           if (i != 1):
              elec_second_vec = ROOT.TLorentzVector()
-             elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[i]).PT**2 + 0.005**2)
-             elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
+             #elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[i]).PT**2 + 0.005**2)
+             #elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
+             elec_second_vec.SetPtEtaPhiM(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, 0.005)
              newnoSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()
              delta_mass = abs(newnoSMmTop - 174)
              if (delta_mass < min_deltamass): 
                  min_deltamass = delta_mass
                  noSMmTop_new = newnoSMmTop                 
 
-  #print "NoSM Top mass:", noSMmTop_new
+  #print "New NonSM Top mass:", noSMmTop_new
   histnewnoSMTopmass.Fill(noSMmTop_new)
 
   # Old algorithm to analyze non SM Top and mLL
@@ -275,8 +280,10 @@ branchElectron.At(index[0]).Phi, elec_ET)
   elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[1]).PT**2 + 0.005**2)
   elec_second_vec = ROOT.TLorentzVector()  
   elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[-1]).PT**2 + 0.005**2)
-  elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,branchElectron.At(index[1]).Phi, elec_first_ET)
-  elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,branchElectron.At(index[-1]).Phi, elec_second_ET)
+  #elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,branchElectron.At(index[1]).Phi, elec_first_ET)
+  elec_first_vec.SetPtEtaPhiM(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,branchElectron.At(index[1]).Phi, 0.005)
+  #elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,branchElectron.At(index[-1]).Phi, elec_second_ET)
+  elec_second_vec.SetPtEtaPhiM(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,branchElectron.At(index[-1]).Phi, 0.005)
   leadjet_vec = ROOT.TLorentzVector()
   #leadjet_ET = ROOT.TMath.Sqrt(branchJet.At(leading_jet_index).PT**2 + branchJet.At(leading_jet_index).Mass)
   #leadjet_vec.SetPtEtaPhiE(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, leadjet_ET)
