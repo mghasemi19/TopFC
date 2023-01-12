@@ -23,3 +23,7 @@ To make analysis trees for both signal and background, [tree_maker.py](https://g
 ```
 python2 examples/tree_maker.py --files /data/mghasemi/IPM_test_signalup/Events/run_01/tag_1_delphes_events.root --treename upsignal
 ```
+All the cross sections are available in xsec folder and the weights are computed based on HLLHC:
+```
+python2 weight_comput.py
+```
