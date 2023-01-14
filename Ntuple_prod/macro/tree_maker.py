@@ -49,6 +49,9 @@ branchMuon = treeReader.UseBranch("Muon")
 branchPhoton = treeReader.UseBranch("Photon")
 branchMET = treeReader.UseBranch("MissingET")
 
+# weights for signal and backgrounds
+weights = {'ttbarZ': 0.004368240427953154, 'tZ': 0.00375, 'tttt': 2.795205553087607e-05, 'ZZ': 0.67125, 'ttbar': 8.5365, 'ttbarW': 0.00015, 'WZ': 0.13575,'signal_charm': 0.01376, 'signal_up': 0.01376}
+
 # Tree to keep variables
 treeName = args.treename
 f = ROOT.TFile("./trees/" + treeName + ".root", "RECREATE")
@@ -86,6 +89,9 @@ SMTopMass = array('d', [0.])
 nonSMTopMass = array('d', [0.])
 newnonSMTopMass = array('d', [0.])
 
+# Weights 
+weight = array('d', [0.])
+
 # Set tree branches
 tree_obj.Branch("jetNo", jetNo, "jetNo/I")
 tree_obj.Branch("jetPT", jetPT, "jetPT[jetNo]/D")
@@ -112,8 +118,11 @@ tree_obj.Branch("TopMass", SMTopMass, "TopMass/D")
 tree_obj.Branch("nonTopMass", nonSMTopMass, "nonTopMass/D")
 tree_obj.Branch("newnonTopMass", newnonSMTopMass, "newnonTopMass/D")
 
+tree_obj.Branch("weight", weight, "weight/D")
+
 # Loop over all events
 print ("Total Num of Events {}".format(numberOfEntries))
+#quit()
 
 # Event weight
 #weight = 0.0004 * 300 * 1E3 / numberOfEntries   # for a specific event
@@ -144,7 +153,7 @@ for entry in range(0, numberOfEntries):
     ncharge += electron.Charge
   if (ncharge == -3 or ncharge == 3): continue
 
-  #if (nEvent == 10): break
+  #if (nEvent == 20): break
   nEvent += 1
   
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
@@ -317,6 +326,10 @@ branchElectron.At(index[0]).Phi, 0.005)
   dielecMass[0] = mLL  
   nonSMTopMass[0] = noSMmTop
 
+  # Weight for the sample
+  weight[0] = float("{:.2f}".format(weights[treeName]))
+  #print weight[0]
+ 
   # Set branches address back to their origin
   tree_obj.SetBranchAddress("jetPT", jetPT)  
   tree_obj.SetBranchAddress("jetETA", jetETA)  
@@ -329,6 +342,7 @@ branchElectron.At(index[0]).Phi, 0.005)
     
 f.cd()
 tree_obj.Write()
+#tree_obj.Scan("weight")
 f.Close()
 
 
