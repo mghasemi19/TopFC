@@ -84,6 +84,7 @@ dielecMass = array('d', [0.])
 dielecR = array('d', [0.])
 
 # W-boson and SM and nonSM Top-quark Mass
+Met = array('d', [0.])
 WMass = array('d', [0.])
 SMTopMass = array('d', [0.])
 nonSMTopMass = array('d', [0.])
@@ -113,6 +114,7 @@ tree_obj.Branch("dielecCOS", dielecCOS, "dielecCOS/D")
 tree_obj.Branch("dielecMass", dielecMass, "dielecMass/D")
 tree_obj.Branch("dielecR", dielecR, "dieleR/D")
 
+tree_obj.Branch("met", Met, "met/D")
 tree_obj.Branch("WMass", WMass, "WMass/D")
 tree_obj.Branch("TopMass", SMTopMass, "TopMass/D")
 tree_obj.Branch("nonTopMass", nonSMTopMass, "nonTopMass/D")
@@ -264,6 +266,7 @@ branchElectron.At(index[0]).Phi, 0.005)
       mW = W_vec.Mt()      
       mTop = top_vec.Mt()
 
+      Met[0] = met
       WMass[0] = mW
       SMTopMass[0] = mTop
   
