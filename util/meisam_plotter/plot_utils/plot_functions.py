@@ -6,7 +6,8 @@
 # - shape-comparison of variables in MC
 # - signal vs bkg plots
 # - diagnostic plots like pile-up dependence
-# author: chiara rizzi chiara.rizzi@cern.ch
+# authors: chiara rizzi chiara.rizzi@cern.ch
+#          meisam ghasemi mghasemi@ipm.ir
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 import pickle, sys
@@ -22,7 +23,7 @@ import types
 ROOT.gStyle.SetOptStat(0)
 ROOT.gStyle.SetOptTitle(0)
 
-
+# Make legend 
 def make_leg(n, labels, x1=0.7, y1=0.6, x2=0.876, y2=0.87, hdata=None, textSize=0):
     leg=ROOT.TLegend(x1,y1,x2,y2)
     leg.SetFillStyle(0)
@@ -54,11 +55,13 @@ def make_leg(n, labels, x1=0.7, y1=0.6, x2=0.876, y2=0.87, hdata=None, textSize=
 
     return leg
 
+# Get sample color for backgrounds and signals
 def getSampleColor(sample):
     if "_NoSys" in sample:
         sample = sample.replace("_NoSys","")
     if "_nominal" in sample:
         sample = sample.replace("_nominal","")
+    # sample colors for SUSY analyses
     if sample == "ttbar_bb":         return ROOT.kBlue-6
     if sample == "ttbar_cc":         return ROOT.kBlue-10
     if sample == "ttbar_light":         return ROOT.kWhite
@@ -89,6 +92,17 @@ def getSampleColor(sample):
     if sample == "ttbarcc": return ROOT.kViolet-3
     if sample == "ttbarbb": return ROOT.kPink+1
 
+    # sample colors for TopFC analysis
+    if sample == "ttbarW": return ROOT.kOrange-3
+    if sample == "ttbarZ": return ROOT.kYellow-4
+    if sample == "tttt": return ROOT.kGreen-9
+    if sample == "tZ": return ROOT.kGreen+2
+    if sample == "WZ": return ROOT.kRed+1
+    if sample == "ZZ": return ROOT.kOrange-4
+    
+    if sample == "signalcharm": return ROOT.kPink+1
+    if sample == "signalup": return ROOT.kAzure+1
+    
     #colors = [609, 856, 410, 801, 629, 879, 602, 921, 622]
 
     if "300_hh4b" in sample: return ROOT.kPink+1
@@ -143,40 +157,7 @@ def getSampleColor(sample):
         print "cannot find color for sample (",sample,")"
     return 1
 
-
-    """
-    if "300_ZZ4b" in sample: return ROOT.kPink+3
-    if "500_ZZ4b" in sample: return ROOT.kGreen+3
-
-    if "800_hh4b" in sample: return ROOT.kRed+1
-    if "800_Zh4b" in sample: return 856
-    if "800_ZZ4b" in sample: return 410
-
-
-    if "hh_300" in sample: return 609
-    if "hh_200" in sample: return 856
-    if "hh_500" in sample: return 410
-    if "hh_800" in sample: return ROOT.kRed+1
-
-    if "Zh_300" in sample: return 609
-    if "Zh_200" in sample: return 856
-    if "Zh_500" in sample: return 410
-    if "Zh_800" in sample: return ROOT.kRed+1
-            
-    if "Gtt" in sample: return ROOT.kPink
-    if "Gbb" in sample: return ROOT.kPink
-
-    if "1900_1545" in sample: return ROOT.kOrange+3
-    if "1900_1600" in sample: return ROOT.kYellow
-    if "1900_1800" in sample: return ROOT.kGreen+5
-    if "1900_1400" in sample: return ROOT.kViolet+6
-    if "1900_1200" in sample: return ROOT.kRed
-    if "1900_1" in sample: return ROOT.kMagenta
-    if "1900_600" in sample: return ROOT.kOrange
-    if "1700_600" in sample: return ROOT.kTeal
-    if "2100_400" in sample: return ROOT.kAzure
-    """
-
+   
 def skip_sel(key, region):
     if "weights" in key:
         return True
@@ -185,10 +166,12 @@ def skip_sel(key, region):
     if not region in key: return True
     else: return False
 
-def data_mc (var, selection, myweights, backgrounds, name_infile, labels, title_x_axis, lumi, logY=False, write=[], outfolder="./plots/", name_can="", do_scale=False, add_signal = False, signals=[], do_blind=False, do_fraction=True, slices=["1"], do_overflow=True, isR20=False):
-    is_2D = False
+def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, labels, title_x_axis, lumi, logY=False, write=[], outfolder="./plots/", name_can="", do_overflow=True, is_2D=False):
+    is_2D = False    
     if len(var)>4:
         is_2D = True
+
+    # Get all the necessary files
     infile = dict()
     for b in backgrounds:
         infile[b]= ROOT.TFile.Open(name_infile[b],"READ")
@@ -196,80 +179,45 @@ def data_mc (var, selection, myweights, backgrounds, name_infile, labels, title_
     for m in signals:
         infile[m]=ROOT.TFile.Open(name_infile[m],"READ")
 
-    if not do_blind:
-        if isR20:
-            t_data = ROOT.TChain("Data")
-        else:
-            t_data = ROOT.TChain("data")
-        #t_data.Add(name_infile["data"])
-        print "is data list?"
-        print isinstance(name_infile["Data"], types.ListType)
-        if isinstance(name_infile["Data"], types.ListType):
-            for f_data in name_infile["Data"]:
-                t_data.Add(f_data)
-        else:
-            t_data.Add(name_infile["Data"])
-#print "files in data",t_data.GetFileNumber()
-    #print "entries in data", t_data.GetEntries()
-    #t_data = infile_data.Get("data")
-
-    if not is_2D and add_signal:
-        for m in signals:
-            t_signal = infile[m].Get(m)
-            name_h_sig = name_can+"_signal_"+m
-            hsignal = ROOT.TH1D(name_h_sig, name_can+"_signal_"+m, var[1], var[2], var[3])
-            hsignal.GetXaxis().SetTitle(title_x_axis)
-            hsignal.Sumw2()
-            string_draw=var[0]+">>"+name_can+"_signal_"+m
+    # First draw signal histograms    
+    h_signals = []
+    for m in signals:
+        t_signal = infile[m].Get(m)
+        name_h_sig = name_can+m
+        hsignal = ROOT.TH1D(name_h_sig, name_h_sig, var[1], var[2], var[3])
+        hsignal.GetXaxis().SetTitle(title_x_axis)
+        hsignal.Sumw2()
+        string_draw=var[0]+">>"+name_can+m
         #print string_draw
-            sel_signal="("+sel+")*("+signal_sel+")"
-            t_signal.Draw(string_draw,sel_signal,"goff")
+        sel_signal = ""
+        #sel_signal="("+sel+")*("+signal_sel+")"
+        t_signal.Draw(string_draw,sel_signal,"goff")
             
-            if do_overflow:
-                hsignal_of = ROOT.TH1D(name_h_sig+"_of", name_h_sig+"_of", var[1], var[2], var[3])
-                hsignal_of.Sumw2()
-                string_draw_of = str(var[3]) + " - (0.5*("+ str(var[3])+"-"+str(var[2])+")/"+str(var[1]) +") >>"+name_h_sig+"_of"
-                t_signal.Draw(string_draw_of, sel_signal+"*("+ var[0]+">"+str(var[3])  +")")
-                hsignal.Add(hsignal_of)                    
+        if not do_overflow:
+           hsignal_of = ROOT.TH1D(name_h_sig+"_of", name_h_sig+"_of", var[1], var[2], var[3])
+           hsignal_of.Sumw2()
+           string_draw_of = str(var[3]) + " - (0.5*("+ str(var[3])+"-"+str(var[2])+")/"+str(var[1]) +") >>"+name_h_sig+"_of"
+           #12 - (0.5*(12-0)/12) >>jetNo_signal_charm_of
+           #print (string_draw_of)
+           t_signal.Draw(string_draw_of, sel_signal+"*("+ var[0]+">"+str(var[3])  +")")
+           hsignal.Add(hsignal_of)                    
 
-            hsignal.Scale(lumi)
-            h_signals.append(hsignal)
+        if do_overflow:
+           hsignal_of = ROOT.TH1D(name_h_sig+"_of", name_h_sig+"_of", var[1], var[2], var[3])
+           hsignal_of.Sumw2()
+	   string_draw_of = var[0]+">>"+name_h_sig+"_of"
+           t_signal.Draw(string_draw_of,sel_signal,"goff")
+           hsignal_of.GetXaxis().SetRangeUser(var[2], var[3]+1)
 
-    if is_2D:
-        hdata=ROOT.TH2D(name_can+"_data", name_can+"_data", var[1], var[2], var[3],var[5], var[6], var[7])    
-    else:
-        hdata=ROOT.TH1D(name_can+"_data", name_can+"_data", var[1], var[2], var[3])
-    hdata.Sumw2()
+        hsignal_of.Scale(lumi)
+        h_signals.append(hsignal_of)
 
-    sel_slice=selection
-
-    if not do_blind:
-        if is_2D:
-            print name_can+"_data", name_can+"_data", var[1], var[2], var[3],var[5], var[6], var[7]
-            string_draw=var[4]+":"+var[0]+" >>"+name_can+"_data"
-        else:
-            string_draw=var[0]+">>"+name_can+"_data"
-            hdata.GetXaxis().SetTitle(title_x_axis)
-        print string_draw
-
-        t_data.Draw(string_draw,sel_slice,"goff")            
-        if not is_2D and do_overflow:
-            hdata_of=ROOT.TH1D(name_can+"_data_of", name_can+"_data_of", var[1], var[2], var[3])
-            hdata_of.Sumw2()
-            string_draw_of = str(var[3]) + " - (0.5*("+ str(var[3])+"-"+str(var[2])+")/"+str(var[1]) +") >>"+name_can+"_data_of"
-            t_data.Draw(string_draw_of,"("+sel_slice+") && "+ var[0]+">"+str(var[3]),"goff")
-            hdata.Add(hdata_of)
-
-        print "Data",hdata.Integral()
 
     sel = "("+selection+")*"+myweights
     print sel
-            #sel=selection
     n=[]
     n_allbkg=[]
     colors=[]
-    if len(slices)>1:
-        colors = [410, 856, 607, 801, 629, 879, 602, 921, 622]
     for b in backgrounds:
         """
         if do_scale:
@@ -280,17 +228,13 @@ def data_mc (var, selection, myweights, backgrounds, name_infile, labels, title_
         SF=postfit/prefit
         """
         n_thisbkg=[]
-
-        if not len(slices)>1:
-            color=getSampleColor(b)                #print b,color
-            colors.append(color)
+        color=getSampleColor(b)
+        colors.append(color)
 
         t = infile[b].Get(b)
         if (not t):
-            t = infile[b].Get(b+"_nominal")
-            if (not t):
-                print b,"not found"
-                continue
+           print b,"not found"
+           continue
         sel_slice=sel
         if is_2D:
             htmp=ROOT.TH2D(name_can+"_"+b, name_can+"_"+b, var[1], var[2], var[3], var[5], var[6], var[7])
@@ -301,31 +245,39 @@ def data_mc (var, selection, myweights, backgrounds, name_infile, labels, title_
             htmp.Scale(lumi)
             n_thisbkg.append(htmp.Clone())
             htmp.Clear()
-        else:            
-            i=0
-            for s in slices:
-                htmp_name = name_can+"_"+str(i)+"_"+b
-                htmp=ROOT.TH1D(htmp_name, htmp_name, var[1], var[2], var[3])
-                htmp.GetXaxis().SetTitle(title_x_axis)
-                htmp.Sumw2()
-                sel_slice=sel+"*("+s+")"
-                string_draw=var[0]+">>"+name_can+"_"+str(i)+"_"+b
-            #print string_draw
-                t.Draw(string_draw,sel_slice,"goff")
+        else:                        
+            htmp_name = name_can+"_"+b
+            htmp=ROOT.TH1D(htmp_name, htmp_name, var[1], var[2], var[3])
+            htmp.GetXaxis().SetTitle(title_x_axis)
+            htmp.Sumw2()
+            string_draw=var[0]+">>"+name_can+"_"+b
+            print string_draw
+            t.Draw(string_draw,sel,"goff")
 
-                if do_overflow:
-                    htmp_of = ROOT.TH1D(htmp_name+"_of", htmp_name+"_of", var[1], var[2], var[3])
-                    htmp_of.Sumw2()
-                    string_draw_of = str(var[3]) + " - (0.5*("+ str(var[3])+"-"+str(var[2])+")/"+str(var[1]) +") >>"+name_can+"_"+str(i)+"_"+b+"_of"
-                    t.Draw(string_draw_of, sel_slice+"*("+ var[0]+">"+str(var[3])  +")")
-                    htmp.Add(htmp_of)                    
+            if not do_overflow:
+               htmp_of = ROOT.TH1D(htmp_name+"_of", htmp_name+"_of", var[1], var[2], var[3])
+               htmp_of.Sumw2()
+               string_draw_of = str(var[3]) + " - (0.5*("+ str(var[3])+"-"+str(var[2])+")/"+str(var[1]) +") >>"+name_can+"_"+str(i)+"_"+b+"_of"
+               t.Draw(string_draw_of, sel_slice+"*("+ var[0]+">"+str(var[3])  +")")
+               htmp.Add(htmp_of)                    
 
-                htmp.Scale(lumi)
-                n_thisbkg.append(htmp.Clone())
-                htmp.Clear()
-                i+=1
+            if do_overflow:
+               htmp_of = ROOT.TH1D(htmp_name+"_of", htmp_name+"_of", var[1], var[2], var[3])
+               htmp_of.Sumw2()
+               string_draw_of = var[0]+">>"+htmp_name+"_of"
+               print (string_draw_of)
+               t_signal.Draw(string_draw_of,sel,"goff")
+               htmp_of.GetXaxis().SetRangeUser(var[2], var[3]+1)	       
+
+            htmp_of.Scale(lumi)
+            n_thisbkg.append(htmp_of.Clone())
+            htmp.Clear()
+            htmp_of.Clear()
 
         n_allbkg.append(n_thisbkg)
+
+    print (n_allbkg)
+    quit()
 
 
     if len(slices)>1: # look at the composizion of one background
