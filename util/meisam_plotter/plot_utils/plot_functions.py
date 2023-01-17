@@ -214,7 +214,7 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
 
 
     sel = "("+selection+")*"+myweights
-    print sel
+    #print sel
     n=[]
     n_allbkg=[]
     colors=[]
@@ -245,16 +245,19 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
             htmp.Scale(lumi)
             n_thisbkg.append(htmp.Clone())
             htmp.Clear()
-        else:                        
+        else:           
+            
             htmp_name = name_can+"_"+b
             htmp=ROOT.TH1D(htmp_name, htmp_name, var[1], var[2], var[3])
             htmp.GetXaxis().SetTitle(title_x_axis)
             htmp.Sumw2()
             string_draw=var[0]+">>"+name_can+"_"+b
-            print string_draw
+            #print string_draw
             t.Draw(string_draw,sel,"goff")
+            
 
             if not do_overflow:
+               htmp_name = name_can+"_"+b
                htmp_of = ROOT.TH1D(htmp_name+"_of", htmp_name+"_of", var[1], var[2], var[3])
                htmp_of.Sumw2()
                string_draw_of = str(var[3]) + " - (0.5*("+ str(var[3])+"-"+str(var[2])+")/"+str(var[1]) +") >>"+name_can+"_"+str(i)+"_"+b+"_of"
@@ -262,41 +265,35 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
                htmp.Add(htmp_of)                    
 
             if do_overflow:
+               htmp_name = name_can+"_"+b
                htmp_of = ROOT.TH1D(htmp_name+"_of", htmp_name+"_of", var[1], var[2], var[3])
                htmp_of.Sumw2()
                string_draw_of = var[0]+">>"+htmp_name+"_of"
-               print (string_draw_of)
+               #print (string_draw_of)
                t_signal.Draw(string_draw_of,sel,"goff")
                htmp_of.GetXaxis().SetRangeUser(var[2], var[3]+1)	       
 
             htmp_of.Scale(lumi)
             n_thisbkg.append(htmp_of.Clone())
-            htmp.Clear()
-            htmp_of.Clear()
+            #htmp.Clear()
+            #htmp_of.Clear()
+            #print (b)
 
         n_allbkg.append(n_thisbkg)
 
-    print (n_allbkg)
-    quit()
+    #print(n_thisbkg)
+    #print (n_allbkg)
 
+    # look at bkg composition
+    for n_allbkg_i in n_allbkg:
+        n.append(n_allbkg_i[0])
 
-    if len(slices)>1: # look at the composizion of one background
-        isel=0
-        for s in slices: # loop sulle slice
-            n_sel=ROOT.TH1D(name_can, name_can, var[1], var[2], var[3])
-            for n_allbkg_i in n_allbkg:
-                n_sel.Add(n_allbkg_i[isel])
-            isel+=1
-            n.append(n_sel)
-    else: # look at bkg composition
-        for n_allbkg_i in n_allbkg:
-            n.append(n_allbkg_i[0])
-
+    #print(n)
     histo_max=0
     i=0
     stack = ROOT.THStack("stack","stack")
     for h in n:
-                #print h.Integral()
+        #print h.Integral()
         h.SetLineColor(colors[i])
         h.SetFillColor(colors[i])
         h.SetLineColor(1)
@@ -311,6 +308,7 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         i+=1
 
     c = ROOT.TCanvas("can"+name_can,"can"+name_can,600,600)
+    do_fraction = True
     if is_2D:
         pad2 = ROOT.TPad("pad2", "pad2",0.0,0.0,1.0,1.0,22)
     elif not do_fraction:
@@ -388,16 +386,13 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         pad3.RedrawAxis("g")
         pad3.Update()
 
-
-    if do_blind:
-        hdata = htot.Clone("h_tot_pseudo_data")
-
     if not is_2D:
         pad1.cd()
         if logY:
             histo_max *= 150
             pad1.SetLogy()
-
+        
+        hdata = h_signals[0].Clone("hdata")
         hdata.SetMarkerStyle(20)
         histo_max=max(histo_max,hdata.GetMaximum())
 
@@ -500,17 +495,12 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
 
 
     name_can = "data_mc_"+name_can
-    if add_signal:
-        name_can=name_can+"_sig"
-    if do_scale:
-        name_pdf=name_can+"_scale.pdf"
-    else:
-        name_pdf=name_can
+    name_pdf=name_can
     c.SaveAs(outfolder+name_pdf+".pdf")
     c.SaveAs(outfolder+name_pdf+".png")
     print outfolder+name_pdf
-    c.Clear()
-    stack.Clear()
+    #c.Clear()
+    #stack.Clear()
 
 def data_mc_all (var, mypickle_sel, backgrounds, name_infile, labels, title_x_axis, lumi, region="_", logY=False, write=[], outfolder="./", name_can="", do_scale=False, add_signal = False):
     print "ciao"
