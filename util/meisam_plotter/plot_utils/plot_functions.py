@@ -1,11 +1,11 @@
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # macro to produce plots starting form HF input files and pickle file with the dictionary for the selections
 # to be used to produce:
-# - pie charts for composition studies
 # - data/MC plots pre-fit
 # - shape-comparison of variables in MC
 # - signal vs bkg plots
 # - diagnostic plots like pile-up dependence
+# - pie charts for composition studies
 # authors: chiara rizzi chiara.rizzi@cern.ch
 #          meisam ghasemi mghasemi@ipm.ir
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -35,6 +35,41 @@ def make_leg(n, labels, x1=0.7, y1=0.6, x2=0.876, y2=0.87, hdata=None, textSize=
     i=len(n)
     if not hdata is None:
         leg.AddEntry(hdata, "Data")
+    for h in reversed(n):
+        i-=1
+        if "hh" in labels[i]:
+            continue
+        if h.GetFillColor() or "ulti" in labels[i] :
+            leg.AddEntry(h,labels[i],"f")
+        else:
+            leg.AddEntry(h,labels[i].replace("GGM_","").replace("_"," "),"l")
+    i=len(n)
+    for h in reversed(n):
+        i-=1
+        if not "hh" in labels[i]:
+            continue
+        if h.GetFillColor() :
+            leg.AddEntry(h,labels[i],"f")
+        else:
+            leg.AddEntry(h,labels[i].replace("GGM_","").replace("_"," "),"l")
+
+    return leg
+
+    
+
+def new_make_leg(n, labels, x1=0.7, y1=0.6, x2=0.876, y2=0.87, hsig_charm=None, hsig_up=None, textSize=0):
+    leg=ROOT.TLegend(x1,y1,x2,y2)
+    leg.SetFillStyle(0)
+    leg.SetLineColor(0)
+    leg.SetLineWidth(0)
+    if textSize>0:
+        leg.SetTextFont(43)
+        leg.SetTextSize(textSize)
+    i=len(n)
+    if not hsig_charm is None:
+        leg.AddEntry(hsig_charm, "tcll")
+    if not hsig_up is None:
+        leg.AddEntry(hsig_up, "tull")        
     for h in reversed(n):
         i-=1
         if "hh" in labels[i]:
@@ -205,9 +240,9 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         if do_overflow:
            hsignal_of = ROOT.TH1D(name_h_sig+"_of", name_h_sig+"_of", var[1], var[2], var[3])
            hsignal_of.Sumw2()
-	   string_draw_of = var[0]+">>"+name_h_sig+"_of"
+           string_draw_of = var[0]+">>"+name_h_sig+"_of"
            t_signal.Draw(string_draw_of,sel_signal,"goff")
-           hsignal_of.GetXaxis().SetRangeUser(var[2], var[3]+1)
+           #hsignal_of.GetXaxis().SetRangeUser(var[2], var[3])
 
         hsignal_of.Scale(lumi)
         h_signals.append(hsignal_of)
@@ -218,6 +253,7 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
     n=[]
     n_allbkg=[]
     colors=[]
+    test_dict = {}
     for b in backgrounds:
         """
         if do_scale:
@@ -231,11 +267,14 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         color=getSampleColor(b)
         colors.append(color)
 
+        #print (infile[b].Get(b))
         t = infile[b].Get(b)
+        #t.Show(0)
         if (not t):
            print b,"not found"
            continue
         sel_slice=sel
+
         if is_2D:
             htmp=ROOT.TH2D(name_can+"_"+b, name_can+"_"+b, var[1], var[2], var[3], var[5], var[6], var[7])
             string_draw=var[4]+":"+var[0]+" >>"+name_can+"_"+b
@@ -270,13 +309,18 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
                htmp_of.Sumw2()
                string_draw_of = var[0]+">>"+htmp_name+"_of"
                #print (string_draw_of)
-               t_signal.Draw(string_draw_of,sel,"goff")
-               htmp_of.GetXaxis().SetRangeUser(var[2], var[3]+1)	       
+               t.Draw(string_draw_of,sel,"goff")
+               #htmp_of.GetXaxis().SetRangeUser(var[2], var[3]+1)	       
 
             htmp_of.Scale(lumi)
+            
             n_thisbkg.append(htmp_of.Clone())
+            #print(htmp_of.GetName(), ":", htmp_of.GetBinContent(10))
+            test_dict[b] = htmp_of.Clone()
             #htmp.Clear()
             #htmp_of.Clear()
+            htmp_of.Delete()
+            htmp.Delete()
             #print (b)
 
         n_allbkg.append(n_thisbkg)
@@ -288,7 +332,9 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
     for n_allbkg_i in n_allbkg:
         n.append(n_allbkg_i[0])
 
+    #for h in n: print(h.GetName(), ":", h.GetBinContent(10))
     #print(n)
+    #print(test_dict)
     histo_max=0
     i=0
     stack = ROOT.THStack("stack","stack")
@@ -318,9 +364,12 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         pad1.SetFillColor(0)
         pad1.Draw()
     else:
+        # pad1 for main distribution plots
         pad1 = ROOT.TPad("pad1", "pad1",0.0,0.47,1.0,1.0,21)
-        pad3 = ROOT.TPad("pad3", "pad3",0.0,0.24,1.0,0.50,22)
+        # pad2 for ratio plots
         pad2 = ROOT.TPad("pad2", "pad2",0.0,0.0,1.0,0.26,22)
+        # pad3 for composition plots
+        pad3 = ROOT.TPad("pad3", "pad3",0.0,0.24,1.0,0.50,22)
         pad2.SetGridy()
         pad1.SetFillColor(0)
         pad3.SetGridy()
@@ -346,9 +395,11 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
     if do_fraction:
         n_frac=[]
         for h in n:
+            #print(h.GetName())
             n_frac.append(h.Clone())
         stack_fraction = ROOT.THStack("stack_fraction","stack_fraction")
-        for i in range(0,htot.GetNbinsX()+2):
+        #print (n_frac)
+        for i in range(0,htot.GetNbinsX()):
             for h in n_frac:
                 if htot.GetBinContent(i)>0:
                     frac = 100*h.GetBinContent(i)/htot.GetBinContent(i)
@@ -364,19 +415,21 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         #pad3.SetBottomMargin(0.01)
 
         hone = htot.Clone("hone")
-        for ibin in range(1, hone.GetNbinsX()+1):
+        for ibin in range(0, hone.GetNbinsX()+2):
             hone.SetBinContent(ibin, 100)
-        hone.SetMaximum(100/2.)
+        hone.SetMaximum(100.)
+        hone.GetYaxis().SetRangeUser(0,100)
         hone.GetYaxis().SetTitle("Composition [%]")
 
         hone.SetFillStyle(0)
         hone.GetXaxis().SetTitleSize(0)
         hone.GetXaxis().SetLabelSize(0)
         hone.GetYaxis().SetTitleFont(43)
-        hone.GetYaxis().SetTitleSize(19)
+        hone.GetYaxis().SetTitleSize(15)
         hone.GetYaxis().SetLabelFont(43)
         hone.GetYaxis().SetLabelSize(15)
-        hone.GetYaxis().SetTitleOffset(1.3)        
+        hone.GetYaxis().SetTitleOffset(1.5)        
+        hone.GetYaxis().CenterTitle()
         hone.Draw('histo')
 
         stack_fraction.Draw("histo same")        
@@ -392,12 +445,20 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
             histo_max *= 150
             pad1.SetLogy()
         
+        hsig_charm = h_signals[0].Clone("hsig_charm")
+        hsig_up = h_signals[1].Clone("hsig_up")
+        hsig_charm.SetLineWidth(2)
+        hsig_charm.SetLineStyle(7)
+        hsig_charm.SetLineColor(getSampleColor("signalcharm"))
+        
+        hsig_up.SetLineWidth(2)
+        hsig_up.SetLineStyle(7)
+        hsig_up.SetLineColor(getSampleColor("signalup"))
         hdata = h_signals[0].Clone("hdata")
-        hdata.SetMarkerStyle(20)
-        histo_max=max(histo_max,hdata.GetMaximum())
+        #hdata.SetMarkerStyle(20)
+        histo_max=max(histo_max,hsig_charm.GetMaximum(), hsig_up.GetMaximum())
 
         stack.Draw("hist")
-
         stack.GetYaxis().SetTitleFont(43)
         stack.GetYaxis().SetTitle("Events")
         stack.GetYaxis().SetTitleSize(19)
@@ -420,11 +481,14 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         stack.SetMinimum(0.1)
 
         stack.Draw("hist")
-        hdata.Draw("E0 same")
+        #hdata.Draw("E0 same")
+        hsig_charm.Draw("hist same")
+        hsig_up.Draw("hist same")
 
         pad1.RedrawAxis()
 
-        leg = make_leg(n, labels, hdata=hdata)
+        #leg = make_leg(n, labels, hdata=hdata)
+        leg = new_make_leg(n, labels, hsig_charm=hsig_charm, hsig_up=hsig_up)
         leg.Draw()
 
         text =  ROOT.TLatex()
@@ -444,6 +508,10 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
     pad2.cd()
     pad2.SetTicky()
     hratio = hdata.Clone("h_ratio")
+    hratio = hsig_charm.Clone("h_ratio")
+    hratio.SetLineStyle(1)
+    hratio1 = hsig_up.Clone("h_ratio1")
+    hratio1.SetLineStyle(1)
 
     hratio.GetYaxis().SetTitleFont(43)
     hratio.GetYaxis().SetTitleSize(19)
@@ -451,12 +519,16 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
     hratio.GetYaxis().SetLabelFont(43)
     hratio.GetYaxis().SetLabelSize(15)
     hratio.GetYaxis().SetTitleOffset(1.3)        
-    hratio.GetYaxis().SetTitle("Data/MC")
+    hratio.GetYaxis().SetTitle("Sig/Bkg")
+    hratio.GetYaxis().CenterTitle()
     hratio.Divide(htot)
+    hratio1.Divide(htot)
     hratio.SetLineColor(1)
-    hratio.SetMinimum(0)
-    hratio.SetMaximum(2)
-    hratio.Draw()
+    #hratio.SetMinimum(0)
+    #hratio.SetMaximum(2)
+    hratio.Draw("hist")
+    hratio1.Draw("hist same")
+
 
     if is_2D:
         hratio.GetXaxis().SetTitle(var[0])
@@ -488,8 +560,8 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         hline=ROOT.TH1D("hline", "hline", 1, var[2], var[3])
         hline.SetLineColor(ROOT.kRed)
         hline.SetBinContent(1,1)
-        hline.GetYaxis().SetTitle("Data/MC")
-        hline.Draw("same")
+        #hline.GetYaxis().SetTitle("Data/MC")
+        #hline.Draw("same")
         #pad2.SetTopMargin(0.01)
         #pad2.SetBottomMargin(0.3)
 
@@ -497,8 +569,8 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
     name_can = "data_mc_"+name_can
     name_pdf=name_can
     c.SaveAs(outfolder+name_pdf+".pdf")
-    c.SaveAs(outfolder+name_pdf+".png")
-    print outfolder+name_pdf
+    #c.SaveAs(outfolder+name_pdf+".png")
+    #print outfolder+name_pdf
     #c.Clear()
     #stack.Clear()
 

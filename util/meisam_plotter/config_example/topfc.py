@@ -33,6 +33,8 @@ write=["#sqrt 13 TeV, L = 3000 fb^{-1}"]
 # Here I organize the vatiables that I want to plot in a list that I can loop on. This is not strictly necessary but can be useful
 # I've chosen to have a list of dictionaries, that put together different arguments of data_mc associated to the same variable. Also this is not mandatory
 var_def=[]
+var_def += [{'def':("jetPT",20,0,1000),'leg':"jet p_{T}"}]
+'''
 var_def += [{'def':("jetNo",12,0,12),'leg':"Number of jets"}]
 var_def += [{'def':("jetPTLeading",50, 0,500),'leg':"Leading jet p_{T}"}]
 var_def += [{'def':("jetPT",50,0,500),'leg':"jet p_{T}"}]
@@ -54,6 +56,7 @@ var_def += [{'def':("WMass",20, 50, 150),'leg':"M_{W}"}]
 var_def += [{'def':("TopMass",30, 0, 300),'leg':"SM M_{top}"}]
 var_def += [{'def':("nonTopMass",30, 0, 300),'leg':"non-SM M_{SM}"}]
 var_def += [{'def':("newnonTopMass",30, 0, 300),'leg':"new non-SM M_{top}"}]
+'''
 
 # loop on all the variables that you want to plot
 for var in var_def:
