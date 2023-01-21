@@ -189,7 +189,7 @@ def getSampleColor(sample):
     if "_800" in sample: return 921
 
     else:
-        print "cannot find color for sample (",sample,")"
+        print ("cannot find color for sample (",sample,")")
     return 1
 
    
@@ -245,9 +245,10 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
            #hsignal_of.GetXaxis().SetRangeUser(var[2], var[3])
 
         hsignal_of.Scale(lumi)
-        h_signals.append(hsignal_of)
+        #hsignal_of.SetMinimum(10000)
+        h_signals.append(hsignal_of)        
 
-
+    # Second darw background histograms
     sel = "("+selection+")*"+myweights
     #print sel
     n=[]
@@ -271,7 +272,7 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         t = infile[b].Get(b)
         #t.Show(0)
         if (not t):
-           print b,"not found"
+           print (b,"not found")
            continue
         sel_slice=sel
 
@@ -313,6 +314,11 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
                #htmp_of.GetXaxis().SetRangeUser(var[2], var[3]+1)	       
 
             htmp_of.Scale(lumi)
+            #print(b)
+            #for bin in range(htmp_of.GetNbinsX()):
+                #print(htmp_of.GetBinContent(bin))
+            #print ("Total No:", int(htmp_of.Integral()))
+            #print("------------------------")
             
             n_thisbkg.append(htmp_of.Clone())
             #print(htmp_of.GetName(), ":", htmp_of.GetBinContent(10))
@@ -398,6 +404,7 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
             #print(h.GetName())
             n_frac.append(h.Clone())
         stack_fraction = ROOT.THStack("stack_fraction","stack_fraction")
+        stack_fraction.SetMinimum(10000)
         #print (n_frac)
         for i in range(0,htot.GetNbinsX()):
             for h in n_frac:
@@ -450,7 +457,7 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         hsig_charm.SetLineWidth(2)
         hsig_charm.SetLineStyle(7)
         hsig_charm.SetLineColor(getSampleColor("signalcharm"))
-        
+
         hsig_up.SetLineWidth(2)
         hsig_up.SetLineStyle(7)
         hsig_up.SetLineColor(getSampleColor("signalup"))
@@ -478,10 +485,13 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         pad1.SetTicky()
 
         stack.SetMaximum(1.4 * histo_max)
-        stack.SetMinimum(0.1)
+        #stack.SetMinimum(0.1)
+        stack.SetMinimum(1000)
 
         stack.Draw("hist")
         #hdata.Draw("E0 same")
+        #hsig_charm.SetMinimum(10)
+        #hsig_up.SetMinimum(10)
         hsig_charm.Draw("hist same")
         hsig_up.Draw("hist same")
 
@@ -510,8 +520,10 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
     hratio = hdata.Clone("h_ratio")
     hratio = hsig_charm.Clone("h_ratio")
     hratio.SetLineStyle(1)
+    hratio.SetLineColor(getSampleColor("signalcharm"))
     hratio1 = hsig_up.Clone("h_ratio1")
     hratio1.SetLineStyle(1)
+    hratio1.SetLineColor(getSampleColor("signalup"))
 
     hratio.GetYaxis().SetTitleFont(43)
     hratio.GetYaxis().SetTitleSize(19)
@@ -522,8 +534,7 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
     hratio.GetYaxis().SetTitle("Sig/Bkg")
     hratio.GetYaxis().CenterTitle()
     hratio.Divide(htot)
-    hratio1.Divide(htot)
-    hratio.SetLineColor(1)
+    hratio1.Divide(htot)    
     #hratio.SetMinimum(0)
     #hratio.SetMaximum(2)
     hratio.Draw("hist")
@@ -566,7 +577,7 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         #pad2.SetBottomMargin(0.3)
 
 
-    name_can = "data_mc_"+name_can
+    #name_can = "data_mc_"+name_can
     name_pdf=name_can
     c.SaveAs(outfolder+name_pdf+".pdf")
     #c.SaveAs(outfolder+name_pdf+".png")
