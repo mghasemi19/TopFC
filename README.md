@@ -15,6 +15,7 @@ The main backgrounds in the SM for this analysis are:
 - [to-do list](#to-do-list)
 - [Feynman Diagrams](#feynman-diagrams)
 - [Signal and background ntuple generation](#signal-and-background-ntuple-generation)
+- [MC distribution plots](#mc-distribution-plots)
 - [BDT implementation](#bdt-implementation)
 - [Event selection](#event-selection)
 
@@ -32,5 +33,6 @@ The main backgrounds in the SM for this analysis are:
 
 ## Feynman Diagrams
 ## Signal and background ntuple generation
+## MC distribution plots
 ## BDT implementation
 ## Event selection
