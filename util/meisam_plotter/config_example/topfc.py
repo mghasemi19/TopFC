@@ -60,9 +60,11 @@ var_def += [{'def':("dielecCOS",20, -1.5, 1.5),'leg':"di-electron Cos"}]
 var_def += [{'def':("dielecMass",20, 0.0, 1000.0),'leg':"di-electron Mass"}]
 var_def += [{'def':("dielecR",16, 0.0, 8.0),'leg':"di-electron R"}]
 
-#var_def += [{'def':("met",20, 0, 1000),'leg':"Missing E_{T}"}]
+var_def += [{'def':("met",20, 0, 1000),'leg':"Missing E_{T}"}]
 var_def += [{'def':("WMass",20, 50, 1000),'leg':"M_{W}"}]
 var_def += [{'def':("TopMass",20, 0, 1000),'leg':"SM M_{top}"}]
+var_def += [{'def':("newWMass",20, 50, 1000),'leg':"new-algorithm M_{W}"}]
+var_def += [{'def':("newTopMass",20, 0, 1000),'leg':"new-algorithm SM M_{top}"}]
 var_def += [{'def':("nonTopMass",20, 0, 1000),'leg':"#eta-algorithm non-SM M_{top}"}]
 var_def += [{'def':("newnonTopMass",20, 0, 1000),'leg':"new-algorithm non-SM M_{top}"}]
 
