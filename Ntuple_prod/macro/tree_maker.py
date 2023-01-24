@@ -93,6 +93,7 @@ newWMass = array('d', [0.])
 newSMTopMass = array('d', [0.])
 nonSMTopMass = array('d', [0.])
 newnonSMTopMass = array('d', [0.])
+testnonSMTopMass = array('d', [0.])
 
 # Weights 
 weight = array('d', [0.])
@@ -125,6 +126,7 @@ tree_obj.Branch("newWMass", newWMass, "newWMass/D")
 tree_obj.Branch("newTopMass", newSMTopMass, "newTopMass/D")
 tree_obj.Branch("nonTopMass", nonSMTopMass, "nonTopMass/D")
 tree_obj.Branch("newnonTopMass", newnonSMTopMass, "newnonTopMass/D")
+tree_obj.Branch("testnonTopMass", testnonSMTopMass, "testnonTopMass/D")
 
 tree_obj.Branch("weight", weight, "weight/D")
 
@@ -336,6 +338,66 @@ branchElectron.At(index[0]).Phi, 0.005)
 
   #print(newindex)
   newnonSMTopMass[0] = noSMmTop_new
+
+
+  # For test
+  newindex = {}  # new index for OS selection
+  leadjet_vec = ROOT.TLorentzVector()
+  leadjet_vec.SetPtEtaPhiM(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, branchJet.At(leading_jet_index).Mass)
+  min_deltamass = 9999
+
+  if (ncharge==+1):
+      newindex[-1] = index[-1]
+      elec_first_vec = ROOT.TLorentzVector()
+      elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[-1]).PT**2 + 0.005**2)
+      #elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,branchElectron.At(index[-1]).Phi, elec_first_ET)
+      elec_first_vec.SetPtEtaPhiM(branchElectron.At(index[-1]).PT, branchElectron.At(index[-1]).Eta,branchElectron.At(index[-1]).Phi, 0.005)
+      for i in index.keys():
+          if (i != -1):
+             elec_second_vec = ROOT.TLorentzVector()
+             elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[i]).PT**2 + 0.005**2)
+             #elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
+             elec_second_vec.SetPtEtaPhiM(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, 0.005)
+             for i in range(0, branchJet.GetEntries()):
+		 if (jet.BTag == 0):
+		    jet_vec = ROOT.TLorentzVector()
+		    jet_vec.SetPtEtaPhiM(branchJet.At(i).PT, branchJet.At(i).Eta, branchJet.At(i).Phi, branchJet.At(i).Mass)
+                    newnoSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()
+                    delta_mass = abs(newnoSMmTop - 174)
+                    if (delta_mass < min_deltamass): 
+                       newindex[1] = index[i]
+                       min_deltamass = delta_mass
+                       noSMmTop_new = newnoSMmTop
+      newindex[0] = [k for k in range(0,3) if not (k==newindex[-1] or k==newindex[+1])][0]
+
+  if (ncharge==-1):
+      newindex[1] = index[1]
+      elec_first_vec = ROOT.TLorentzVector()
+      elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[1]).PT**2 + 0.005**2)
+      #elec_first_vec.SetPtEtaPhiE(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,branchElectron.At(index[1]).Phi, elec_first_ET)
+      elec_first_vec.SetPtEtaPhiM(branchElectron.At(index[1]).PT, branchElectron.At(index[1]).Eta,branchElectron.At(index[1]).Phi, 0.005)
+      for i in index.keys():
+          if (i != 1):
+             elec_second_vec = ROOT.TLorentzVector()
+             elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[i]).PT**2 + 0.005**2)
+             #elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
+             elec_second_vec.SetPtEtaPhiM(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, 0.005)
+             for i in range(0, branchJet.GetEntries()):
+                 if (jet.BTag == 0):
+                    jet_vec = ROOT.TLorentzVector()
+                    jet_vec.SetPtEtaPhiM(branchJet.At(i).PT, branchJet.At(i).Eta, branchJet.At(i).Phi, branchJet.At(i).Mass)
+                    newnoSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()  
+                    delta_mass = abs(newnoSMmTop - 174)
+                    if (delta_mass < min_deltamass): 
+                       newindex[-1] = index[i]
+                       min_deltamass = delta_mass
+                       noSMmTop_new = newnoSMmTop                 
+
+      newindex[0] = [k for k in range(0,3) if not (k==newindex[-1] or k==newindex[+1])][0]
+
+  #print(newindex)
+  testnonSMTopMass[0] = noSMmTop_new
+
 
   # W boson and SM top mass (based on newindex[0] -- SM top vertex)
   if branchMET.GetEntries() >= 0:
