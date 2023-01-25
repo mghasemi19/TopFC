@@ -52,7 +52,7 @@ branchPhoton = treeReader.UseBranch("Photon")
 branchMET = treeReader.UseBranch("MissingET")
 
 # weights for signal and backgrounds
-weights = {'ttbarZ': 0.004368240427953154, 'tZ': 0.00375, 'tttt': 2.795205553087607e-05, 'ZZ': 0.67125, 'ttbar': 8.5365, 'ttbarW': 0.00015, 'WZ': 0.13575,'signal_charm': 0.01376, 'signal_up': 0.01376}
+weights = {'ttbarZ': 0.004368240427953154, 'tZ': 0.00375, 'tttt': 2.795205553087607e-05, 'ZZ': 0.67125, 'ttbar': 8.5365, 'ttbarW': 0.00015, 'WZ': 0.13575,'signal_charm': 0.01376, 'signal_up': 0.01376, 'test':1}
 
 # Tree to keep variables
 treeName = args.treename
@@ -163,7 +163,7 @@ for entry in range(0, numberOfEntries):
     ncharge += electron.Charge
   if (ncharge == -3 or ncharge == 3): continue
 
-  #if (nEvent == 20): break
+  #if (nEvent == 21): break
   nEvent += 1
   
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
@@ -340,10 +340,9 @@ branchElectron.At(index[0]).Phi, 0.005)
   newnonSMTopMass[0] = noSMmTop_new
 
 
-  # For test
+  # New algorithm with Jet selection as an extra degree of freedome
   newindex = {}  # new index for OS selection
-  leadjet_vec = ROOT.TLorentzVector()
-  leadjet_vec.SetPtEtaPhiM(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, branchJet.At(leading_jet_index).Mass)
+  #leadjet_vec.SetPtEtaPhiM(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, branchJet.At(leading_jet_index).Mass)
   min_deltamass = 9999
 
   if (ncharge==+1):
@@ -358,12 +357,15 @@ branchElectron.At(index[0]).Phi, 0.005)
              elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[i]).PT**2 + 0.005**2)
              #elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
              elec_second_vec.SetPtEtaPhiM(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, 0.005)
-             for i in range(0, branchJet.GetEntries()):
-		 if (jet.BTag == 0):
+             for j in range(0, branchJet.GetEntries()):
+		 if (branchJet.At(j).BTag == 0):
 		    jet_vec = ROOT.TLorentzVector()
-		    jet_vec.SetPtEtaPhiM(branchJet.At(i).PT, branchJet.At(i).Eta, branchJet.At(i).Phi, branchJet.At(i).Mass)
-                    newnoSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()
+		    jet_vec.SetPtEtaPhiM(branchJet.At(j).PT, branchJet.At(j).Eta, branchJet.At(j).Phi, branchJet.At(j).Mass)
+		    #print("jet_vec.M", jet_vec.M())
+                    newnoSMmTop = (elec_first_vec + elec_second_vec + jet_vec).Mt()
                     delta_mass = abs(newnoSMmTop - 174)
+                    #print("newnoSMmTop", newnoSMmTop)
+                    #print(i, index[i])
                     if (delta_mass < min_deltamass): 
                        newindex[1] = index[i]
                        min_deltamass = delta_mass
@@ -382,11 +384,11 @@ branchElectron.At(index[0]).Phi, 0.005)
              elec_second_ET = ROOT.TMath.Sqrt(branchElectron.At(index[i]).PT**2 + 0.005**2)
              #elec_second_vec.SetPtEtaPhiE(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, elec_second_ET)
              elec_second_vec.SetPtEtaPhiM(branchElectron.At(index[i]).PT, branchElectron.At(index[i]).Eta,branchElectron.At(index[i]).Phi, 0.005)
-             for i in range(0, branchJet.GetEntries()):
-                 if (jet.BTag == 0):
+             for j in range(0, branchJet.GetEntries()):
+		 if (branchJet.At(j).BTag == 0):
                     jet_vec = ROOT.TLorentzVector()
-                    jet_vec.SetPtEtaPhiM(branchJet.At(i).PT, branchJet.At(i).Eta, branchJet.At(i).Phi, branchJet.At(i).Mass)
-                    newnoSMmTop = (elec_first_vec + elec_second_vec + leadjet_vec).Mt()  
+                    jet_vec.SetPtEtaPhiM(branchJet.At(j).PT, branchJet.At(j).Eta, branchJet.At(j).Phi, branchJet.At(j).Mass)
+                    newnoSMmTop = (elec_first_vec + elec_second_vec + jet_vec).Mt()  
                     delta_mass = abs(newnoSMmTop - 174)
                     if (delta_mass < min_deltamass): 
                        newindex[-1] = index[i]
@@ -458,7 +460,7 @@ branchElectron.At(newindex[0]).Phi, 0.005)
 f.cd()
 tree_obj.Write()
 #tree_obj.Scan("weight")
-print("./trees/" + treeName + ".root is created")
+print("./newtrees/" + treeName + ".root is created")
 f.Close()
 
 
