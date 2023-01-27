@@ -201,6 +201,57 @@ def skip_sel(key, region):
     if not region in key: return True
     else: return False
 
+def topmass_plotter (var, selection, myweights, backgrounds, signals, name_infile, labels, title_x_axis, lumi, logY=False, write=[], outfolder="./plots/topmass/", name_can="", do_overflow=True, is_2D=False):    
+    infile = dict()
+    hists = dict()
+    colors = [ROOT.kBlue, ROOT.kRed, ROOT.kGreen]
+    for m in signals:
+        infile[m]=ROOT.TFile.Open(name_infile[m],"READ")
+        hists[m] = []
+    for m in signals:
+        t_signal = infile[m].Get(m)
+        for mass in range(len(name_can)):
+            #print(name_can[mass][0])
+            name_h_sig = name_can[mass][0]+m
+            var = name_can[mass]
+            hsignal = ROOT.TH1D(name_h_sig, name_h_sig, var[1], var[2], var[3])
+            hsignal.GetXaxis().SetTitle("non-SM m_{top}")
+            #hsignal.GetYaxis().SetTitle("Event")
+            hsignal.Sumw2()
+            string_draw=var[0]+">>"+name_h_sig
+            #print string_draw
+            sel_signal = ""
+            #sel_signal="("+sel+")*("+signal_sel+")"
+            t_signal.Draw(string_draw,sel_signal,"goff")
+            #hsignal.Scale(lumi)
+            hists[m].append(hsignal)
+
+
+    for m in signals:
+        c = ROOT.TCanvas("can1","can1",600,600)
+        for i in range(len(hists[m])):
+            if i==0: 
+                hists[m][i].Draw("HIST")
+                hists[m][i].SetLineColor(colors[i])
+                leg=ROOT.TLegend(x1=0.6, y1=0.65, x2=0.8, y2=0.77)
+                leg.SetFillStyle(0)
+                leg.SetLineColor(0)
+                leg.SetLineWidth(0)
+                leg.SetTextFont(43)
+                leg.SetTextSize(12)
+                leg.AddEntry(hists[m][i], title_x_axis[i])
+
+            else:
+                hists[m][i].Draw("HIST same")
+                hists[m][i].SetLineColor(colors[i]) 
+                leg.AddEntry(hists[m][i], title_x_axis[i])
+        leg.Draw()
+        c.SaveAs(outfolder+m+"topmass.pdf")
+        for hist in hists[m]: hist.Delete()
+
+
+
+    
 def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, labels, title_x_axis, lumi, logY=False, write=[], outfolder="./plots/", name_can="", do_overflow=True, is_2D=False):
     is_2D = False    
     if len(var)>4:
