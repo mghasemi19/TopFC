@@ -1,5 +1,4 @@
-# TopFC analysis tree making framework
-
+# TopFC analysis tree making framework. This makes trees with analysis variables as branches
 #!/usr/bin/env python
 
 #from http.client import HTTP_VERSION_NOT_SUPPORTED
@@ -23,7 +22,7 @@ except:
   pass
 
 if len(args.files) < 1:
-  print(" Usage: Example1.py input_file")
+  print(" Usage: python2 treemaker.py --files input_file --treename name")
   sys.exit(1)
 
 ROOT.gSystem.Load("libDelphes")
@@ -51,7 +50,7 @@ branchMuon = treeReader.UseBranch("Muon")
 branchPhoton = treeReader.UseBranch("Photon")
 branchMET = treeReader.UseBranch("MissingET")
 
-# weights for signal and backgrounds
+# weights for signal and backgrounds based on MG5 xsec
 weights = {'ttbarZ': 0.004368240427953154, 'tZ': 0.00375, 'tttt': 2.795205553087607e-05, 'ZZ': 0.67125, 'ttbar': 8.5365, 'ttbarW': 0.00015, 'WZ': 0.13575,'signal_charm': 0.01376, 'signal_up': 0.01376, 'test':1}
 
 # Tree to keep variables
@@ -91,9 +90,9 @@ WMass = array('d', [0.])
 SMTopMass = array('d', [0.])
 newWMass = array('d', [0.])
 newSMTopMass = array('d', [0.])
-nonSMTopMass = array('d', [0.])
-newnonSMTopMass = array('d', [0.])
-testnonSMTopMass = array('d', [0.])
+nonSMTopMass = array('d', [0.])        # delta Eta algorithm
+newnonSMTopMass = array('d', [0.])     # min top mass with leading jet
+testnonSMTopMass = array('d', [0.])    # min top mass with all jets included
 
 # Weights 
 weight = array('d', [0.])
@@ -135,10 +134,8 @@ print ("Total Num of Events {}".format(numberOfEntries))
 #quit()
 
 # Event weight
-#weight = 0.0004 * 300 * 1E3 / numberOfEntries   # for a specific event
-#weight = 1
-#yield_val = 0
-#y2 = 0
+# weight = xsec * lumi * eff / numberOfEntries 
+#weight = 0.0004 * 300 * 1E3 / numberOfEntries   # for a specific event (H to bbar)
 
 # Jet variables
 nEvent = 0
@@ -187,8 +184,6 @@ for entry in range(0, numberOfEntries):
        leading_jet_pt = jet.PT
        leading_jet_index = i    
   jetPTleading[0] = leading_jet_pt
-
-  #print jetPT
 
   # 2) Loop over all bjets in events  
   bjetNo[0] = bJetNo
@@ -244,10 +239,10 @@ for entry in range(0, numberOfEntries):
                         min_deltaEta = tmp_eta
                         index[-1] = abs(int(i))
                         index[1] = abs(int(j))  
+  index[0] = [k for k in range(0,3) if not (k==index[-1] or k==index[+1])][0]
   # index [-1, 1] corresponds to l- and l+ coming from non-SM top vertex
   # index[0] depends on the ncharge and coming from SM top vertex
-  index[0] = [k for k in range(0,3) if not (k==index[-1] or k==index[+1])][0]
-  
+ 
   '''
   print(ncharge)
   for i in range(0, branchElectron.GetEntries()):
@@ -256,7 +251,7 @@ for entry in range(0, numberOfEntries):
   print(index)
   '''
   
-  # 4) Fill Di-electron variables
+  # 4) Fill Di-electron variables based on min delta ETA
   deltaPhi = abs(branchElectron.At(index[1]).Phi - branchElectron.At(index[-1]).Phi)
   deltaR = ROOT.sqrt((min_deltaEta * min_deltaEta) + (deltaPhi * deltaPhi))
   
@@ -264,7 +259,8 @@ for entry in range(0, numberOfEntries):
   dielecCOS[0] = ROOT.cos(deltaPhi)
   dielecR[0] = deltaR 
 
-  # 5) Analyse missing ET, W boson and SM top mass (based on index[0] -- SM top vertex)
+  # 5) Analyse missing ET, W boson and SM top mass 
+  #    (based on min delta ETA algorithm --->>> index[0] -- SM top vertex)
   if branchMET.GetEntries() >= 0:
       met = branchMET.At(0)
       met_vec = ROOT.TLorentzVector()
@@ -289,7 +285,7 @@ branchElectron.At(index[0]).Phi, 0.005)
       WMass[0] = mW
       SMTopMass[0] = mTop
   
-  # New algorithm for (OS) lepton selection (mll - mtop)
+  # 6) New algorithm for (OS) lepton selection (mll - mtop with leading jet)
   newindex = {}  # new index for OS selection
   leadjet_vec = ROOT.TLorentzVector()
   leadjet_vec.SetPtEtaPhiM(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, branchJet.At(leading_jet_index).Mass)
@@ -340,9 +336,8 @@ branchElectron.At(index[0]).Phi, 0.005)
   newnonSMTopMass[0] = noSMmTop_new
 
 
-  # New algorithm with Jet selection as an extra degree of freedome
+  # 7) New algorithm for (OS) lepton selection with Jet selection as an extra degree of freedome
   newindex = {}  # new index for OS selection
-  #leadjet_vec.SetPtEtaPhiM(branchJet.At(leading_jet_index).PT, branchJet.At(leading_jet_index).Eta, branchJet.At(leading_jet_index).Phi, branchJet.At(leading_jet_index).Mass)
   min_deltamass = 9999
 
   if (ncharge==+1):
@@ -400,8 +395,7 @@ branchElectron.At(index[0]).Phi, 0.005)
   #print(newindex)
   testnonSMTopMass[0] = noSMmTop_new
 
-
-  # W boson and SM top mass (based on newindex[0] -- SM top vertex)
+  # 8) W boson and SM top mass with new algorithm (based on newindex[0] -- SM top vertex)
   if branchMET.GetEntries() >= 0:
       met = branchMET.At(0)
       met_vec = ROOT.TLorentzVector()
@@ -425,7 +419,7 @@ branchElectron.At(newindex[0]).Phi, 0.005)
       newWMass[0] = mW
       newSMTopMass[0] = mTop
 
-  # Old algorithm to analyze non SM Top and mLL
+  # 9) Old algorithm (delta ETA) to analyze non SM Top and mLL
   elec_first_vec = ROOT.TLorentzVector()
   elec_first_ET = ROOT.TMath.Sqrt(branchElectron.At(index[1]).PT**2 + 0.005**2)
   elec_second_vec = ROOT.TLorentzVector()  
