@@ -149,16 +149,26 @@ for entry in range(0, numberOfEntries):
 
   # Preselections exactly 3 leptons with 1 OS and at least 2 jet with 1 b-tagged
   if (not(branchElectron.GetEntries() == 3 and branchJet.GetEntries() >=2)): continue
+  nonbJetNo = 0
   bJetNo = 0
   for i in range(0, branchJet.GetEntries()):
     jet = branchJet.At(i)
-    if (jet.BTag): bJetNo += 1
+    # Di-lepton HLT --->>> jetPT>30 GeV and jetETA<5 (for non-btagged)
+    # Di-lepton HLT --->>> jetPT>30 GeV and jetETA<3 (for btagged)
+    if ((jet.BTag==0) and (jet.PT>=30) and (jet.Eta<=5)): nonbJetNo += 1
+    if ((jet.BTag==1) and (jet.PT>=30) and (jet.Eta<=3)): bJetNo += 1
+  
+  if (not nonbJetNo == branchJet.GetEntries()): continue
   if (not bJetNo == 1): continue
   ncharge = 0
+  nelectron = 0
   for i in range(0, branchElectron.GetEntries()):
     electron = branchElectron.At(i)      
+    # Di-lepton HLT --->>> jetPT>20 GeV and jetETA<3 (for electron)
+    if (electron.PT>=20 or electron.Eta<=3): nelectron += 1
     ncharge += electron.Charge
   if (ncharge == -3 or ncharge == 3): continue
+  if (not nelectron == branchElectron.GetEntries()): continue
 
   #if (nEvent == 21): break
   nEvent += 1
