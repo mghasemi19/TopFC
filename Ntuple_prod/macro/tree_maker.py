@@ -70,6 +70,7 @@ jetPHI = array('d')
 # bjet variables
 bjetNo = array('l', [0])
 bjetPT = array('d', [0])
+bjetETA = array('d', [0])
 
 # Electron variables
 elecNo = array('l', [0])
@@ -106,6 +107,7 @@ tree_obj.Branch("jetPHI", jetPHI, "jetPHI[jetNo]/D")
 
 tree_obj.Branch("bjetNo", bjetNo, "bjetNo/I")
 tree_obj.Branch("bjetPT", bjetPT, "jetPT/D")
+tree_obj.Branch("bjetETA", bjetETA, "jetETA/D")
 
 tree_obj.Branch("elecNo", elecNo, "elecNo/I")
 tree_obj.Branch("elecPT", elecPT, "elecPT[elecNo]/D")
@@ -137,7 +139,7 @@ print ("Total Num of Events {}".format(numberOfEntries))
 # weight = xsec * lumi * eff / numberOfEntries 
 #weight = 0.0004 * 300 * 1E3 / numberOfEntries   # for a specific event (H to bbar)
 
-# Jet variables
+# Event numbers
 nEvent = 0
 counter = 0
 for entry in range(0, numberOfEntries):
@@ -147,7 +149,7 @@ for entry in range(0, numberOfEntries):
   if (entry % 100000 == 0): print("Event Number:{}".format(entry))
   treeReader.ReadEntry(entry)
 
-  # Preselections exactly 3 leptons with 1 OS and at least 2 jet with 1 b-tagged
+  # Trigger and Preselections exactly 3 leptons with 1 OS and at least 2 jet with 1 b-tagged
   if (not(branchElectron.GetEntries() == 3 and branchJet.GetEntries() >=2)): continue
   nonbJetNo = 0
   bJetNo = 0
@@ -155,11 +157,24 @@ for entry in range(0, numberOfEntries):
     jet = branchJet.At(i)
     # Di-lepton HLT --->>> jetPT>30 GeV and jetETA<5 (for non-btagged)
     # Di-lepton HLT --->>> jetPT>30 GeV and jetETA<3 (for btagged)
-    if ((jet.BTag==0) and (jet.PT>=30) and (jet.Eta<=5)): nonbJetNo += 1
-    if ((jet.BTag==1) and (jet.PT>=30) and (jet.Eta<=3)): bJetNo += 1
+    if ((int(jet.BTag)==0) and (jet.PT>=30.) and (abs(jet.Eta)<=5.)): 
+       nonbJetNo += 1
+       #print("loop PT:", int(jet.PT))
+       #print("loop eta:", int(jet.Eta))
+    if ((int(jet.BTag)==1) and (jet.PT>=30.) and (abs(jet.Eta)<=3.)): 
+       bJetNo += 1
+       #print("loop PT:", int(jet.PT))
+       #print("loop eta:", int(jet.Eta))
+    #print("Btag:", int(jet.BTag))
+    #print("PT:", int(jet.PT))
+    #print("Eta:", int(jet.Eta))
   
-  if (not nonbJetNo == branchJet.GetEntries()): continue
+  #print("nonbJetNo:", nonbJetNo)
+  #print("branchJet.GetEntries():", branchJet.GetEntries())
+  #print(">>>>>>>>>>>>")
+  if (not nonbJetNo+bJetNo == branchJet.GetEntries()): continue
   if (not bJetNo == 1): continue
+
   ncharge = 0
   nelectron = 0
   for i in range(0, branchElectron.GetEntries()):
@@ -170,8 +185,12 @@ for entry in range(0, numberOfEntries):
   if (ncharge == -3 or ncharge == 3): continue
   if (not nelectron == branchElectron.GetEntries()): continue
 
+ 
   #if (nEvent == 21): break
+  #if (nEvent == 1): break
   nEvent += 1
+  #print("nonbJetNo:", nonbJetNo)
+  #print("branchJet.GetEntries():", branchJet.GetEntries())
   
   #if (nEvent in range(0,10)): print("Jet No:{}\tbJetNo:{}\tElectronNo:{}".format(branchJet.GetEntries(), bJetNo, branchElectron.GetEntries()))
 
@@ -201,6 +220,7 @@ for entry in range(0, numberOfEntries):
     jet = branchJet.At(i)
     if (jet.BTag):
       bjetPT[0] = jet.PT
+      bjetETA[0] = jet.Eta
       bjet_index = i
 
   # 3) Loop over all electrons in event
