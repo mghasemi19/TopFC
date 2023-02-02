@@ -230,6 +230,7 @@ def topmass_plotter (var, selection, myweights, backgrounds, signals, name_infil
     for m in signals:
         c = ROOT.TCanvas("can1","can1",600,600)
         for i in range(len(hists[m])):
+            print(hists[m][i].GetMean())
             if i==0: 
                 hists[m][i].Draw("HIST")
                 hists[m][i].SetLineColor(colors[i])
@@ -248,7 +249,7 @@ def topmass_plotter (var, selection, myweights, backgrounds, signals, name_infil
         leg.Draw()
         c.SaveAs(outfolder+m+"topmass.pdf")
         for hist in hists[m]: hist.Delete()
-
+    
 
 
     
@@ -293,6 +294,8 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
            hsignal_of.Sumw2()
            string_draw_of = var[0]+">>"+name_h_sig+"_of"
            t_signal.Draw(string_draw_of,sel_signal,"goff")
+           overflow_cont = hsignal_of.GetBinContent(var[1]) + hsignal_of.GetBinContent(var[1]+1)
+           hsignal_of.SetBinContent(var[1], overflow_cont)
            #hsignal_of.GetXaxis().SetRangeUser(var[2], var[3])
 
         hsignal_of.Scale(lumi)
@@ -362,6 +365,8 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
                string_draw_of = var[0]+">>"+htmp_name+"_of"
                #print (string_draw_of)
                t.Draw(string_draw_of,sel,"goff")
+               bkgoverflow_cont = htmp_of.GetBinContent(var[1]) + htmp_of.GetBinContent(var[1]+1)
+               htmp_of.SetBinContent(var[1], bkgoverflow_cont)
                #htmp_of.GetXaxis().SetRangeUser(var[2], var[3]+1)	       
 
             htmp_of.Scale(lumi)
@@ -529,8 +534,8 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         stack.GetXaxis().SetTitleSize(19)
         stack.GetXaxis().SetLabelFont(43)
         stack.GetXaxis().SetLabelSize(15)
-        stack.GetXaxis().SetTitleOffset(1.5)        
-
+        #stack.GetXaxis().SetTitleOffset(1.5)        
+        stack.GetXaxis().SetTitleOffset(1.7)  
         pad1.SetBottomMargin(0.14)
         pad1.SetTickx()
         pad1.SetTicky()

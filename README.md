@@ -26,7 +26,7 @@ The main backgrounds in the SM for this analysis are:
 - [X] Determine the signal and dominant/sub-dominant backgrounds (make all the Feynman diagrams)
 - [X] Generate signal and background ntuples using MadGraph+Delphes (useful [link](http://feynrules.irmp.ucl.ac.be/wiki/FourFermionFCNCtqll))
 - [X] Produce all signal vs background distribution plots for all analysis variables (sig/bkg ratios)
-- [ ] Di-lepton Trigger and final object selections
+- [X] Di-lepton Trigger and final object selections
 - [ ] Event selection: signal vs. background
 - [ ] Implement BDT algorithm to gain ML weights
 - [ ] Perform cut-and-count analysis using BDT weights to define signal regions
