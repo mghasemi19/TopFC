@@ -180,7 +180,7 @@ for entry in range(0, numberOfEntries):
   for i in range(0, branchElectron.GetEntries()):
     electron = branchElectron.At(i)      
     # Di-lepton HLT --->>> jetPT>20 GeV and jetETA<3 (for electron)
-    if (electron.PT>=20 or electron.Eta<=3): nelectron += 1
+    if (electron.PT>=20 and electron.Eta<=3): nelectron += 1
     ncharge += electron.Charge
   if (ncharge == -3 or ncharge == 3): continue
   if (not nelectron == branchElectron.GetEntries()): continue
