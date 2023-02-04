@@ -11,7 +11,7 @@ logY = True
 do_scale = False # doesn't do anything for now!
 
 # define the output folder (and create it if it doesn't exist)
-folder_out="plots/example_data_mc/"
+folder_out="plots/triggexample_data_mc/"
 os.system("mkdir -p "+folder_out)
 
 # backgrounds (names as in the input file, except removing "_NoSys")
@@ -24,6 +24,7 @@ labels = ["t#bar{t}+W","t#bar{t}+Z","t#bar{t}t#bar{t}","tZ","WZ","ZZ","t#bar{t}"
 
 # create the dictionaty that points to the correct input file for each background and for data
 name_infile=dict()
+'''
 name_infile = {'ttbar':'/Users/mghasemi/Desktop/IPM/plotter/trees/ttbar.root',
  'ttbarW':'/Users/mghasemi/Desktop/IPM/plotter/trees/ttbarW.root',
  'ttbarZ':'/Users/mghasemi/Desktop/IPM/plotter/trees/ttbarZ.root', 
@@ -33,6 +34,19 @@ name_infile = {'ttbar':'/Users/mghasemi/Desktop/IPM/plotter/trees/ttbar.root',
  'ZZ':'/Users/mghasemi/Desktop/IPM/plotter/trees/ZZ.root',
  'signal_up':'/Users/mghasemi/Desktop/IPM/plotter/trees/signal_up.root',
  'signal_charm':'/Users/mghasemi/Desktop/IPM/plotter/trees/signal_charm.root'}
+ '''
+
+name_infile = {'ttbar':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/ttbar.root',
+ 'ttbarW':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/ttbarW.root',
+ 'ttbarZ':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/ttbarZ.root', 
+ 'tttt':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/tttt.root',
+ 'tZ':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/tZ.root',
+ 'WZ':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/WZ.root',
+ 'ZZ':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/ZZ.root',
+ 'signal_up':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/signal_up.root',
+ 'signal_charm':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/signal_charm.root'}
+
+
 
 # create myweights, a *single* string with the weights to be used sepatated by a *
 myweights = "weight"
@@ -44,13 +58,16 @@ write=["#sqrt{s} = 13 TeV, L = 3000 fb^{-1}"]
 # I've chosen to have a list of dictionaries, that put together different arguments of data_mc associated to the same variable. Also this is not mandatory
 var_def=[]
 
-var_def += [{'def':("jetPT",20,0,1000),'leg':"jet p_{T}"}]
+var_def += [{'def':("jetPT",20,0,600),'leg':"jet p_{T}"}]
 var_def += [{'def':("jetNo",10,0,10),'leg':"Number of jets"}]
 var_def += [{'def':("jetPTLeading",20, 0,1000),'leg':"Leading jet p_{T}"}]
 var_def += [{'def':("jetETA",40,-10,10),'leg':"jet #eta"}]
 var_def += [{'def':("jetPHI",16,-4,4),'leg':"jet #phi"}]
 
-var_def += [{'def':("elecPT",20,0,1000),'leg':"electron p_{T}"}]
+var_def += [{'def':("bjetPT",20, 0,600),'leg':"b-tagged jet p_{T}"}]
+var_def += [{'def':("bjetETA",20,-5,5),'leg':"b-tagged jet #eta"}]
+
+var_def += [{'def':("elecPT",30,0,600),'leg':"electron p_{T}"}]
 var_def += [{'def':("elecPTLeading",20,0,1000),'leg':"Leading electron p_{T}"}]
 var_def += [{'def':("elecETA",40,-10,10),'leg':"electron #eta"}]
 var_def += [{'def':("elecPHI",16,-4,4),'leg':"electron #phi"}]
@@ -63,10 +80,16 @@ var_def += [{'def':("dielecR",16, 0.0, 8.0),'leg':"di-electron R"}]
 var_def += [{'def':("met",20, 0, 1000),'leg':"Missing E_{T}"}]
 var_def += [{'def':("WMass",20, 50, 1000),'leg':"M_{W}"}]
 var_def += [{'def':("TopMass",20, 0, 1000),'leg':"SM M_{top}"}]
+
 var_def += [{'def':("newWMass",20, 50, 1000),'leg':"new-algorithm M_{W}"}]
 var_def += [{'def':("newTopMass",20, 0, 1000),'leg':"new-algorithm SM M_{top}"}]
 var_def += [{'def':("nonTopMass",20, 0, 1000),'leg':"#eta-algorithm non-SM M_{top}"}]
-var_def += [{'def':("newnonTopMass",20, 0, 1000),'leg':"new-algorithm non-SM M_{top}"}]
+#var_def += [{'def':("newnonTopMass",20, 0, 1000),'leg':"new-algorithm non-SM M_{top}"}]
+#var_def += [{'def':("testnonTopMass",20, 0, 1000),'leg':"test new-algorithm non-SM M_{top}"}]
+
+var_def += [{'def':("nonTopMass",50, 0, 500),'leg':"#Delta#eta-algorithm non-SM M_{top}"}]
+var_def += [{'def':("newnonTopMass",50, 0, 500),'leg':"min #Deltam leading jet non-SM M_{top}"}]
+var_def += [{'def':("testnonTopMass",50, 0, 500),'leg':"min #Deltam all jet non-SM M_{top}"}]
 
 #var_def += [{'def':("newnonTopMass",20, 0, 1000),'leg':"new-algorithm non-SM M_{top}"}]
 
