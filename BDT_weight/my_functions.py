@@ -51,7 +51,9 @@ def plot_SoverB(DataFrames, SoverB_hist_dict):
         
         distributions_axes.set_xlim( left=bin_edges[0], right=bin_edges[-1] ) # x-limits of the distributions axes
         distributions_axes.set_ylabel('Arbitrary units' ) # y-axis label for distributions axes
-        distributions_axes.set_ylim( top=max(signal_heights[0])*1.3 ) # set y-axis limits
+        y_max = max(max(signal_heights[0]), max(background_heights[0]) )
+        #distributions_axes.set_ylim( top=max(signal_heights[0])*1.3 ) # set y-axis limits
+        distributions_axes.set_ylim( top=y_max*1.3 ) # set y-axis limits
         plt.title('Signal and background '+x_variable+' distributions') # add title
         distributions_axes.legend() # draw the legend
         distributions_axes.set_xlabel( h_xlabel ) # x-axis label
