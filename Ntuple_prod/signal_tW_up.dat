@@ -1,0 +1,74 @@
+import model ../models/4fermion-models/4fermitop_up_5F
+
+# multiparticle definition
+define p = g u c d s b u~ c~ d~ s~ b~
+define j = g u c d s b u~ c~ d~ s~ b~
+define lightj = g u u~ d d~ c c~
+define l = e- e+ mu- mu+
+
+# our signal
+generate p p > t w-, (t > l+ l- u), (w- > l- vl~)
+add process p p > t~ w+, (t~ > l+ l- u~), (w+ > l+ vl)
+
+output /home/mghasemi/project/TopFC/Ntuple_prod/MG5/MG5_aMC_v3_4_1/bin/samples/signals/tW_up
+
+# 1st launch
+launch /home/mghasemi/project/TopFC/Ntuple_prod/MG5/MG5_aMC_v3_4_1/bin/samples/signals/tW_up
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000  # may increase in future
+
+set fSrr = 1
+set fTrr = 1
+set fVlr = 1
+set fVrl = 1
+set fVrr = 1
+set fVll = 1
+
+../Delphes/cards/delphes_card_HLLHC.tcl
+
+# 2nd launch
+launch /home/mghasemi/project/TopFC/Ntuple_prod/MG5/MG5_aMC_v3_4_1/bin/samples/signals/tW_up
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000  # may increase in future
+
+set fSrr = 1
+set fTrr = 1
+set fVlr = 1
+set fVrl = 1
+set fVrr = 1
+set fVll = 1
+
+../Delphes/cards/delphes_card_HLLHC.tcl
+
+# 3rdd launch
+launch /home/mghasemi/project/TopFC/Ntuple_prod/MG5/MG5_aMC_v3_4_1/bin/samples/signals/tW_up
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000  # may increase in future
+
+set fSrr = 1
+set fTrr = 1
+set fVlr = 1
+set fVrl = 1
+set fVrr = 1
+set fVll = 1
+
+../Delphes/cards/delphes_card_HLLHC.tcl
+
