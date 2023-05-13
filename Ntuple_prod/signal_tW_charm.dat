@@ -7,13 +7,13 @@ define lightj = g u u~ d d~ c c~
 define l = e- e+ mu- mu+
 
 # our signal
-generate p p > t w-, (t > l+ l- u), (w- > l- vl~)
-add process p p > t~ w+, (t~ > l+ l- u~), (w+ > l+ vl)
+generate p p > t w-, (t > l+ l- c), (w- > l- vl~)
+add process p p > t~ w+, (t~ > l+ l- c~), (w+ > l+ vl)
 
-output /data/mghasemi/samples/signals/tW_up
+output /data/mghasemi/samples/signals/tW_charm
 
 # 1st launch
-launch /data/mghasemi/samples/signals/tW_up
+launch /data/mghasemi/samples/signals/tW_charm
 
 shower=Pythia8
 detector=Delphes
@@ -33,7 +33,7 @@ set fVll = 1
 ../Delphes/cards/delphes_card_HLLHC.tcl
 
 # 2nd launch
-launch /data/mghasemi/samples/signals/tW_up
+launch /data/mghasemi/samples/signals/tW_charm
 
 shower=Pythia8
 detector=Delphes
@@ -53,7 +53,7 @@ set fVll = 1
 ../Delphes/cards/delphes_card_HLLHC.tcl
 
 # 3rdd launch
-launch /data/mghasemi/samples/signals/tW_up
+launch /data/mghasemi/samples/signals/tW_charm
 
 shower=Pythia8
 detector=Delphes
