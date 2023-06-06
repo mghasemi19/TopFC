@@ -6,6 +6,10 @@ sig = ['signal_charm', 'signal_up']
 xsec_sig = [0.01376, 0.01376]
 sig_event = [3*10**6, 3*10**6]
 
+sig_tW = ['signal_tW_charm', 'signal_tW_up']
+xsec_sig_tW = [0.0007, 0.0007]
+sig_event_tW = [3*10**6, 3*10**6]
+
 def bkg_xsec_computer(cross, bkg, event):
     weight = {}
     for i in range(len(cross)):
@@ -22,4 +26,6 @@ weight_bkg = bkg_xsec_computer(xsec_bkg, bkgs, bkg_event)
 print(weight_bkg)
 weight_sig = sig_xsec_computer(xsec_sig, sig, sig_event) 
 print(weight_sig)
+weight_sig_tW = sig_xsec_computer(xsec_sig_tW, sig_tW, sig_event_tW)
+print(weight_sig_tW)
 

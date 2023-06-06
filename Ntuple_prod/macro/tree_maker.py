@@ -51,7 +51,7 @@ branchPhoton = treeReader.UseBranch("Photon")
 branchMET = treeReader.UseBranch("MissingET")
 
 # weights for signal and backgrounds based on MG5 xsec
-weights = {'ttbarZ': 0.004368240427953154, 'tZ': 0.00375, 'tttt': 2.795205553087607e-05, 'ZZ': 0.67125, 'ttbar': 0.9485, 'ttbarW': 0.00015, 'WZ': 0.13575,'signal_charm': 0.01376, 'signal_up': 0.01376, 'test':1}
+weights = {'ttbarZ': 0.004368240427953154, 'tZ': 0.00375, 'tttt': 2.795205553087607e-05, 'ZZ': 0.67125, 'ttbar': 0.742304347826087, 'ttbarW': 0.00015, 'WZ': 0.02715,'signal_charm': 0.01376, 'signal_up': 0.01376, 'test':1, 'signal_tW_charm':0.0007, 'signal_tW_up':0.0007}
 
 # Tree to keep variables
 treeName = args.treename
