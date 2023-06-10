@@ -74,9 +74,25 @@ void rs_numbercountingutils()
    // -------------------------------------------------------------
    // Expected p-values and significance with background uncertainty
    //double sExpected = 50;
-   double sExpected = 6.3;
-   double bExpected = 0.9;
-   double relativeBkgUncert = 0.3;
+   double sExpected_list[] = {399.1, 292.6, 184.3};
+   double bExpected_list[] = {269.1, 180.8, 105.3};
+   //double relativeBkgUncert[] = {0.25, 0.5, 1};
+   double relativeBkgUncert = 0.25;
+   double mu_sig[] = {1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7};
+   
+   for (int i=0; i<3; i++){
+   	for (int j=0; j<13; j++){
+	    double pExp = NumberCountingUtils::BinomialExpP(sExpected_list[i]*mu_sig[j], bExpected_list[i], relativeBkgUncert);
+	    double zExp = NumberCountingUtils::BinomialExpZ(sExpected_list[i]*mu_sig[j], bExpected_list[i], relativeBkgUncert);
+	    cout << "nSig=" << sExpected_list[i] << "*" << mu_sig[j] << "  nBkg=" << bExpected_list[i] << endl; 
+	    cout << "expected p-value =" << pExp << "  Z value (Gaussian sigma) = " << zExp << endl;	    
+	}
+	cout << "------------------" << endl;
+   }
+
+   double sExpected = 399.1;
+   double bExpected = 269.1;
+   //double relativeBkgUncert = 0.3;
 
    double new_sExpected = 399.1;
    double new_bExpected = 269.14;
