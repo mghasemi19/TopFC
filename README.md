@@ -19,17 +19,20 @@ The main backgrounds in the SM for this analysis are:
 - [Trigger and analysis cuts](#dilepton-trigger-and-final-object-cuts)
 - [NN, BDT, and RNN implementation](#ml-implementation)
 - [Event selection](#event-selection)
+- [Significance and CLs upper limits](#significance-and-cls-upper-limits)
 
 
 ## to-do list
-- [x] Read the [paper](https://arxiv.org/pdf/2101.05286.pdf) and review QFT for the related phenomology parts
+- [X] Read the [paper](https://arxiv.org/pdf/2101.05286.pdf) and review QFT for the related phenomology parts
 - [X] Determine the signal and dominant/sub-dominant backgrounds (make all the Feynman diagrams)
 - [X] Generate signal and background ntuples using MadGraph+Delphes (useful [link](http://feynrules.irmp.ucl.ac.be/wiki/FourFermionFCNCtqll))
 - [X] Produce all signal vs background distribution plots for all analysis variables (sig/bkg ratios)
 - [X] Di-lepton Trigger and final object selections
-- [ ] Event selection: signal vs. background
-- [ ] Implement NN, BDT, RF, and RNN algorithms to gain ML weights
-- [ ] Perform cut-and-count analysis using BDT weights to define signal regions
+- [X] Event selection: signal vs. background
+- [X] Implement NN, BDT, RF, and RNN algorithms to gain ML weights
+- [X] Perform cut-and-count analysis using BDT weights to define signal regions
+- [ ] Compute significance (p-value and z-value) for all signals
+- [ ] Derive 95% CLs upper limits and combine the results
 
 
 
@@ -39,3 +42,4 @@ The main backgrounds in the SM for this analysis are:
 ## Dilepton trigger and final object cuts
 ## ML implementation
 ## Event selection
+## Significance and CLs upper limits
