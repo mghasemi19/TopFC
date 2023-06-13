@@ -73,8 +73,18 @@ void significance_compute()
 
    // -------------------------------------------------------------
    // Expected p-values and significance with background uncertainty   
-   double ttcharm_sExpected_list[] = {399.1, 292.6, 184.3};
-   double ttcharm_bExpected_list[] = {269.1, 180.8, 105.3};
+   // simple NN stats
+   //double ttcharm_sExpected_list[] = {399.1, 292.6, 184.3};       
+   //double ttcharm_bExpected_list[] = {269.1, 180.8, 105.3};
+
+   // optimized NN stats
+   //double ttcharm_sExpected_list[] = {567.2, 487.0, 387.7};       
+   //double ttcharm_bExpected_list[] = {337.9, 246.6, 160.1};   
+
+   // optimized NN with dropout stats
+   double ttcharm_sExpected_list[] = {570.8, 492.8, 397.1};       
+   double ttcharm_bExpected_list[] = {240.7, 173.9, 116.7};   
+
    double relativeBkgUncert[] = {0.25, 0.5, 1};
    double ttcharm_pval_25[3][9];
    double ttcharm_zval_25[3][9];
@@ -110,6 +120,7 @@ void significance_compute()
       }   
 	//cout << "------------------" << endl;
    }
+   
    cout << "P-val for ttcharm_pval_25:" << endl;
    for (auto &row : ttcharm_pval_25){
       for (auto &col : row) {cout << col << endl;}
@@ -136,11 +147,12 @@ void significance_compute()
    for (auto &row : ttcharm_zval_100){
       for (auto &col : row) {cout << col << endl;}
    }   
-
+   
 // -------------------------------------------------------------
+   /*
    // Expected p-values and significance with background uncertainty   
-   double ttup_sExpected_list[] = {399.1, 292.6, 184.3};
-   double ttup_bExpected_list[] = {269.1, 180.8, 105.3};
+   double ttup_sExpected_list[] = {496.9, 379.2, 252.1};
+   double ttup_bExpected_list[] = {348.4, 242.4, 141.2};
    //double relativeBkgUncert[] = {0.25, 0.5, 1};
    double ttup_pval_25[3][9];
    double ttup_zval_25[3][9];
@@ -176,31 +188,31 @@ void significance_compute()
       }   
 	//cout << "------------------" << endl;
    }
-   cout << "P-val for ttcharm_pval_25:" << endl;
-   for (auto &row : ttcharm_pval_25){
+   cout << "P-val for ttup_pval_25:" << endl;
+   for (auto &row : ttup_pval_25){
       for (auto &col : row) {cout << col << endl;}
    }     
    cout << "Z-val for ttcharm_zval_25:" << endl;
-   for (auto &row : ttcharm_zval_25){
+   for (auto &row : ttup_zval_25){
       for (auto &col : row) {cout << col << endl;}
    }     
 
-   cout << "P-val for ttcharm_pval_50:" << endl;
-   for (auto &row : ttcharm_pval_50){
+   cout << "P-val for ttup_pval_50:" << endl;
+   for (auto &row : ttup_pval_50){
       for (auto &col : row) {cout << col << endl;}
    }     
-   cout << "Z-val for ttcharm_zval_50:" << endl;
-   for (auto &row : ttcharm_zval_50){
+   cout << "Z-val for ttup_zval_50:" << endl;
+   for (auto &row : ttup_zval_50){
       for (auto &col : row) {cout << col << endl;}
    }
 
-   cout << "P-val for ttcharm_pval_100:" << endl;
-   for (auto &row : ttcharm_pval_100){
+   cout << "P-val for ttup_pval_100:" << endl;
+   for (auto &row : ttup_pval_100){
       for (auto &col : row) {cout << col << endl;}
    }     
-   cout << "Z-val for ttcharm_zval_100:" << endl;
-   for (auto &row : ttcharm_zval_100){
+   cout << "Z-val for ttup_zval_100:" << endl;
+   for (auto &row : ttup_zval_100){
       for (auto &col : row) {cout << col << endl;}
    }   
-
+   */
 }
