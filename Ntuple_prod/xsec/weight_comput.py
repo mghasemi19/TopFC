@@ -1,14 +1,24 @@
+# Background info
 bkgs = ['ttbar', 'ttbarW', 'ttbarZ', 'tttt', 'tZ', 'WZ', 'ZZ']
+# cross-sections
 xsec_bkg = [5.691, 0.0001, 0.0026, 1.378e-05, 0.0025, 0.0905, 0.4475]
+# number of events generated
 bkg_event = [23 * 10**6, 2 * 10**6, 1785616, 1478961, 2 * 10**6, 10 * 10**6, 2 * 10**6]
 
+# ttbar channel info
 sig = ['signal_charm', 'signal_up']
+# cross-sections
 xsec_sig = [0.01376, 0.01376]
+# number of events generated
 sig_event = [3*10**6, 3*10**6]
 
+# tW channel info
 sig_tW = ['signal_tW_charm', 'signal_tW_up']
+# cross-sections
 xsec_sig_tW = [0.0007, 0.0007]
+# number of events generated
 sig_event_tW = [3*10**6, 3*10**6]
+
 
 def bkg_xsec_computer(cross, bkg, event):
     weight = {}
