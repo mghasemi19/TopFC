@@ -1,0 +1,73 @@
+import model ../models/4fermion-models/4fermitop_up_5F
+
+# multiparticle definition
+define p = g u c d s b u~ c~ d~ s~ b~
+define j = g u c d s b u~ c~ d~ s~ b~
+define lightj = g u u~ d d~ c c~
+define l = e- e+ mu- mu+
+
+# our signal
+generate p p > t t~, (t > l+ l- u), (t~ > w- b~, w- > l- vl~)
+add process p p > t t~, (t~ > l+ l- u~), (t > w+ b, w+ > l+ vl)
+
+output /data/mghasemi/signal_coupling/ttbar_up_SRR
+
+# 1st launch
+launch /data/mghasemi/signal_coupling/ttbar_up_SRR
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000 
+
+set fSrr = 1
+set fTrr = 0
+set fVlr = 0
+set fVrl = 0
+set fVrr = 0
+set fVll = 0
+
+../Delphes/cards/delphes_card_HLLHC.tcl
+
+#2nd launch
+launch /data/mghasemi/signal_coupling/ttbar_up_SRR
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000
+
+set fSrr = 1
+set fTrr = 0
+set fVlr = 0
+set fVrl = 0
+set fVrr = 0
+set fVll = 0
+
+../Delphes/cards/delphes_card_HLLHC.tcl
+
+# 3rd launch
+launch /data/mghasemi/signal_coupling/ttbar_up_SRR
+
+shower=Pythia8
+detector=Delphes
+analysis=OFF
+madspin=OFF
+reweight=OFF
+
+set nevents = 1000000
+
+set fSrr = 1
+set fTrr = 0
+set fVlr = 0
+set fVrl = 0
+set fVrr = 0
+set fVll = 0
+
+../Delphes/cards/delphes_card_HLLHC.tcl
