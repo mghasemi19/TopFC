@@ -476,8 +476,8 @@ branchElectron.At(newindex[0]).Phi, 0.005)
   tree_obj.SetBranchAddress("jetETA", jetETA)  
   tree_obj.SetBranchAddress("jetPHI", jetPHI)  
   tree_obj.SetBranchAddress("elecPT", elecPT)  
-  tree_obj.SetBranchAddress("elecETA", jetETA)  
-  tree_obj.SetBranchAddress("elecPHI", jetPHI) 
+  tree_obj.SetBranchAddress("elecETA", elecETA)  
+  tree_obj.SetBranchAddress("elecPHI", elecPHI) 
 
   tree_obj.Fill() 
     
