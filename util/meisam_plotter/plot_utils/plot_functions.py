@@ -54,8 +54,7 @@ def make_leg(n, labels, x1=0.7, y1=0.6, x2=0.876, y2=0.87, hdata=None, textSize=
             leg.AddEntry(h,labels[i].replace("GGM_","").replace("_"," "),"l")
 
     return leg
-
-    
+ 
 
 def new_make_leg(n, labels, x1=0.7, y1=0.6, x2=0.876, y2=0.87, hsig_charm=None, hsig_up=None, textSize=0):
     leg=ROOT.TLegend(x1,y1,x2,y2)
@@ -67,9 +66,48 @@ def new_make_leg(n, labels, x1=0.7, y1=0.6, x2=0.876, y2=0.87, hsig_charm=None, 
         leg.SetTextSize(textSize)
     i=len(n)
     if not hsig_charm is None:
-        leg.AddEntry(hsig_charm, "tcll")
+        #leg.AddEntry(hsig_charm, "tt-tcll")
+        leg.AddEntry(hsig_charm, "tW-Wcll")
     if not hsig_up is None:
-        leg.AddEntry(hsig_up, "tull")        
+        #leg.AddEntry(hsig_up, "tt-tull")        
+        leg.AddEntry(hsig_up, "tW-Wull")        
+    for h in reversed(n):
+        i-=1
+        if "hh" in labels[i]:
+            continue
+        if h.GetFillColor() or "ulti" in labels[i] :
+            leg.AddEntry(h,labels[i],"f")
+        else:
+            leg.AddEntry(h,labels[i].replace("GGM_","").replace("_"," "),"l")
+    i=len(n)
+    for h in reversed(n):
+        i-=1
+        if not "hh" in labels[i]:
+            continue
+        if h.GetFillColor() :
+            leg.AddEntry(h,labels[i],"f")
+        else:
+            leg.AddEntry(h,labels[i].replace("GGM_","").replace("_"," "),"l")
+
+    return leg
+
+def make_leg_coupling(n, labels, x1=0.7, y1=0.6, x2=0.876, y2=0.87, hsig_S=None, hsig_V=None, hsig_T=None, textSize=0):
+    leg=ROOT.TLegend(x1,y1,x2,y2)
+    leg.SetFillStyle(0)
+    leg.SetLineColor(0)
+    leg.SetLineWidth(0)
+    if textSize>0:
+        leg.SetTextFont(43)
+        leg.SetTextSize(textSize)
+    i=len(n)
+    if not hsig_S is None:        
+        leg.AddEntry(hsig_S, "tt-tcll (S)")
+    if not hsig_V is None:
+        #leg.AddEntry(hsig_up, "tt-tull")        
+        leg.AddEntry(hsig_V, "tt-tcll (V)")     
+    if not hsig_T is None:
+        #leg.AddEntry(hsig_up, "tt-tull")        
+        leg.AddEntry(hsig_T, "tt-tcll (T)")               
     for h in reversed(n):
         i-=1
         if "hh" in labels[i]:
@@ -136,7 +174,12 @@ def getSampleColor(sample):
     if sample == "ZZ": return ROOT.kOrange-4
     
     if sample == "signalcharm": return ROOT.kPink+1
+    if sample == "hsig_S": return ROOT.kPink+1
+    if sample == "hsig_V": return ROOT.kAzure+1
+    if sample == "hsig_T": return ROOT.kGreen-9
     if sample == "signalup": return ROOT.kAzure+1
+    if sample == "signaltWcharm": return ROOT.kPink+1
+    if sample == "signaltWup": return ROOT.kAzure+1
     
     #colors = [609, 856, 410, 801, 629, 879, 602, 921, 622]
 
@@ -250,8 +293,6 @@ def topmass_plotter (var, selection, myweights, backgrounds, signals, name_infil
         c.SaveAs(outfolder+m+"topmass.pdf")
         for hist in hists[m]: hist.Delete()
     
-
-
     
 def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, labels, title_x_axis, lumi, logY=False, write=[], outfolder="./plots/", name_can="", do_overflow=True, is_2D=False):
     is_2D = False    
@@ -276,7 +317,399 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
         hsignal.Sumw2()
         string_draw=var[0]+">>"+name_can+m
         #print string_draw
-        sel_signal = ""
+        #sel_signal = ""
+        sel_signal = "("+selection+")*"+myweights
+        #sel_signal="("+sel+")*("+signal_sel+")"
+        t_signal.Draw(string_draw,sel_signal,"goff")
+            
+        if not do_overflow:
+           hsignal_of = ROOT.TH1D(name_h_sig+"_of", name_h_sig+"_of", var[1], var[2], var[3])
+           hsignal_of.Sumw2()
+           string_draw_of = str(var[3]) + " - (0.5*("+ str(var[3])+"-"+str(var[2])+")/"+str(var[1]) +") >>"+name_h_sig+"_of"
+           #12 - (0.5*(12-0)/12) >>jetNo_signal_charm_of
+           #print (string_draw_of)
+           t_signal.Draw(string_draw_of, sel_signal+"*("+ var[0]+">"+str(var[3])  +")")
+           hsignal.Add(hsignal_of)                    
+
+        if do_overflow:
+           hsignal_of = ROOT.TH1D(name_h_sig+"_of", name_h_sig+"_of", var[1], var[2], var[3])
+           hsignal_of.Sumw2()
+           string_draw_of = var[0]+">>"+name_h_sig+"_of"
+           t_signal.Draw(string_draw_of,sel_signal,"goff")
+           overflow_cont = hsignal_of.GetBinContent(var[1]) + hsignal_of.GetBinContent(var[1]+1)
+           hsignal_of.SetBinContent(var[1], overflow_cont)
+           #hsignal_of.GetXaxis().SetRangeUser(var[2], var[3])
+
+        hsignal_of.Scale(lumi)
+        #hsignal_of.SetMinimum(10000)
+        h_signals.append(hsignal_of)        
+
+    # Second darw background histograms
+    sel = "("+selection+")*"+myweights
+    #print sel
+    n=[]
+    n_allbkg=[]
+    colors=[]
+    test_dict = {}
+    for b in backgrounds:
+        """
+        if do_scale:
+        with open(mypickle_fit, 'rb') as handle2:
+        fit_res = pickle.load(handle2)
+        prefit = fit_res["MC_exp_events_"+b][0]
+        postfit = fit_res["Fitted_events_"+b][0]
+        SF=postfit/prefit
+        """
+        n_thisbkg=[]
+        color=getSampleColor(b)
+        colors.append(color)
+
+        #print (infile[b].Get(b))
+        t = infile[b].Get(b)
+        #t.Show(0)
+        if (not t):
+           print (b,"not found")
+           continue
+        sel_slice=sel
+
+        if is_2D:
+            htmp=ROOT.TH2D(name_can+"_"+b, name_can+"_"+b, var[1], var[2], var[3], var[5], var[6], var[7])
+            string_draw=var[4]+":"+var[0]+" >>"+name_can+"_"+b
+            htmp.GetXaxis().SetTitle(name_can)
+            htmp.Sumw2()
+            t.Draw(string_draw,sel_slice,"goff")
+            htmp.Scale(lumi)
+            n_thisbkg.append(htmp.Clone())
+            htmp.Clear()
+        else:           
+            
+            htmp_name = name_can+"_"+b
+            htmp=ROOT.TH1D(htmp_name, htmp_name, var[1], var[2], var[3])
+            htmp.GetXaxis().SetTitle(title_x_axis)
+            htmp.Sumw2()
+            string_draw=var[0]+">>"+name_can+"_"+b
+            #print string_draw
+            t.Draw(string_draw,sel,"goff")
+            
+
+            if not do_overflow:
+               htmp_name = name_can+"_"+b
+               htmp_of = ROOT.TH1D(htmp_name+"_of", htmp_name+"_of", var[1], var[2], var[3])
+               htmp_of.Sumw2()
+               string_draw_of = str(var[3]) + " - (0.5*("+ str(var[3])+"-"+str(var[2])+")/"+str(var[1]) +") >>"+name_can+"_"+str(i)+"_"+b+"_of"
+               t.Draw(string_draw_of, sel_slice+"*("+ var[0]+">"+str(var[3])  +")")
+               htmp.Add(htmp_of)                    
+
+            if do_overflow:
+               htmp_name = name_can+"_"+b
+               htmp_of = ROOT.TH1D(htmp_name+"_of", htmp_name+"_of", var[1], var[2], var[3])
+               htmp_of.Sumw2()
+               string_draw_of = var[0]+">>"+htmp_name+"_of"
+               #print (string_draw_of)
+               t.Draw(string_draw_of,sel,"goff")
+               bkgoverflow_cont = htmp_of.GetBinContent(var[1]) + htmp_of.GetBinContent(var[1]+1)
+               htmp_of.SetBinContent(var[1], bkgoverflow_cont)
+               #htmp_of.GetXaxis().SetRangeUser(var[2], var[3]+1)	       
+
+            htmp_of.Scale(lumi)
+            #print(b)
+            #for bin in range(htmp_of.GetNbinsX()):
+                #print(htmp_of.GetBinContent(bin))
+            #print ("Total No:", int(htmp_of.Integral()))
+            #print("------------------------")
+            
+            n_thisbkg.append(htmp_of.Clone())
+            #print(htmp_of.GetName(), ":", htmp_of.GetBinContent(10))
+            test_dict[b] = htmp_of.Clone()
+            #htmp.Clear()
+            #htmp_of.Clear()
+            htmp_of.Delete()
+            htmp.Delete()
+            #print (b)
+
+        n_allbkg.append(n_thisbkg)
+
+    #print(n_thisbkg)
+    #print (n_allbkg)
+
+    # look at bkg composition
+    for n_allbkg_i in n_allbkg:
+        n.append(n_allbkg_i[0])
+
+    #for h in n: print(h.GetName(), ":", h.GetBinContent(10))
+    #print(n)
+    #print(test_dict)
+    histo_max=0
+    i=0
+    stack = ROOT.THStack("stack","stack")
+    for h in n:
+        #print h.Integral()
+        h.SetLineColor(colors[i])
+        h.SetFillColor(colors[i])
+        h.SetLineColor(1)
+        h.GetXaxis().SetTitle(var[0])
+        if h.GetMaximum() > histo_max:
+            histo_max=h.GetMaximum()
+        stack.Add(h)
+        if i==0:
+            htot=h.Clone("htot")
+        else:
+            htot.Add(h)
+        i+=1
+
+    c = ROOT.TCanvas("can"+name_can,"can"+name_can,600,600)
+    do_fraction = True
+    if is_2D:
+        pad2 = ROOT.TPad("pad2", "pad2",0.0,0.0,1.0,1.0,22)
+    elif not do_fraction:
+        pad1 = ROOT.TPad("pad1", "pad1",0.0,0.35,1.0,1.0,21)
+        pad2 = ROOT.TPad("pad2", "pad2",0.0,0.0,1.0,0.35,22)
+        pad2.SetGridy()
+        pad1.SetFillColor(0)
+        pad1.Draw()
+    else:
+        # pad1 for main distribution plots
+        pad1 = ROOT.TPad("pad1", "pad1",0.0,0.47,1.0,1.0,21)
+        # pad2 for ratio plots
+        pad2 = ROOT.TPad("pad2", "pad2",0.0,0.0,1.0,0.26,22)
+        # pad3 for composition plots
+        pad3 = ROOT.TPad("pad3", "pad3",0.0,0.24,1.0,0.50,22)
+        pad2.SetGridy()
+        pad1.SetFillColor(0)
+        pad3.SetGridy()
+        pad1.SetFillColor(0)
+        pad1.SetFillStyle(0)
+        pad2.SetFillColor(0)
+        pad2.SetFillStyle(0)
+        pad3.SetFillColor(0)
+        pad3.SetFillStyle(0)
+        pad1.SetTickx()
+        pad2.SetTickx()
+        pad3.SetTickx()
+        pad1.SetTicky()
+        pad2.SetTicky()
+        pad3.SetTicky()
+        pad1.Draw()
+        pad3.Draw()
+
+    pad2.SetFillColor(0)
+    pad2.Draw()
+
+    # chiara: here
+    if do_fraction:
+        n_frac=[]
+        for h in n:
+            #print(h.GetName())
+            n_frac.append(h.Clone())
+        stack_fraction = ROOT.THStack("stack_fraction","stack_fraction")
+        stack_fraction.SetMinimum(10000)
+        #print (n_frac)
+        for i in range(0,htot.GetNbinsX()):
+            for h in n_frac:
+                if htot.GetBinContent(i)>0:
+                    frac = 100*h.GetBinContent(i)/htot.GetBinContent(i)
+                    h.SetBinContent(i,frac)
+                else:
+                    h.SetBinContent(i,0)
+        for h in n_frac:
+            stack_fraction.Add(h)
+
+        pad3.cd()
+        stack_fraction.Draw("histo")
+        #pad3.SetTopMargin(0.01)
+        #pad3.SetBottomMargin(0.01)
+
+        hone = htot.Clone("hone")
+        for ibin in range(0, hone.GetNbinsX()+2):
+            hone.SetBinContent(ibin, 100)
+        hone.SetMaximum(100.)
+        hone.GetYaxis().SetRangeUser(0,100)
+        hone.GetYaxis().SetTitle("Composition [%]")
+
+        hone.SetFillStyle(0)
+        hone.GetXaxis().SetTitleSize(0)
+        hone.GetXaxis().SetLabelSize(0)
+        hone.GetYaxis().SetTitleFont(43)
+        hone.GetYaxis().SetTitleSize(15)
+        hone.GetYaxis().SetLabelFont(43)
+        hone.GetYaxis().SetLabelSize(15)
+        hone.GetYaxis().SetTitleOffset(1.5)        
+        hone.GetYaxis().CenterTitle()
+        hone.Draw('histo')
+
+        stack_fraction.Draw("histo same")        
+        pad3.SetGridy()
+        pad3.SetTicky()
+        pad3.SetTickx()
+        pad3.RedrawAxis("g")
+        pad3.Update()
+
+    if not is_2D:
+        pad1.cd()
+        if logY:
+            histo_max *= 10
+            pad1.SetLogy()
+        
+        hsig_charm = h_signals[0].Clone("hsig_charm")
+        hsig_up = h_signals[1].Clone("hsig_up")
+        hsig_charm.SetLineWidth(2)
+        hsig_charm.SetLineStyle(7)
+        hsig_charm.SetLineColor(getSampleColor("signalcharm"))
+
+        hsig_up.SetLineWidth(2)
+        hsig_up.SetLineStyle(7)
+        hsig_up.SetLineColor(getSampleColor("signalup"))
+        hdata = h_signals[0].Clone("hdata")
+        #hdata.SetMarkerStyle(20)
+        histo_max=max(histo_max,hsig_charm.GetMaximum(), hsig_up.GetMaximum())
+
+        stack.Draw("hist")
+        stack.GetYaxis().SetTitleFont(43)
+        stack.GetYaxis().SetTitle("Events")
+        stack.GetYaxis().SetTitleSize(19)
+        stack.GetYaxis().SetLabelFont(43)
+        stack.GetYaxis().SetLabelSize(15)
+        stack.GetYaxis().SetTitleOffset(1.3)        
+
+        stack.GetXaxis().SetTitle(title_x_axis)
+        stack.GetXaxis().SetTitleFont(43)
+        stack.GetXaxis().SetTitleSize(16)
+        stack.GetXaxis().SetLabelFont(43)
+        stack.GetXaxis().SetLabelSize(15)
+        #stack.GetXaxis().SetTitleOffset(1.1)        
+        stack.GetXaxis().SetTitleOffset(1.1)  
+        pad1.SetBottomMargin(0.14)
+        pad1.SetTickx()
+        pad1.SetTicky()
+
+        stack.SetMaximum(1.05 * histo_max)
+        #stack.SetMaximum(1.4 * histo_max)
+        #stack.SetMinimum(0.1)
+        #stack.SetMinimum(1000)
+
+        stack.Draw("hist")
+        #hdata.Draw("E0 same")
+        #hsig_charm.SetMinimum(10)
+        #hsig_up.SetMinimum(10)
+        hsig_charm.Draw("hist same")
+        hsig_up.Draw("hist same")
+
+        pad1.RedrawAxis()
+
+        #leg = make_leg(n, labels, hdata=hdata)
+        leg = new_make_leg(n, labels, hsig_charm=hsig_charm, hsig_up=hsig_up)
+        leg.Draw()
+
+        text =  ROOT.TLatex()
+        text.SetNDC()
+        text.SetTextAlign( 11 )
+        text.SetTextFont( 42 )
+        text.SetTextSize( 0.05 )
+        text.SetTextColor( 1 )
+        y = 0.82
+        #write.append(region.replace("_","-"))
+        for t in write:
+            text.DrawLatex(0.15,y, t)
+            y = y-0.06
+            #text.DrawLatex(0.15,y, var[0].replace("_","-"))
+        pad1.Update()
+
+    pad2.cd()
+    pad2.SetTicky()
+    hratio = hdata.Clone("h_ratio")
+    hratio = hsig_charm.Clone("h_ratio")
+    hratio.SetLineStyle(1)
+    hratio.SetLineColor(getSampleColor("signalcharm"))
+    hratio1 = hsig_up.Clone("h_ratio1")
+    hratio1.SetLineStyle(1)
+    hratio1.SetLineColor(getSampleColor("signalup"))
+
+    hratio.GetYaxis().SetTitleFont(43)
+    hratio.GetYaxis().SetTitleSize(19)
+
+    hratio.GetYaxis().SetLabelFont(43)
+    hratio.GetYaxis().SetLabelSize(15)
+    hratio.GetYaxis().SetTitleOffset(1.3)        
+    hratio.GetYaxis().SetTitle("Sig/Bkg")
+    hratio.GetYaxis().CenterTitle()
+    hratio.Divide(htot)
+    hratio1.Divide(htot)    
+    #hratio.SetMinimum(0)
+    #hratio.SetMaximum(2)
+    hratio.Draw("hist")
+    hratio1.Draw("hist same")
+
+
+    if is_2D:
+        hratio.GetXaxis().SetTitle(var[0])
+        hratio.GetXaxis().SetTitleFont(43)
+        hratio.GetXaxis().SetTitleSize(19)
+        hratio.GetXaxis().SetLabelFont(43)
+        hratio.GetXaxis().SetLabelSize(15)
+        hratio.GetXaxis().SetTitleOffset(1.3)
+        hratio.GetXaxis().SetTitle(var[4])
+        hratio.Draw("COLZ")
+        hratio.Draw("TEXTE same")
+        text =  ROOT.TLatex()
+        text.SetNDC()
+        text.SetTextAlign( 11 )
+        text.SetTextFont( 42 )
+        text.SetTextSize( 0.05 )
+        text.SetTextColor( 1 )
+        y = 0.82
+        for t in write:
+            text.DrawLatex(0.15,y, t)
+            y = y-0.06
+            #text.DrawLatex(0.15,y, var[0].replace("_","-"))
+        pad2.Update()
+
+
+    if not is_2D:
+        hratio.GetXaxis().SetLabelSize(0)
+        hratio.GetXaxis().SetTitleSize(0)
+        hline=ROOT.TH1D("hline", "hline", 1, var[2], var[3])
+        hline.SetLineColor(ROOT.kRed)
+        hline.SetBinContent(1,1)
+        #hline.GetYaxis().SetTitle("Data/MC")
+        #hline.Draw("same")
+        #pad2.SetTopMargin(0.01)
+        #pad2.SetBottomMargin(0.3)
+
+
+    #name_can = "data_mc_"+name_can
+    name_pdf=name_can
+    c.SaveAs(outfolder+name_pdf+".pdf")
+    #c.SaveAs(outfolder+name_pdf+".png")
+    #print outfolder+name_pdf
+    #c.Clear()
+    #stack.Clear()
+
+def signal_bkg_tw (var, selection, myweights, backgrounds, signals, name_infile, labels, title_x_axis, lumi, logY=False, write=[], outfolder="./plots/", name_can="", do_overflow=True, is_2D=False):
+    is_2D = False    
+    if len(var)>4:
+        is_2D = True
+
+    # Get all the necessary files
+    infile = dict()
+    for b in backgrounds:
+        infile[b]= ROOT.TFile.Open(name_infile[b],"READ")
+
+    for m in signals:
+        infile[m]=ROOT.TFile.Open(name_infile[m],"READ")
+
+    # First draw signal histograms    
+    h_signals = []
+    for m in signals:
+        t_signal = infile[m].Get(m)
+        name_h_sig = name_can+m
+        hsignal = ROOT.TH1D(name_h_sig, name_h_sig, var[1], var[2], var[3])
+        hsignal.GetXaxis().SetTitle(title_x_axis)
+        hsignal.Sumw2()
+        string_draw=var[0]+">>"+name_can+m
+        #print string_draw
+        #sel_signal = ""
+        sel_signal = "("+selection+")*"+myweights
+
         #sel_signal="("+sel+")*("+signal_sel+")"
         t_signal.Draw(string_draw,sel_signal,"goff")
             
@@ -531,18 +964,18 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
 
         stack.GetXaxis().SetTitle(title_x_axis)
         stack.GetXaxis().SetTitleFont(43)
-        stack.GetXaxis().SetTitleSize(19)
+        stack.GetXaxis().SetTitleSize(16)
         stack.GetXaxis().SetLabelFont(43)
         stack.GetXaxis().SetLabelSize(15)
         #stack.GetXaxis().SetTitleOffset(1.5)        
-        stack.GetXaxis().SetTitleOffset(1.7)  
+        stack.GetXaxis().SetTitleOffset(1.1)  
         pad1.SetBottomMargin(0.14)
         pad1.SetTickx()
         pad1.SetTicky()
 
-        stack.SetMaximum(1.4 * histo_max)
-        #stack.SetMinimum(0.1)
-        stack.SetMinimum(1000)
+        stack.SetMaximum(1.05 * histo_max)
+        stack.SetMinimum(0.1)
+        #stack.SetMinimum(1000)
 
         stack.Draw("hist")
         #hdata.Draw("E0 same")
@@ -595,6 +1028,405 @@ def signal_bkg (var, selection, myweights, backgrounds, signals, name_infile, la
     #hratio.SetMaximum(2)
     hratio.Draw("hist")
     hratio1.Draw("hist same")
+
+
+    if is_2D:
+        hratio.GetXaxis().SetTitle(var[0])
+        hratio.GetXaxis().SetTitleFont(43)
+        hratio.GetXaxis().SetTitleSize(19)
+        hratio.GetXaxis().SetLabelFont(43)
+        hratio.GetXaxis().SetLabelSize(15)
+        hratio.GetXaxis().SetTitleOffset(1.3)
+        hratio.GetXaxis().SetTitle(var[4])
+        hratio.Draw("COLZ")
+        hratio.Draw("TEXTE same")
+        text =  ROOT.TLatex()
+        text.SetNDC()
+        text.SetTextAlign( 11 )
+        text.SetTextFont( 42 )
+        text.SetTextSize( 0.05 )
+        text.SetTextColor( 1 )
+        y = 0.82
+        for t in write:
+            text.DrawLatex(0.15,y, t)
+            y = y-0.06
+            #text.DrawLatex(0.15,y, var[0].replace("_","-"))
+        pad2.Update()
+
+
+    if not is_2D:
+        hratio.GetXaxis().SetLabelSize(0)
+        hratio.GetXaxis().SetTitleSize(0)
+        hline=ROOT.TH1D("hline", "hline", 1, var[2], var[3])
+        hline.SetLineColor(ROOT.kRed)
+        hline.SetBinContent(1,1)
+        #hline.GetYaxis().SetTitle("Data/MC")
+        #hline.Draw("same")
+        #pad2.SetTopMargin(0.01)
+        #pad2.SetBottomMargin(0.3)
+
+
+    #name_can = "data_mc_"+name_can
+    name_pdf=name_can
+    c.SaveAs(outfolder+name_pdf+".pdf")
+    #c.SaveAs(outfolder+name_pdf+".png")
+    #print outfolder+name_pdf
+    #c.Clear()
+    #stack.Clear()
+
+def signal_bkg_couplings (var, selection, myweights, backgrounds, signals, name_infile, labels, title_x_axis, lumi, logY=False, write=[], outfolder="./plots/", name_can="", do_overflow=True, is_2D=False):
+    is_2D = False    
+    if len(var)>4:
+        is_2D = True
+
+    # Get all the necessary files
+    infile = dict()
+    for b in backgrounds:
+        infile[b]= ROOT.TFile.Open(name_infile[b],"READ")
+
+    for m in signals:
+        infile[m]=ROOT.TFile.Open(name_infile[m],"READ")
+
+    # First draw signal histograms    
+    h_signals = []
+    for m in signals:
+        t_signal = infile[m].Get(m)
+        name_h_sig = name_can+m
+        hsignal = ROOT.TH1D(name_h_sig, name_h_sig, var[1], var[2], var[3])
+        hsignal.GetXaxis().SetTitle(title_x_axis)
+        hsignal.Sumw2()
+        string_draw=var[0]+">>"+name_can+m
+        #print string_draw
+        #sel_signal = ""
+        sel_signal = "("+selection+")*"+myweights
+        #sel_signal="("+sel+")*("+signal_sel+")"
+        t_signal.Draw(string_draw,sel_signal,"goff")
+            
+        if not do_overflow:
+           hsignal_of = ROOT.TH1D(name_h_sig+"_of", name_h_sig+"_of", var[1], var[2], var[3])
+           hsignal_of.Sumw2()
+           string_draw_of = str(var[3]) + " - (0.5*("+ str(var[3])+"-"+str(var[2])+")/"+str(var[1]) +") >>"+name_h_sig+"_of"
+           #12 - (0.5*(12-0)/12) >>jetNo_signal_charm_of
+           #print (string_draw_of)
+           t_signal.Draw(string_draw_of, sel_signal+"*("+ var[0]+">"+str(var[3])  +")")
+           hsignal.Add(hsignal_of)                    
+
+        if do_overflow:
+           hsignal_of = ROOT.TH1D(name_h_sig+"_of", name_h_sig+"_of", var[1], var[2], var[3])
+           hsignal_of.Sumw2()
+           string_draw_of = var[0]+">>"+name_h_sig+"_of"
+           t_signal.Draw(string_draw_of,sel_signal,"goff")
+           overflow_cont = hsignal_of.GetBinContent(var[1]) + hsignal_of.GetBinContent(var[1]+1)
+           hsignal_of.SetBinContent(var[1], overflow_cont)
+           #hsignal_of.GetXaxis().SetRangeUser(var[2], var[3])
+
+        hsignal_of.Scale(lumi)
+        #hsignal_of.SetMinimum(10000)
+        h_signals.append(hsignal_of)        
+
+    # Second darw background histograms
+    sel = "("+selection+")*"+myweights
+    #print sel
+    n=[]
+    n_allbkg=[]
+    colors=[]
+    test_dict = {}
+    for b in backgrounds:
+        """
+        if do_scale:
+        with open(mypickle_fit, 'rb') as handle2:
+        fit_res = pickle.load(handle2)
+        prefit = fit_res["MC_exp_events_"+b][0]
+        postfit = fit_res["Fitted_events_"+b][0]
+        SF=postfit/prefit
+        """
+        n_thisbkg=[]
+        color=getSampleColor(b)
+        colors.append(color)
+
+        #print (infile[b].Get(b))
+        t = infile[b].Get(b)
+        #t.Show(0)
+        if (not t):
+           print (b,"not found")
+           continue
+        sel_slice=sel
+
+        if is_2D:
+            htmp=ROOT.TH2D(name_can+"_"+b, name_can+"_"+b, var[1], var[2], var[3], var[5], var[6], var[7])
+            string_draw=var[4]+":"+var[0]+" >>"+name_can+"_"+b
+            htmp.GetXaxis().SetTitle(name_can)
+            htmp.Sumw2()
+            t.Draw(string_draw,sel_slice,"goff")
+            htmp.Scale(lumi)
+            n_thisbkg.append(htmp.Clone())
+            htmp.Clear()
+        else:           
+            
+            htmp_name = name_can+"_"+b
+            htmp=ROOT.TH1D(htmp_name, htmp_name, var[1], var[2], var[3])
+            htmp.GetXaxis().SetTitle(title_x_axis)
+            htmp.Sumw2()
+            string_draw=var[0]+">>"+name_can+"_"+b
+            #print string_draw
+            t.Draw(string_draw,sel,"goff")
+            
+
+            if not do_overflow:
+               htmp_name = name_can+"_"+b
+               htmp_of = ROOT.TH1D(htmp_name+"_of", htmp_name+"_of", var[1], var[2], var[3])
+               htmp_of.Sumw2()
+               string_draw_of = str(var[3]) + " - (0.5*("+ str(var[3])+"-"+str(var[2])+")/"+str(var[1]) +") >>"+name_can+"_"+str(i)+"_"+b+"_of"
+               t.Draw(string_draw_of, sel_slice+"*("+ var[0]+">"+str(var[3])  +")")
+               htmp.Add(htmp_of)                    
+
+            if do_overflow:
+               htmp_name = name_can+"_"+b
+               htmp_of = ROOT.TH1D(htmp_name+"_of", htmp_name+"_of", var[1], var[2], var[3])
+               htmp_of.Sumw2()
+               string_draw_of = var[0]+">>"+htmp_name+"_of"
+               #print (string_draw_of)
+               t.Draw(string_draw_of,sel,"goff")
+               bkgoverflow_cont = htmp_of.GetBinContent(var[1]) + htmp_of.GetBinContent(var[1]+1)
+               htmp_of.SetBinContent(var[1], bkgoverflow_cont)
+               #htmp_of.GetXaxis().SetRangeUser(var[2], var[3]+1)	       
+
+            htmp_of.Scale(lumi)
+            #print(b)
+            #for bin in range(htmp_of.GetNbinsX()):
+                #print(htmp_of.GetBinContent(bin))
+            #print ("Total No:", int(htmp_of.Integral()))
+            #print("------------------------")
+            
+            n_thisbkg.append(htmp_of.Clone())
+            #print(htmp_of.GetName(), ":", htmp_of.GetBinContent(10))
+            test_dict[b] = htmp_of.Clone()
+            #htmp.Clear()
+            #htmp_of.Clear()
+            htmp_of.Delete()
+            htmp.Delete()
+            #print (b)
+
+        n_allbkg.append(n_thisbkg)
+
+    #print(n_thisbkg)
+    #print (n_allbkg)
+
+    # look at bkg composition
+    for n_allbkg_i in n_allbkg:
+        n.append(n_allbkg_i[0])
+
+    #for h in n: print(h.GetName(), ":", h.GetBinContent(10))
+    #print(n)
+    #print(test_dict)
+    histo_max=0
+    i=0
+    stack = ROOT.THStack("stack","stack")
+    for h in n:
+        #print h.Integral()
+        h.SetLineColor(colors[i])
+        h.SetFillColor(colors[i])
+        h.SetLineColor(1)
+        h.GetXaxis().SetTitle(var[0])
+        if h.GetMaximum() > histo_max:
+            histo_max=h.GetMaximum()
+        stack.Add(h)
+        if i==0:
+            htot=h.Clone("htot")
+        else:
+            htot.Add(h)
+        i+=1
+
+    c = ROOT.TCanvas("can"+name_can,"can"+name_can,600,600)
+    do_fraction = True
+    if is_2D:
+        pad2 = ROOT.TPad("pad2", "pad2",0.0,0.0,1.0,1.0,22)
+    elif not do_fraction:
+        pad1 = ROOT.TPad("pad1", "pad1",0.0,0.35,1.0,1.0,21)
+        pad2 = ROOT.TPad("pad2", "pad2",0.0,0.0,1.0,0.35,22)
+        pad2.SetGridy()
+        pad1.SetFillColor(0)
+        pad1.Draw()
+    else:
+        # pad1 for main distribution plots
+        pad1 = ROOT.TPad("pad1", "pad1",0.0,0.47,1.0,1.0,21)
+        # pad2 for ratio plots
+        pad2 = ROOT.TPad("pad2", "pad2",0.0,0.0,1.0,0.26,22)
+        # pad3 for composition plots
+        pad3 = ROOT.TPad("pad3", "pad3",0.0,0.24,1.0,0.50,22)
+        pad2.SetGridy()
+        pad1.SetFillColor(0)
+        pad3.SetGridy()
+        pad1.SetFillColor(0)
+        pad1.SetFillStyle(0)
+        pad2.SetFillColor(0)
+        pad2.SetFillStyle(0)
+        pad3.SetFillColor(0)
+        pad3.SetFillStyle(0)
+        pad1.SetTickx()
+        pad2.SetTickx()
+        pad3.SetTickx()
+        pad1.SetTicky()
+        pad2.SetTicky()
+        pad3.SetTicky()
+        pad1.Draw()
+        pad3.Draw()
+
+    pad2.SetFillColor(0)
+    pad2.Draw()
+
+    # chiara: here
+    if do_fraction:
+        n_frac=[]
+        for h in n:
+            #print(h.GetName())
+            n_frac.append(h.Clone())
+        stack_fraction = ROOT.THStack("stack_fraction","stack_fraction")
+        stack_fraction.SetMinimum(10000)
+        #print (n_frac)
+        for i in range(0,htot.GetNbinsX()):
+            for h in n_frac:
+                if htot.GetBinContent(i)>0:
+                    frac = 100*h.GetBinContent(i)/htot.GetBinContent(i)
+                    h.SetBinContent(i,frac)
+                else:
+                    h.SetBinContent(i,0)
+        for h in n_frac:
+            stack_fraction.Add(h)
+
+        pad3.cd()
+        stack_fraction.Draw("histo")
+        #pad3.SetTopMargin(0.01)
+        #pad3.SetBottomMargin(0.01)
+
+        hone = htot.Clone("hone")
+        for ibin in range(0, hone.GetNbinsX()+2):
+            hone.SetBinContent(ibin, 100)
+        hone.SetMaximum(100.)
+        hone.GetYaxis().SetRangeUser(0,100)
+        hone.GetYaxis().SetTitle("Composition [%]")
+
+        hone.SetFillStyle(0)
+        hone.GetXaxis().SetTitleSize(0)
+        hone.GetXaxis().SetLabelSize(0)
+        hone.GetYaxis().SetTitleFont(43)
+        hone.GetYaxis().SetTitleSize(15)
+        hone.GetYaxis().SetLabelFont(43)
+        hone.GetYaxis().SetLabelSize(15)
+        hone.GetYaxis().SetTitleOffset(1.5)        
+        hone.GetYaxis().CenterTitle()
+        hone.Draw('histo')
+
+        stack_fraction.Draw("histo same")        
+        pad3.SetGridy()
+        pad3.SetTicky()
+        pad3.SetTickx()
+        pad3.RedrawAxis("g")
+        pad3.Update()
+
+    if not is_2D:
+        pad1.cd()
+        if logY:
+            histo_max *= 10
+            pad1.SetLogy()
+        
+        hsig_S = h_signals[0].Clone("hsig_S")
+        hsig_V = h_signals[1].Clone("hsig_V")
+        hsig_T = h_signals[2].Clone("hsig_T")
+        hsig_S.SetLineWidth(2)
+        hsig_S.SetLineStyle(7)
+        hsig_S.SetLineColor(getSampleColor("hsig_S"))
+        hsig_V.SetLineWidth(2)
+        hsig_V.SetLineStyle(7)
+        hsig_V.SetLineColor(getSampleColor("hsig_V"))
+        hsig_T.SetLineWidth(2)
+        hsig_T.SetLineStyle(7)
+        hsig_T.SetLineColor(getSampleColor("hsig_T"))
+
+        #hdata = h_signals[0].Clone("hdata")
+        #hdata.SetMarkerStyle(20)
+        histo_max=max(histo_max,hsig_S.GetMaximum(), hsig_T.GetMaximum())
+
+        stack.Draw("hist")
+        stack.GetYaxis().SetTitleFont(43)
+        stack.GetYaxis().SetTitle("Events")
+        stack.GetYaxis().SetTitleSize(19)
+        stack.GetYaxis().SetLabelFont(43)
+        stack.GetYaxis().SetLabelSize(15)
+        stack.GetYaxis().SetTitleOffset(1.3)        
+
+        stack.GetXaxis().SetTitle(title_x_axis)
+        stack.GetXaxis().SetTitleFont(43)
+        stack.GetXaxis().SetTitleSize(16)
+        stack.GetXaxis().SetLabelFont(43)
+        stack.GetXaxis().SetLabelSize(15)
+        #stack.GetXaxis().SetTitleOffset(1.1)        
+        stack.GetXaxis().SetTitleOffset(1.1)  
+        pad1.SetBottomMargin(0.14)
+        pad1.SetTickx()
+        pad1.SetTicky()
+
+        stack.SetMaximum(1.05 * histo_max)
+        #stack.SetMaximum(1.4 * histo_max)
+        #stack.SetMinimum(0.1)
+        #stack.SetMinimum(1000)
+
+        stack.Draw("hist")
+        #hdata.Draw("E0 same")
+        #hsig_charm.SetMinimum(10)
+        #hsig_up.SetMinimum(10)
+        hsig_S.Draw("hist same")
+        hsig_V.Draw("hist same")
+        hsig_T.Draw("hist same")
+
+        pad1.RedrawAxis()
+
+        #leg = make_leg(n, labels, hdata=hdata)
+        leg = make_leg_coupling(n, labels, hsig_S=hsig_S, hsig_V=hsig_V, hsig_T=hsig_T)
+        leg.Draw()
+
+        text =  ROOT.TLatex()
+        text.SetNDC()
+        text.SetTextAlign( 11 )
+        text.SetTextFont( 42 )
+        text.SetTextSize( 0.05 )
+        text.SetTextColor( 1 )
+        y = 0.82
+        #write.append(region.replace("_","-"))
+        for t in write:
+            text.DrawLatex(0.15,y, t)
+            y = y-0.06
+            #text.DrawLatex(0.15,y, var[0].replace("_","-"))
+        pad1.Update()
+
+    pad2.cd()
+    pad2.SetTicky()
+    
+    hratio = hsig_S.Clone("h_ratio")
+    hratio.SetLineStyle(1)
+    hratio.SetLineColor(getSampleColor("hsig_S"))
+    hratio1 = hsig_V.Clone("h_ratio1")
+    hratio1.SetLineStyle(1)
+    hratio1.SetLineColor(getSampleColor("hsig_V"))
+    hratio2 = hsig_T.Clone("h_ratio2")
+    hratio2.SetLineStyle(1)
+    hratio2.SetLineColor(getSampleColor("hsig_T"))
+
+    hratio.GetYaxis().SetTitleFont(43)
+    hratio.GetYaxis().SetTitleSize(19)
+    hratio.GetYaxis().SetLabelFont(43)
+    hratio.GetYaxis().SetLabelSize(15)
+    hratio.GetYaxis().SetTitleOffset(1.3)        
+    hratio.GetYaxis().SetTitle("Sig/Bkg")
+    hratio.GetYaxis().CenterTitle()
+    hratio.Divide(htot)
+    hratio1.Divide(htot)    
+    hratio2.Divide(htot)    
+    hratio.SetMinimum(0)
+    hratio.SetMaximum(1.6)
+    hratio.Draw("hist")
+    hratio1.Draw("hist same")
+    hratio2.Draw("hist same")
 
 
     if is_2D:
@@ -1524,7 +2356,6 @@ def signal_eff(masses, name_infile, num_sel, den_sel, weights, legend, outfolder
     return
 
 
-
 def tt_dt (var, sel, background, name_infile, title_x_axis, ntags, isIncl, lumi, logY=False, write=[], outfolder="./", name_can="", do_scale=False, b_dep_var=""):
     print "ciao"
     infile = ROOT.TFile.Open(name_infile,"READ")
@@ -1678,8 +2509,6 @@ def tt_dt (var, sel, background, name_infile, title_x_axis, ntags, isIncl, lumi,
     c.Clear()
 
 
-
-
 def turn_on (var, num_sel, den_sel, weights, backgrounds, name_infile, labels, title_x_axis, outfolder="./", name_can="", doLogY=False, write=[]):
     #print "ciao"
     infile = dict()
@@ -1777,7 +2606,6 @@ def turn_on (var, num_sel, den_sel, weights, backgrounds, name_infile, labels, t
     name_pdf=name_can.replace(".pdf","")+".pdf"
     c.SaveAs(outfolder+name_pdf)
     c.Clear()
-
 
 
 def turn_on_data (var, num_sel, den_sel, weights, backgrounds, name_infile, labels, title_x_axis, outfolder="./", name_can="", doLogY=False, write=[]):
@@ -1939,8 +2767,6 @@ def turn_on_data (var, num_sel, den_sel, weights, backgrounds, name_infile, labe
     name_pdf=name_can.replace(".pdf","")+".pdf"
     c.SaveAs(outfolder+name_pdf)
     c.Clear()
-
-
 
 
 def pu_dependence(var, selections, weights, mc_chan, bkg, name_infile, pu_file, labels, title_x_axis, outfolder="./", name_can="", doLogY=False, write=[]):
