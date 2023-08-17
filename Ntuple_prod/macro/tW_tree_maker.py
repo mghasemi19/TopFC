@@ -51,11 +51,13 @@ branchPhoton = treeReader.UseBranch("Photon")
 branchMET = treeReader.UseBranch("MissingET")
 
 # weights for signal and backgrounds based on MG5 xsec
-weights = {'ttbarZ': 0.004368240427953154, 'tZ': 0.00375, 'tttt': 2.795205553087607e-05, 'ZZ': 0.67125, 'ttbar': 0.742304347826087, 'ttbarW': 0.00015, 'WZ': 0.02715,'signal_charm': 0.01376, 'signal_up': 0.01376, 'test':1, 'signal_tW_charm':7e-4, 'signal_tW_up':7e-04}
+#weights = {'ttbarZ': 0.004368240427953154, 'tZ': 0.00375, 'tttt': 2.795205553087607e-05, 'ZZ': 0.67125, 'ttbar': 0.742304347826087, 'ttbarW': 0.00015, 'WZ': 0.02715,'signal_charm': 0.01376, 'signal_up': 0.01376, 'test':1, 'signal_tW_charm':7e-4, 'signal_tW_up':7e-4}
+
+weights = {'signal_tW_charm_SRR': 1.2e-5, 'signal_tW_charm_VRR':4.8e-5 , 'signal_tW_charm_TRR': 0.0005, 'signal_tW_up_SRR': 1.8e-5, 'signal_tW_charm_VRR':7.2e-05 , 'signal_tW_charm_TRR': 0.000765}
 
 # Tree to keep variables
 treeName = args.treename
-f = ROOT.TFile("./newtrees/" + treeName + ".root", "RECREATE")
+f = ROOT.TFile("./tW_trees/" + treeName + ".root", "RECREATE")
 tree_obj = ROOT.TTree(treeName, treeName+"tree")
 
 # List of all variables to keep in the tree
@@ -134,7 +136,7 @@ counter = 0
 for entry in range(0, numberOfEntries):
   # Load selected branches with data from specified event
   #if (entry % 100 == 0 and entry != 0): break 
-  #if (entry == 50000): break 
+  #if (entry == 500000): break 
   if (entry % 100000 == 0): print("Event Number:{}".format(entry))
   treeReader.ReadEntry(entry)
 
@@ -277,25 +279,17 @@ for entry in range(0, numberOfEntries):
       met = branchMET.At(0)
       met_vec = ROOT.TLorentzVector()
       elec_vec = ROOT.TLorentzVector()
-      bjet_vec = ROOT.TLorentzVector()
       #met_vec.SetPtEtaPhiE(met.MET, met.Eta, met.Phi, met.MET) 
       met_vec.SetPtEtaPhiM(met.MET, met.Eta, met.Phi, 0) 
       elec_ET = ROOT.TMath.Sqrt(branchElectron.At(index[0]).PT**2 + 0.005**2)
       #elec_vec.SetPtEtaPhiE(branchElectron.At(index[0]).PT, branchElectron.At(index[0]).Eta,
       elec_vec.SetPtEtaPhiM(branchElectron.At(index[0]).PT, branchElectron.At(index[0]).Eta,
 branchElectron.At(index[0]).Phi, 0.005)
-      bjet_ET = ROOT.TMath.Sqrt(branchJet.At(bjet_index).PT**2 + 4.67**2)
-      #bjet_vec.SetPtEtaPhiE(branchJet.At(bjet_index).PT, branchJet.At(bjet_index).Eta, branchJet.At(bjet_index).Phi, bjet_ET)
-      bjet_vec.SetPtEtaPhiM(branchJet.At(bjet_index).PT, branchJet.At(bjet_index).Eta, branchJet.At(bjet_index).Phi, 4.67)
       W_vec = met_vec + elec_vec
-      top_vec = met_vec + elec_vec + bjet_vec
-
       mW = W_vec.Mt()      
-      mTop = top_vec.Mt()
 
       Met[0] = met.MET
       WMass[0] = mW
-      SMTopMass[0] = mTop
   
   # 6) New algorithm for (OS) lepton selection (mll - mtop with leading jet)
   newindex = {}  # new index for OS selection
@@ -407,29 +401,22 @@ branchElectron.At(index[0]).Phi, 0.005)
   #print(newindex)
   testnonSMTopMass[0] = noSMmTop_new
 
-  # 8) W boson and SM top mass with new algorithm (based on newindex[0] -- SM top vertex)
+  # 8) W boson mass with new algorithm (based on newindex[0] -- SM top vertex)
   if branchMET.GetEntries() >= 0:
       met = branchMET.At(0)
       met_vec = ROOT.TLorentzVector()
       elec_vec = ROOT.TLorentzVector()
-      bjet_vec = ROOT.TLorentzVector()
       #met_vec.SetPtEtaPhiE(met.MET, met.Eta, met.Phi, met.MET)
       met_vec.SetPtEtaPhiM(met.MET, met.Eta, met.Phi, 0)
       elec_ET = ROOT.TMath.Sqrt(branchElectron.At(newindex[0]).PT**2 + 0.005**2)
       #elec_vec.SetPtEtaPhiE(branchElectron.At(index[0]).PT, branchElectron.At(index[0]).Eta,
       elec_vec.SetPtEtaPhiM(branchElectron.At(newindex[0]).PT, branchElectron.At(newindex[0]).Eta,
 branchElectron.At(newindex[0]).Phi, 0.005)
-      bjet_ET = ROOT.TMath.Sqrt(branchJet.At(bjet_index).PT**2 + 4.67**2)
-      #bjet_vec.SetPtEtaPhiE(branchJet.At(bjet_index).PT, branchJet.At(bjet_index).Eta, branchJet.At(bjet_index).Phi, bjet_ET)
-      bjet_vec.SetPtEtaPhiM(branchJet.At(bjet_index).PT, branchJet.At(bjet_index).Eta, branchJet.At(bjet_index).Phi, 4.67)
       W_vec = met_vec + elec_vec
-      top_vec = met_vec + elec_vec + bjet_vec
 
       mW = W_vec.Mt()
-      mTop = top_vec.Mt()
 
       newWMass[0] = mW
-      newSMTopMass[0] = mTop
 
   # 9) Old algorithm (delta ETA) to analyze non SM Top and mLL
   elec_first_vec = ROOT.TLorentzVector()
@@ -458,15 +445,15 @@ branchElectron.At(newindex[0]).Phi, 0.005)
   tree_obj.SetBranchAddress("jetETA", jetETA)  
   tree_obj.SetBranchAddress("jetPHI", jetPHI)  
   tree_obj.SetBranchAddress("elecPT", elecPT)  
-  tree_obj.SetBranchAddress("elecETA", jetETA)  
-  tree_obj.SetBranchAddress("elecPHI", jetPHI) 
+  tree_obj.SetBranchAddress("elecETA", elecETA)  
+  tree_obj.SetBranchAddress("elecPHI", elecPHI) 
 
   tree_obj.Fill() 
     
 f.cd()
 tree_obj.Write()
 #tree_obj.Scan("weight")
-print("./newtrees/" + treeName + ".root is created")
+print("./tW_trees/couplings" + treeName + ".root is created")
 f.Close()
 
 

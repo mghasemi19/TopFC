@@ -12,7 +12,7 @@ xsec_sig = [0.01376, 0.01376]
 # number of events generated
 sig_event = [3*10**6, 3*10**6]
 
-# ttbar channel info
+# ttbar coupling channel info
 sig_couplings = ['signal_charm_SRR', 'signal_charm_VRR', 'signal_charm_TRR', 'signal_up_SRR', 'signal_up_VRR', 'signal_up_TRR']
 # cross-sections (pb)
 xsec_sig_couplings = [0.0002, 0.0008, 0.0101, 0.0002, 0.0008, 0.0101]
@@ -25,6 +25,13 @@ sig_tW = ['signal_tW_charm', 'signal_tW_up']
 xsec_sig_tW = [0.0007, 0.0007]
 # number of events generated
 sig_event_tW = [3*10**6, 3*10**6]
+
+# tW coupling channel info
+sig_tW_couplings = ['signal_tW_charm_SRR', 'signal_tW_charm_VRR', 'signal_tW_charm_TRR', 'signal_tW_up_SRR', 'signal_tW_up_VRR', 'signal_tW_up_TRR']
+# cross-sections (pb)
+xsec_sig_tW_couplings = [0.000012, 0.000048, 0.0005, 0.000012, 0.000048, 0.00051]
+# number of events generated
+sig_event_tW_couplings = [3*10**6, 3*10**6, 3*10**6, 2*10**6, 2*10**6, 2*10**6]
 
 
 def bkg_xsec_computer(cross, bkg, event):
@@ -50,4 +57,7 @@ print(weight_sig_couplings)
 
 weight_sig_tW = sig_xsec_computer(xsec_sig_tW, sig_tW, sig_event_tW)
 print(weight_sig_tW)
+
+weight_sig_tW_couplings = sig_xsec_computer(xsec_sig_tW_couplings, sig_tW_couplings, sig_event_tW_couplings)
+print(weight_sig_tW_couplings)
 
