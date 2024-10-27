@@ -31,8 +31,8 @@ The main backgrounds in the SM for this analysis are:
 - [X] Event selection: signal vs. background
 - [X] Implement NN, BDT, RF, and RNN algorithms to gain ML weights
 - [X] Perform cut-and-count analysis using BDT weights to define signal regions
-- [ ] Compute significance (p-value and z-value) for all signals
-- [ ] Derive 95% CLs upper limits and combine the results
+- [X] Compute significance (p-value and z-value) for all signals
+- [X] Derive 95% CLs upper limits and combine the results
 
 
 
