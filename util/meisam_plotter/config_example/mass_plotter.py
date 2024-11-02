@@ -11,7 +11,7 @@ logY = True
 do_scale = False # doesn't do anything for now!
 
 # define the output folder (and create it if it doesn't exist)
-folder_out="plots/example_data_mc/"
+folder_out="plots/topmass/"
 os.system("mkdir -p "+folder_out)
 
 # backgrounds (names as in the input file, except removing "_NoSys")
@@ -79,8 +79,11 @@ var_def += [{'def':("testnonTopMass",20, 50, 300),'leg':"test new-algorithm non-
 #var_def += [{'def':("newnonTopMass",20, 0, 1000),'leg':"new-algorithm non-SM M_{top}"}]
 '''
 
+#var_def += [{'def':[("testnonTopMass",100, 0, 350), ("newnonTopMass",100, 0, 350), ("nonTopMass",100, 0, 350)],
+#            'leg':["non-SM M_{top} with jet selection", "non-SM M_{top} with leading jet", "non-SM M_{top} with #Delta#eta"]}]
+
 var_def += [{'def':[("testnonTopMass",100, 0, 350), ("newnonTopMass",100, 0, 350), ("nonTopMass",100, 0, 350)],
-            'leg':["non-SM M_{top} with jet selection", "non-SM M_{top} with leading jet", "non-SM M_{top} with #Delta#eta"]}]
+            'leg':["method 3", "method 2", "method 1"]}]
 
 # loop on all the variables that you want to plot
 for var in var_def:
