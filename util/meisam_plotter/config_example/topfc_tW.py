@@ -12,27 +12,26 @@ logY = True
 do_scale = False # doesn't do anything for now!
 
 # define the output folder (and create it if it doesn't exist)
-folder_out="plots/ttbar_data_mc/"
+folder_out="plots/tW_data_mc/"
 os.system("mkdir -p "+folder_out)
 
 # backgrounds (names as in the input file, except removing "_NoSys")
 backgrounds=['ttbarW', 'ttbarZ', 'tttt', 'tZ', 'WZ', 'ZZ', 'ttbar']
-signals = ['signal_charm', 'signal_up']
+signals = ['signal_tW_charm', 'signal_tW_up']
 # backgrounds (as you want them in the legend)
 labels = ["t#bar{t}+W","t#bar{t}+Z","t#bar{t}t#bar{t}","tZ","WZ","ZZ","t#bar{t}"]
 
 # create the dictionaty that points to the correct input file for each background and for data
 name_infile=dict()
-name_infile = {'ttbar':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/ttbar.root',
- 'ttbarW':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/ttbarW.root',
- 'ttbarZ':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/ttbarZ.root', 
- 'tttt':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/tttt.root',
- 'tZ':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/tZ.root',
- 'WZ':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/WZ.root',
- 'ZZ':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/ZZ.root',
- 'signal_up':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/signal_up.root',
- 'signal_charm':'/Users/mghasemi/Desktop/IPM/plotter/newtrees/signal_charm.root'}
-
+name_infile = {'ttbar':'/Users/mghasemi/Desktop/IPM/plotter/tW_trees/ttbar.root',
+ 'ttbarW':'/Users/mghasemi/Desktop/IPM/plotter/tW_trees/ttbarW.root',
+ 'ttbarZ':'/Users/mghasemi/Desktop/IPM/plotter/tW_trees/ttbarZ.root', 
+ 'tttt':'/Users/mghasemi/Desktop/IPM/plotter/tW_trees/tttt.root',
+ 'tZ':'/Users/mghasemi/Desktop/IPM/plotter/tW_trees/tZ.root',
+ 'WZ':'/Users/mghasemi/Desktop/IPM/plotter/tW_trees/WZ.root',
+ 'ZZ':'/Users/mghasemi/Desktop/IPM/plotter/tW_trees/ZZ.root',
+ 'signal_tW_up':'/Users/mghasemi/Desktop/IPM/plotter/tW_trees/signal_tW_up.root',
+ 'signal_tW_charm':'/Users/mghasemi/Desktop/IPM/plotter/tW_trees/signal_tW_charm.root'}
 
 
 # create myweights, a *single* string with the weights to be used sepatated by a *
@@ -45,14 +44,13 @@ write=["#sqrt{s} = 13 TeV, L = 3000 fb^{-1}"]
 # I've chosen to have a list of dictionaries, that put together different arguments of data_mc associated to the same variable. Also this is not mandatory
 var_def=[]
 
+#var_def += [{'def':("jetNo",10,0,10),'leg':"Number of jets"}]
+
 var_def += [{'def':("jetPT",20,0,400),'leg':"jet p_{T}"}]
 var_def += [{'def':("jetNo",10,0,10),'leg':"Number of jets"}]
 var_def += [{'def':("jetPTLeading",20, 0,400),'leg':"Leading jet p_{T}"}]
 var_def += [{'def':("jetETA",24,-6,6),'leg':"jet #eta"}]
 var_def += [{'def':("jetPHI",16,-4,4),'leg':"jet #phi"}]
-
-var_def += [{'def':("bjetPT",20, 0,400),'leg':"b-tagged jet p_{T}"}]
-var_def += [{'def':("bjetETA",20,-5,5),'leg':"b-tagged jet #eta"}]
 
 var_def += [{'def':("elecPT",20,0,400),'leg':"electron p_{T}"}]
 var_def += [{'def':("elecPTLeading",20,0,400),'leg':"Leading electron p_{T}"}]
@@ -66,22 +64,14 @@ var_def += [{'def':("dielecR",16, 0.0, 8.0),'leg':"di-electron R"}]
 
 var_def += [{'def':("met",20,0,400),'leg':"Missing E_{T}"}]
 var_def += [{'def':("WMass",50, 0, 500),'leg':"M_{W}"}]
-var_def += [{'def':("TopMass",50, 0, 500),'leg':"SM M_{top}"}]
-
 var_def += [{'def':("newWMass",50, 0, 500),'leg':"new-algorithm M_{W}"}]
-var_def += [{'def':("newTopMass",50, 0, 500),'leg':"new-algorithm SM M_{top}"}]
 
 var_def += [{'def':("nonTopMass",50, 0, 500),'leg':"#Delta#eta-algorithm non-SM M_{top}"}]
 var_def += [{'def':("newnonTopMass",50, 0, 500),'leg':"min #Deltam leading jet non-SM M_{top}"}]
 var_def += [{'def':("testnonTopMass",50, 0, 500),'leg':"min #Deltam all jet non-SM M_{top}"}]
 
-#var_def += [{'def':("nonTopMass",20, 0, 500),'leg':"#Delta#eta-algorithm non-SM M_{top}"}]
-#var_def += [{'def':("newnonTopMass",20, 0, 500),'leg':"min #Deltam leading jet non-SM M_{top}"}]
 #newvar_def = [{'def':("testnonTopMass",20, 0, 500),'leg':"min #Deltam all jet non-SM M_{top}"}]
-newvar_def = [{'def':("testnonTopMass",20, 0, 800),'leg':"non-SM M_{top} [GeV]"}]
-
-#var_def += [{'def':("newnonTopMass",20, 0, 1000),'leg':"new-algorithm non-SM M_{top}"}]
-
+newvar_def = [{'def':("testnonTopMass",20, 0, 1000),'leg':"non-SM M_{top} [GeV]"}]
 
 # loop on all the variables that you want to plot
 #for var in var_def:
@@ -89,7 +79,7 @@ for var in newvar_def:
     # this is just to define the name of the pdf file: if the key 'can' is in the dictionaly that will be the name, otherwise the name of the variable is used
     name_can = var['def'][0]
     # fianlly, the data_mc function is called
-    #signal_bkg (var['def'], sel, myweights, backgrounds, signals, name_infile, labels, var['leg'], lumi, logY, write, folder_out, name_can)
-    small_signal_bkg (var['def'], sel, myweights, backgrounds, signals, name_infile, labels, var['leg'], lumi, logY, write, folder_out, name_can)
+    #signal_bkg_tw (var['def'], sel, myweights, backgrounds, signals, name_infile, labels, var['leg'], lumi, logY, write, folder_out, name_can)
+    small_signal_bkg_tw (var['def'], sel, myweights, backgrounds, signals, name_infile, labels, var['leg'], lumi, logY, write, folder_out, name_can)
 
 
